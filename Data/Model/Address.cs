@@ -8,6 +8,5 @@ namespace Backend_API.Data.Model
         public long Id { get; set; }
 
         public string? FullAddress { get; set; }
-
     }
 }

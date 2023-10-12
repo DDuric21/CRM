@@ -7,5 +7,6 @@
         IAssetRepository Assets { get; }
         ICustomerAssetsRepository CustomerAssets { get; }
         IOptionRepository Options { get; }
+        IUserRepository Users { get; }
     }
 }

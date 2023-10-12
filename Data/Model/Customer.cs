@@ -13,6 +13,7 @@ namespace Backend_API.Data.Model
         [ForeignKey("AdressId")]
         public long AddressId { get; set; }
 
+        [NotMapped]
         public Address? Address { get; set; }
 
         public DateTime Birthday { get; set; }

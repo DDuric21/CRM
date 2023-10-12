@@ -15,10 +15,24 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Customer")]
+        [Route("/Customers")]
         public IEnumerable<Customer> GetAll()
         {
             var customer = _repository.Customers.GetAllAsync();
+
+            return customer.Result;
+        }
+
+        [HttpGet]
+        [Route("/Customers/{id}")]
+        public Customer GetById(long id)
+        {
+            var customer = _repository.Customers.GetByIdAsync(id);
+
+            if (customer == null)
+            {
+                return new Customer();
+            }
 
             return customer.Result;
         }
