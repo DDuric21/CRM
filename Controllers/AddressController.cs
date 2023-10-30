@@ -35,5 +35,57 @@ namespace Backend_API.Controllers
 
             return address.Result;
         }
+
+        [HttpPost]
+        [Route("/Addresses")]
+        public int InsertAddress(Address address)
+        {
+            try
+            {
+                _repository.Addresses.Insert(address);
+
+                return _repository.Addresses.SaveAsync().Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return 0;
+        }
+
+        [HttpDelete]
+        [Route("/Addresses/{id}")]
+        public string DeleteAddress(long id)
+        {
+            var isDeleted = string.Empty;
+
+            try
+            {
+                isDeleted = _repository.Addresses.DeleteByIdAsync(id).Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return isDeleted;
+        }
+
+        [HttpPut]
+        [Route("/Addresses")]
+        public int UpdateAddress(Address address)
+        {
+            try
+            {
+                return _repository.Addresses.UpdateAsync(address).Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return 0;
+        }
     }
 }

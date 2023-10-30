@@ -31,10 +31,63 @@ namespace Backend_API.Controllers
 
             if (customer == null)
             {
+                //add loging
                 return new Customer();
             }
 
             return customer.Result;
+        }
+
+        [HttpPost]
+        [Route("/Customers")]
+        public int InsertCustomer(Customer customer)
+        {
+            try
+            {
+                _repository.Customers.Insert(customer);
+
+                return _repository.Customers.SaveAsync().Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return 0;
+        }
+
+        [HttpDelete]
+        [Route("/Customers/{id}")]
+        public string DeleteCustomer(long id)
+        {
+            var isDeleted = string.Empty;
+
+            try
+            {
+                isDeleted = _repository.Customers.DeleteByIdAsync(id).Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return isDeleted;
+        }
+
+        [HttpPut]
+        [Route("/Customers")]
+        public int UpdateCustomer(Customer customer)
+        {
+            try
+            {
+                return _repository.Customers.UpdateAsync(customer).Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return 0;
         }
     }
 }

@@ -35,5 +35,59 @@ namespace Backend_API.Controllers
 
             return asset.Result;
         }
+
+        [HttpPost]
+        [Route("/Assets")]
+        public int InsertAsset(Asset asset)
+        {
+            try
+            {
+                _repository.Assets.Insert(asset);
+
+                return _repository.Assets.SaveAsync().Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return 0;
+        }
+
+        [HttpDelete]
+        [Route("/Assets/{id}")]
+        public string DeleteAsset(long id)
+        {
+            var isDeleted = string.Empty;
+
+            try
+            {
+                isDeleted = _repository.Assets.DeleteByIdAsync(id).Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return isDeleted;
+        }
+
+        [HttpPut]
+        [Route("/Assets")]
+        public int UpdateAsset(Asset asset)
+        {
+            try
+            {
+                return _repository.Assets.UpdateAsync(asset).Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return 0;
+        }
+
+
     }
 }

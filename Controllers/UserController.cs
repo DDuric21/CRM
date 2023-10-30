@@ -35,5 +35,57 @@ namespace Backend_API.Controllers
 
             return user.Result;
         }
+
+        [HttpPost]
+        [Route("/Users")]
+        public int InsertUser(User user)
+        {
+            try
+            {
+                _repository.Users.Insert(user);
+
+                return _repository.Users.SaveAsync().Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return 0;
+        }
+
+        [HttpDelete]
+        [Route("/Users/{id}")]
+        public string DeleteUser(long id)
+        {
+            var isDeleted = string.Empty;
+
+            try
+            {
+                isDeleted = _repository.Users.DeleteByIdAsync(id).Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return isDeleted;
+        }
+
+        [HttpPut]
+        [Route("/Users")]
+        public int UpdateUser(User user)
+        {
+            try
+            {
+                return _repository.Users.UpdateAsync(user).Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return 0;
+        }
     }
 }

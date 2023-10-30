@@ -7,7 +7,7 @@ namespace Backend_API.Data.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected readonly CrmDbContext _context;
+        protected CrmDbContext _context;
         public GenericRepository(CrmDbContext context)
         {
             _context = context;
@@ -18,7 +18,6 @@ namespace Backend_API.Data.Repositories
             var entity = await _context.Set<T>().FindAsync(id);
 
             //entity can be null
-            var model = typeof(T);
             var modelName = typeof(T).Name;
 
             var message = new StringBuilder();
@@ -29,6 +28,7 @@ namespace Backend_API.Data.Repositories
             else
             {
                 _context.Remove(entity);
+                await _context.SaveChangesAsync();
                 message.AppendFormat("{0} by ID: {1} successfully deleted", modelName, id);
             }
 
@@ -56,16 +56,22 @@ namespace Backend_API.Data.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task<T> InsertAsync(T entity)
+        public void Insert(T entity)
         {
-            await _context.Set<T>().AddAsync(entity);
-
-            return entity;
+            _context.Set<T>().Add(entity);
         }
 
-        public async void Save()
+        public async Task<int> SaveAsync()
         {
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> UpdateAsync(T entity)
+        {
+            //malo bolje ovo rješiti
+            _context.Set<T>().Add(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            return await _context.SaveChangesAsync();
         }
     }
 }

@@ -36,5 +36,57 @@ namespace Backend_API.Controllers
 
             return option.Result;
         }
+
+        [HttpPost]
+        [Route("/Options")]
+        public int InsertOption(Option option)
+        {
+            try
+            {
+                _repository.Options.Insert(option);
+
+                return _repository.Options.SaveAsync().Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return 0;
+        }
+
+        [HttpDelete]
+        [Route("/Options/{id}")]
+        public string DeleteOption(long id)
+        {
+            var isDeleted = string.Empty;
+
+            try
+            {
+                isDeleted = _repository.Options.DeleteByIdAsync(id).Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return isDeleted;
+        }
+
+        [HttpPut]
+        [Route("/Options")]
+        public int UpdateOption(Option option)
+        {
+            try
+            {
+                return _repository.Options.UpdateAsync(option).Result;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+            }
+
+            return 0;
+        }
     }
 }

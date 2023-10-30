@@ -17,22 +17,28 @@ namespace Backend_API.Data.Repositories
         Task<T> GetByIdAsync(long id);
 
         /// <summary>
-        /// Inserts an element asynchronously
+        /// Inserts an element synchronously
         /// </summary>
-        /// <returns>Inserted task of type TResult</returns>
-        Task<T> InsertAsync(T entity);
+        void Insert(T entity);
+
+        /// <summary>
+        /// Updates existing element for given Id asynchronously
+        /// </summary>
+        /// <param name="entity">Element to be updated</param>
+        /// <returns>Task of type int that represents number of modified elements</returns>
+        Task<int> UpdateAsync(T entity);
 
         /// <summary>
         /// Deletes all elements for given id asynchronously
         /// </summary>
-        /// <returns>Task of type string with information of deleted items</returns>
+        /// <returns>Task of type string with information of deleted elements</returns>
         Task<string> DeleteByIdAsync(long id);
 
         /// <summary>
         /// Saves all elements asynchronously
         /// </summary>
-        /// <returns>Task</returns>
-        void Save();
+        /// <returns>Task of type int that represents number of saved elements</returns>
+        Task<int> SaveAsync();
 
         /// <summary>
         /// Filters a sequence of values based on a predicate
