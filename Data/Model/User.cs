@@ -12,6 +12,8 @@ namespace Backend_API.Data.Model
 
         public string? UserEmail { get; set; }
 
+        public string? Password { get; set; }
+
         [ForeignKey("UserRoleId")]
         public long UserRoleId { get; set; }
     }
