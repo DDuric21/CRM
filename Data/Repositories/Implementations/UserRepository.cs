@@ -8,5 +8,12 @@ namespace Backend_API.Data.Repositories
         public UserRepository(CrmDbContext context) : base(context)
         {
         }
+
+        public User GetUserByEmail(string userEmail)
+        {
+            return _context.Users
+                .Where(x => x.UserEmail.ToLower() == userEmail.ToLower())
+                .FirstOrDefault();
+        }
     }
 }

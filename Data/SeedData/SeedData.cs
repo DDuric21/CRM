@@ -1,5 +1,6 @@
 ﻿using Backend_API.Data.DbContext;
 using Backend_API.Data.Model;
+using Ng.Services;
 
 namespace Backend_API.Data.SeedData
 {
@@ -128,24 +129,28 @@ namespace Backend_API.Data.SeedData
         {
             if (!context.Users.Any())
             {
+                var passwordHashingService = new PasswordHashingService();
                 context.Users.AddRange(new List<User>
                 {
                     new User
                     {
                         UserName = "Pero Perić",
                         UserEmail = "pero.peric@nepostoji.rh",
+                        Password = passwordHashingService.HashPassword("readOnly"),
                         UserRoleId = 2
                     },
                     new User
                     {
                         UserName = "Ivo Ivić",
                         UserEmail = "ivo.ivic@nepostoji.rh",
+                        Password = passwordHashingService.HashPassword("edit"),
                         UserRoleId = 1
                     },
                     new User
                     {
                         UserName = "Admin Adminić",
                         UserEmail = "admin.adminic@nepostoji.rh",
+                        Password = passwordHashingService.HashPassword("admin"),
                         UserRoleId = 0
                     }
                 });
