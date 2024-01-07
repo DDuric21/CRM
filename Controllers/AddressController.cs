@@ -1,9 +1,12 @@
 ﻿using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend_API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AddressController : Controller
     {
         private readonly ICrmRepository _repository;

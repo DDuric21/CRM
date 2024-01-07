@@ -1,27 +1,28 @@
 ﻿using Backend_API.Data.DTO;
-using Backend_API.Data.Repositories;
 using Backend_API.HelperMethods;
+using Microsoft.AspNetCore.Identity;
 
 namespace Backend_API.Services
 {
     public class LoginService : ILoginService
     {
+        private readonly UserManager<IdentityUser> _userManager;
 
-        private readonly ICrmRepository _repository;
-
-        public LoginService(ICrmRepository crmRepository)
+        public LoginService(UserManager<IdentityUser> userManager)
         {
-            _repository = crmRepository;
+            _userManager = userManager;
         }
 
         public bool ValidateLogin(UserDTO userDTO)
         {
-            var user = _repository.Users
-                .Where(x => x.UserEmail.ToLower() == userDTO.UserEmail.ToLower())
-                .FirstOrDefault();
+            var user = _userManager.FindByEmailAsync(userDTO.UserEmail).Result;
 
-            if (user.IsNullOrEmpty()
-                || userDTO.Password != user.Password)
+            if (user.IsNullOrEmpty())
+            {
+                return false;
+            }
+            var isPasswordCorrect = _userManager.CheckPasswordAsync(user, userDTO.Password).Result;
+            if (!isPasswordCorrect)
             {
                 return false;
             }

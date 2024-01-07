@@ -1,9 +1,10 @@
 ﻿using Backend_API.Data.Model;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend_API.Data.DbContext
 {
-    public class CrmDbContext : Microsoft.EntityFrameworkCore.DbContext // for unknown reason I need to explicitly define DbContext
+    public class CrmDbContext : IdentityDbContext 
     {
         public static CrmDbContext _context;
 
@@ -39,6 +40,7 @@ namespace Backend_API.Data.DbContext
             modelBuilder.Entity<Asset>();
             modelBuilder.Entity<CustomerAssets>();
             modelBuilder.Entity<Option>();
+            base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<Customer> Customers { get; set; }
