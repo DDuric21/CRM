@@ -100,5 +100,19 @@ namespace Backend_API.Data.Repositories
             }
         }
 
+        public IRefreshTokenRepository _refreshTokens;
+        public IRefreshTokenRepository RefreshTokens
+        {
+            get
+            {
+                if (_refreshTokens == null)
+                {
+                    _refreshTokens = new RefreshTokenRepository(_context);
+                }
+
+                return _refreshTokens;
+            }
+        }
+
     }
 }

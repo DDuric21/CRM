@@ -26,6 +26,17 @@ namespace Backend_API.Startup
             });
             builder.Services.AddScoped<ICrmRepository, CrmRepository>();
 
+            var secret = builder.Configuration.GetSection("JwtConfiguration:Secret").Value;
+            var key = Encoding.ASCII.GetBytes(secret);
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                RequireExpirationTime = false,
+                ValidateLifetime = true
+            };
             builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtConfig"));
             builder.Services.AddDefaultIdentity<IdentityUser>(
                 options =>
@@ -42,22 +53,12 @@ namespace Backend_API.Startup
                 })
                 .AddJwtBearer(jwt =>
                 {
-                    var secret = builder.Configuration.GetSection("JwtConfiguration:Secret").Value;
-                    var key = Encoding.ASCII.GetBytes(secret);
-
                     jwt.SaveToken = true;
-                    jwt.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        RequireExpirationTime = false,
-                        ValidateLifetime = true
-                    };
+                    jwt.TokenValidationParameters = tokenValidationParameters;
                 });
 
-            builder.Services.AddScoped<ILoginService, LoginService>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddSingleton(tokenValidationParameters);
         }
     }
 }

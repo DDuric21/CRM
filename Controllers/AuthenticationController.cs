@@ -1,31 +1,23 @@
 ﻿using Backend_API.Authentication;
 using Backend_API.Data.DTO;
-using Backend_API.Data.Model;
 using Backend_API.HelperMethods;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Backend_API.Controllers
 {
     public class AuthenticationController : ControllerBase
     {
-        private readonly ILoginService _loginService;
+        private readonly IAuthenticationService _authenticationService;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IConfiguration _configuration;
 
         public AuthenticationController(
-            ILoginService loginService,
-            UserManager<IdentityUser> userManager,
-            IConfiguration configuration)
+            IAuthenticationService authenticationService,
+            UserManager<IdentityUser> userManager)
         {
-            _loginService = loginService;
+            _authenticationService = authenticationService;
             _userManager = userManager;
-            _configuration = configuration;
         }
 
         [HttpPost]
@@ -37,7 +29,7 @@ namespace Backend_API.Controllers
                 return BadRequest();
             }
 
-            if (!_loginService.ValidateLogin(userDTO))
+            if (!_authenticationService.ValidateLogin(userDTO))
             {
                 return Forbid();
             }
@@ -48,12 +40,13 @@ namespace Backend_API.Controllers
                 Email = userDTO.UserEmail
             };
 
-            var jwtToken = GenerateJwtToken(identityUser);
+            var jwtToken = _authenticationService.GenerateJwtToken(identityUser);
 
             return Ok(new AuthenticationResult
             {
                 IsAuthenticated = true,
-                Token = jwtToken
+                Token = jwtToken.Token,
+                RefreshToken = jwtToken.RefreshToken
             });
         }
 
@@ -77,7 +70,7 @@ namespace Backend_API.Controllers
                 return BadRequest(result);
             }
 
-            var newUser = new IdentityUser
+            var newUser = new IdentityUser 
             {
                 Email = userDTO.UserEmail,
                 UserName = userDTO.UserName
@@ -93,40 +86,31 @@ namespace Backend_API.Controllers
                 return BadRequest(result);
             }
 
-            var jwtToken = GenerateJwtToken(newUser);
-            result.IsAuthenticated = true;
-            result.Token = jwtToken;
+            result = _authenticationService.GenerateJwtToken(newUser);
 
             return Ok(result);
         }
 
-        private string GenerateJwtToken(IdentityUser user)
+        [HttpPost]
+        [Route("/RefreshToken")]
+        public async Task<IActionResult> RefreshToken(TokenRequest tokenRequest)
         {
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
+            var authenticationResult = _authenticationService.VerifyTokenRequest(tokenRequest);
 
-            var secret = _configuration.GetSection("JwtConfiguration:Secret").Value;
-            var key = Encoding.UTF8.GetBytes(secret);
-
-            var claims = new[] 
-            { 
-                new Claim("Id", user.Id),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString())
-            };
-
-            var tokenDescripter = new SecurityTokenDescriptor
+            if (!authenticationResult.IsAuthenticated)
             {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddHours(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-            };
+                return SignOut();
+            }
 
-            var token = jwtTokenHandler.CreateToken(tokenDescripter);
-            var jwtToken = jwtTokenHandler.WriteToken(token);
+            var refreshTokenUser = _authenticationService.GetRefreshTokenUser(tokenRequest.RefreshToken);
 
-            return jwtToken;
+            var jwtToken = _authenticationService.GenerateJwtToken(refreshTokenUser.Result);
+
+            authenticationResult.IsAuthenticated = true;
+            authenticationResult.Token = jwtToken.Token;
+            authenticationResult.RefreshToken = jwtToken.RefreshToken;
+
+            return Ok(authenticationResult);
         }
     }
 }

@@ -40,6 +40,7 @@ namespace Backend_API.Data.DbContext
             modelBuilder.Entity<Asset>();
             modelBuilder.Entity<CustomerAssets>();
             modelBuilder.Entity<Option>();
+            modelBuilder.Entity<RefreshToken>();
             base.OnModelCreating(modelBuilder);
         }
 
@@ -49,5 +50,6 @@ namespace Backend_API.Data.DbContext
         public DbSet<Address> Addresses { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Option> Options { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
     }
 }
