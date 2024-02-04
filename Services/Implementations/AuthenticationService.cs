@@ -69,6 +69,8 @@ namespace Backend_API.Services
             var secret = _configuration.GetSection("JwtConfiguration:Secret").Value;
             var key = Encoding.UTF8.GetBytes(secret);
 
+            user = _userManager.FindByEmailAsync(user.Email).Result;
+
             var claims = new[]
             {
                 new Claim("Id", user.Id),

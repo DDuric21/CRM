@@ -65,7 +65,7 @@ namespace Backend_API.Controllers
             if (user != null)
             {
                 result.IsAuthenticated = false;
-                result.ErrorMessages = new List<string> { "User email already exists" };
+                result.ErrorMessages.Add("User email already exists");
 
                 return BadRequest(result);
             }
@@ -81,7 +81,7 @@ namespace Backend_API.Controllers
             if (!isCreated.Succeeded)
             {
                 result.IsAuthenticated = false;
-                result.ErrorMessages = new List<string> { "Server error" };
+                result.ErrorMessages.Add("Server error");
 
                 return BadRequest(result);
             }
