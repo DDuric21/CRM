@@ -1,5 +1,5 @@
 ﻿using Backend_API.Authentication;
-using Backend_API.Data.DTO;
+using Models.DTO;
 using Backend_API.HelperMethods;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +22,7 @@ namespace Backend_API.Controllers
 
         [HttpPost]
         [Route("/Login")]
-        public ActionResult LoginUser(UserDTO userDTO)
+        public ActionResult LoginUser([FromBody] UserDTO userDTO)
         {
             if (userDTO.IsNullOrEmpty())
             {
@@ -102,7 +102,7 @@ namespace Backend_API.Controllers
                 return SignOut();
             }
 
-            var refreshTokenUser = _authenticationService.GetRefreshTokenUser(tokenRequest.RefreshToken);
+            var refreshTokenUser = _authenticationService.GetRefreshTokenUser(tokenRequest.RefreshToken);// OVO NE TREBA IMAŠ INFO U aCCESS TOKENU
 
             var jwtToken = _authenticationService.GenerateJwtToken(refreshTokenUser.Result);
 

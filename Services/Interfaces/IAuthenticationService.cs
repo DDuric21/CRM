@@ -1,5 +1,5 @@
 ﻿using Backend_API.Authentication;
-using Backend_API.Data.DTO;
+using Models.DTO;
 using Microsoft.AspNetCore.Identity;
 
 namespace Backend_API.Services

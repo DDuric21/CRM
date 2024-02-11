@@ -1,5 +1,5 @@
 ﻿using Backend_API.Authentication;
-using Backend_API.Data.DTO;
+using Models.DTO;
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
 using Backend_API.HelperMethods;
@@ -205,7 +205,7 @@ namespace Backend_API.Services
                 return authenticationResult;
             }
 
-            if (storedRefreshToken.ExpiryDate < DateTime.Now)
+            if (storedRefreshToken.ExpiryDate < DateTime.UtcNow)
             {
                 authenticationResult.ErrorMessages.Add("RefreshToken is expired.");
                 return authenticationResult;
