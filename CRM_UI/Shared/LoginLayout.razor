@@ -1,23 +1,14 @@
 ﻿@inherits LayoutComponentBase
 
 <PageTitle>CRM_UI</PageTitle>
-<AuthorizeView>
-    <div class="page">
-        <div class="sidebar">
-            <NavMenu />
-        </div>
 
-        <main>
-            <div class="top-row px-4">
-                <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-            </div>
+<HeadContent>    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</HeadContent>
 
-            <article class="content px-4">
-                @Body
-            </article>
-        </main>
-    </div>
-</AuthorizeView>
+<div class="page">
+    @Body
+</div>
 
 @inject NavigationManager NavigationManager
 @inject IConfiguration configuration
@@ -29,12 +20,12 @@
     protected async override Task OnInitializedAsync()
     {
         var user = (await authenticationState).User;
-        if(!user.Identity.IsAuthenticated)
+        if(user.Identity.IsAuthenticated)
         {
             var baseUrl = configuration.GetSection("profiles:CRM_UI:applicationUrl").Value
                     .Split(";")
                     .First();
-            NavigationManager.NavigateTo(baseUrl + "/Login");
+            NavigationManager.NavigateTo(baseUrl + "/index");
         }
 
         base.OnInitialized();
