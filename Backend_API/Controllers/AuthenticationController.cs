@@ -1,6 +1,6 @@
-﻿using Backend_API.Authentication;
+﻿using Models.Authentication;
 using Models.DTO;
-using Backend_API.HelperMethods;
+using Models.HelperMethods;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +22,7 @@ namespace Backend_API.Controllers
 
         [HttpPost]
         [Route("/Login")]
-        public ActionResult LoginUser([FromBody] UserDTO userDTO)
+        public ActionResult<AuthenticationResult> LoginUser([FromBody] UserDTO userDTO)
         {
             if (userDTO.IsNullOrEmpty())
             {

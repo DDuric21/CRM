@@ -1,4 +1,4 @@
-﻿using Backend_API.Authentication;
+﻿using Models.Authentication;
 using Backend_API.Data.DbContext;
 using Backend_API.Data.Repositories;
 using Backend_API.Services;

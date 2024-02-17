@@ -1,4 +1,4 @@
-﻿namespace Backend_API.Authentication
+﻿namespace Models.Authentication
 {
     public class JwtConfiguration
     {

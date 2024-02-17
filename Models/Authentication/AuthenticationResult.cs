@@ -1,4 +1,4 @@
-﻿namespace Backend_API.Authentication
+﻿namespace Models.Authentication
 {
     public class AuthenticationResult
     {
@@ -11,6 +11,5 @@
         {
             ErrorMessages = new List<string>();
         }
-
     }
 }

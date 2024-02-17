@@ -1,4 +1,4 @@
-﻿namespace Backend_API.HelperMethods
+﻿namespace Models.HelperMethods
 {
     public static class Helper
     {

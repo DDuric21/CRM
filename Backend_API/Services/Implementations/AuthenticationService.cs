@@ -1,8 +1,8 @@
-﻿using Backend_API.Authentication;
+﻿using Models.Authentication;
 using Models.DTO;
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
-using Backend_API.HelperMethods;
+using Models.HelperMethods;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
