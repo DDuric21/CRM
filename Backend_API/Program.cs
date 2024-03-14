@@ -9,4 +9,6 @@ var app = builder.Build();
 ApplicationConfigurationSetup.ExecuteMigrations(app);
 ApplicationConfigurationSetup.InitialzeConfiguration(app);
 
+app.UseCors("LocalPolicy");
+
 app.Run();

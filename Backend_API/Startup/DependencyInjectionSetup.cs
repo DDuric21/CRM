@@ -59,6 +59,17 @@ namespace Backend_API.Startup
 
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddSingleton(tokenValidationParameters);
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("LocalPolicy",
+                    policy =>
+                    {
+                        policy.AllowAnyOrigin() // dodati samo svoje
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();    
+                    });
+            });
         }
     }
 }

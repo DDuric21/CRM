@@ -18,7 +18,7 @@ namespace Backend_API.Services
         /// </summary>
         /// <param name="tokenRequest">Request containing acces and refresh token</param>
         /// <returns>Returns result of verification</returns>
-        public AuthenticationResult VerifyTokenRequest(TokenRequest tokenRequest);
+        AuthenticationResult VerifyTokenRequest(TokenRequest tokenRequest);
 
         /// <summary>
         /// Generates a web token

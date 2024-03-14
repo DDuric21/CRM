@@ -1,0 +1,50 @@
+﻿@layout LoginLayout
+@page "/Login"
+@using UI.Authentication
+@using UI.Services
+@using Models.DTO
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject IAuthenticationService authenticationService
+@inject NavigationManager navigationManager
+
+<PageTitle>Login</PageTitle>
+
+<HeadContent>    
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    <link rel="stylesheet" href="/css/loginStyle.css">
+</HeadContent>
+
+<div class="login-left">
+    <h1>CRM</h1>
+</div>
+<div class="login-right">
+    <div class="form">
+        <div class="login">
+            <div class="login-header">
+            <h3>Login</h3>
+            <p>Please enter your credentials to login.</p>
+            </div>
+        </div>
+        <EditForm class="login-form" Model="@userDTO" OnSubmit="@SubmitLogin">
+            <input type="text" placeholder="username" name="username" @bind-value="userDTO.UserEmail" />
+            <input type="password" placeholder="password" name="password" @bind-value="userDTO.Password" />
+            <button type="submit" name="submit" class="button">LOGIN</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private UserDTO userDTO = new UserDTO();
+
+    private async Task SubmitLogin()
+    {
+        var loginResult = await authenticationService.Login(userDTO.UserEmail, userDTO.Password);
+        if (!loginResult.IsNullOrEmpty())
+        {
+            var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)authenticationStateProvider;
+            await crmAuthenticationStateProvider.UpdateAuthenticationState(new UserSession { UserName = userDTO.UserEmail});
+            navigationManager.NavigateTo("/index");
+        }
+    }
+}
