@@ -1,5 +1,6 @@
 ﻿using Backend_API.Data.DbContext;
 using Microsoft.EntityFrameworkCore;
+using Models.HelperMethods;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -56,10 +57,16 @@ namespace Backend_API.Data.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public void Insert(T entity)
+        public async Task<long> InsertAsync(T entity)
         {
             _context.Set<T>().Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            var idProperty = entity.GetType().GetProperty("Id")?.GetValue(entity);
+
+            return idProperty.IsNullOrEmpty()
+                ? 0L
+                : (long)idProperty;
         }
 
         public async Task<int> SaveAsync()
@@ -73,6 +80,12 @@ namespace Backend_API.Data.Repositories
             _context.Set<T>().Add(entity);
             _context.Entry(entity).State = EntityState.Modified;
             return await _context.SaveChangesAsync();
+        }
+
+        public void Insert(T entity)
+        {
+            _context.Set<T>().Add(entity);
+            _context.SaveChanges();
         }
     }
 }

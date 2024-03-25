@@ -45,7 +45,7 @@ namespace Backend_API.Controllers
         {
             try
             {
-                _repository.Addresses.Insert(address);
+                _repository.Addresses.InsertAsync(address);
 
                 return _repository.Addresses.SaveAsync().Result;
             }

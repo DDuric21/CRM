@@ -9,5 +9,10 @@
         public DateTime Birthday { get; set; }
 
         public ICollection<AssetDTO> Assets { get; set; }
+
+        public CustomerDTO()
+        {
+            Address = new AddressDTO();
+        }
     }
 }

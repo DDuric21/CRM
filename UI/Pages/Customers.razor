@@ -1,14 +1,15 @@
 ﻿@page "/customers"
 
-<PageTitle>Customers</PageTitle>
-
 @using UI.Services
 @using Models.DTO
+@inject NavigationManager navigationManager
 @inject ICustomerService _customerService
 
 <h3>Customers</h3>
 
 <p>This component demonstrates fetching customers data.</p>
+
+<button id="btnAddCustomer" class="btn btn-primary" @onclick="Redirect">Add</button>
 
 @if (customers == null)
 {
@@ -30,7 +31,7 @@ else
                 <tr>
                     <td>@customer.Name</td>
                     <td>@customer.Address?.FullAddress</td>
-                    <td>@customer.Birthday</td>
+                    <td>@customer.Birthday.ToLocalTime()</td>
                 </tr>
             }
         </tbody>
@@ -42,11 +43,23 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var asyncCustomers = await _customerService.GetCustomers();
+        try
+        {            
+            var asyncCustomers = await _customerService.GetCustomersAsync();
 
-        await foreach(var customer in asyncCustomers)
-        {
-            customers.Add(customer);
+            await foreach(var customer in asyncCustomers)
+            {
+                customers.Add(customer);
+            }
         }
+        catch (Exception ex)
+        {
+            // show error modal
+        }
+    }
+
+    protected void Redirect()
+    {
+        navigationManager.NavigateTo("/NewCustomerForm");
     }
 }

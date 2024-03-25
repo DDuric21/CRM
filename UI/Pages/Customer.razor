@@ -1,0 +1,26 @@
+﻿@page "/Customers/{customerId:long}"
+
+@inject ICustomerService customerService
+
+<label>@customer.Name</label>
+<label>@customer.Birthday</label>
+<label>@customer.Address.FullAddress</label>
+
+@code {
+    [Parameter]
+    public long customerId { get; set; }
+    
+    private CustomerDTO customer = new CustomerDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {            
+            customer = await customerService.GetCustomerByIdAsync(customerId);
+        }
+        catch (Exception ex)
+        {
+            // show error modal
+        }
+    }
+}

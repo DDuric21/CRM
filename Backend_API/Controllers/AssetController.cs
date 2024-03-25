@@ -42,7 +42,7 @@ namespace Backend_API.Controllers
         {
             try
             {
-                _repository.Assets.Insert(asset);
+                _repository.Assets.InsertAsync(asset);
 
                 return _repository.Assets.SaveAsync().Result;
             }

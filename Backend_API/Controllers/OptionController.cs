@@ -43,7 +43,7 @@ namespace Backend_API.Controllers
         {
             try
             {
-                _repository.Options.Insert(option);
+                _repository.Options.InsertAsync(option);
 
                 return _repository.Options.SaveAsync().Result;
             }

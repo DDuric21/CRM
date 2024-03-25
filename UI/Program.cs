@@ -14,6 +14,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<ICommunicationService, CommunicationService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CrmAuthenticationStateProvider>();
 builder.Services.AddScoped<ICookie, Cookie>();
 builder.Services.AddAuthorizationCore();

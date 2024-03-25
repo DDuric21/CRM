@@ -17,6 +17,12 @@ namespace Backend_API.Data.Repositories
         Task<T> GetByIdAsync(long id);
 
         /// <summary>
+        /// Inserts an element asynchronously
+        /// </summary>
+        /// <returns>Task of type long that contains the id of inserted element</returns>
+        Task<long> InsertAsync(T entity);
+
+        /// <summary>
         /// Inserts an element synchronously
         /// </summary>
         void Insert(T entity);

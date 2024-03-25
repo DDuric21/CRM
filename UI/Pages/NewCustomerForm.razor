@@ -1,0 +1,42 @@
+﻿@page "/NewCustomerForm"
+@using Models.DTO
+@using UI.Shared
+@using UI.Services
+
+@inject ICustomerService _customerService
+@inject IJSRuntime JsRuntime
+@inject NavigationManager navigationManager
+
+<PageTitle>New Customer Form</PageTitle>
+
+<h2>Create New Customer</h2>
+
+<div class="top-container">
+    <div class="top-left-container">
+        <EditForm class="newCustomer-form" Model="@customerDTO" OnSubmit="@CreateNewCustomer">
+            <InputText placeholder="Firstname" @bind-Value="customerDTO.Name" /><br>
+			<InputDate placeholder="2018-07-22" @bind-Value="customerDTO.Birthday" /><br>
+            <InputText placeholder="Full address" @bind-Value="customerDTO.Address.FullAddress" /><br>
+            <button type="submit" name="submit" class="button">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private CustomerDTO customerDTO = new CustomerDTO();
+
+    private async Task CreateNewCustomer()
+    {
+        var result = await _customerService.CreateNewCustomerAsync(customerDTO);
+
+        if (result == 0)
+        {
+            // ovo treba pretvoriti u modal
+            await JsRuntime.InvokeVoidAsync("alert", "Customer not created!");
+            return;
+        }
+
+        var redirectPath = string.Format("/Customers/{0}", result);
+        navigationManager.NavigateTo(redirectPath);
+    }
+}

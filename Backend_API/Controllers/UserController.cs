@@ -42,7 +42,7 @@ namespace Backend_API.Controllers
         {
             try
             {
-                _repository.Users.Insert(user);
+                _repository.Users.InsertAsync(user);
 
                 return _repository.Users.SaveAsync().Result;
             }

@@ -5,23 +5,45 @@ namespace UI.Services
 {
     public class CustomerService : ICustomerService
     {
-        public CustomerService()
+        private readonly ICommunicationService _customerService;
+
+        public CustomerService(ICommunicationService communicationService)
         {
+            _customerService = communicationService;
         }
 
-        public async Task<IAsyncEnumerable<CustomerDTO>> GetCustomers()
+        public async Task<IAsyncEnumerable<CustomerDTO>> GetCustomersAsync()
         {
-            var httpClient = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7076/Customers");
-            var response = await httpClient.SendAsync(request);
-            var result = await response.Content.ReadAsStreamAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            var deserialisedResult = JsonSerializer.DeserializeAsyncEnumerable<CustomerDTO>(result, options: options);
+            var request = _customerService.CreateRequest(HttpMethod.Get, "https://localhost:7076/Customers");
+            var response = await _customerService.SendRequestAsync<IAsyncEnumerable<CustomerDTO>>(request);
 
-            return deserialisedResult;
+            return response;
+        }
+
+        public async Task<CustomerDTO> GetCustomerByIdAsync(long customerID)
+        {
+            var url = string.Format("https://localhost:7076/Customers/{0}", customerID);
+            var request = _customerService.CreateRequest(HttpMethod.Get, url);
+            var response = await _customerService.SendRequestAsync<CustomerDTO>(request);
+
+            return response;
+        }
+
+        public async Task<long> CreateNewCustomerAsync(CustomerDTO customerDTO)
+        {
+            var request = _customerService.CreateRequest(HttpMethod.Post, "https://localhost:7076/Customers", customerDTO);
+            
+            try
+            {
+                var response = await _customerService.SendRequestAsync<long>(request);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                // loging
+            }
+
+            return 0;
         }
 
     }

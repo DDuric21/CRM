@@ -27,7 +27,7 @@
             </div>
         </div>
         <EditForm class="login-form" Model="@userDTO" OnSubmit="@SubmitLogin">
-            <input type="text" placeholder="username" name="username" @bind-value="userDTO.UserEmail" />
+            <input placeholder="username" name="username" @bind-value="userDTO.UserEmail" />
             <input type="password" placeholder="password" name="password" @bind-value="userDTO.Password" />
             <button type="submit" name="submit" class="button">LOGIN</button>
         </EditForm>
