@@ -62,7 +62,7 @@ namespace Backend_API.Controllers
 
             try
             {
-                isDeleted = _repository.Users.DeleteByIdAsync(id).Result;
+                //isDeleted = _repository.Users.DeleteByIdAsync(id).Result;
             }
             catch (Exception ex)
             {

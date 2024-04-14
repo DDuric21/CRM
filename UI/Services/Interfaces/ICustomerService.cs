@@ -9,5 +9,7 @@ namespace UI.Services
         Task<long> CreateNewCustomerAsync(CustomerDTO customerDTO);
 
         Task<CustomerDTO> GetCustomerByIdAsync(long customerID);
+
+        Task DeleteCustomer(long customerID);
     }
 }

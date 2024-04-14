@@ -4,6 +4,7 @@ using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.HelperMethods;
+using Models.Responses;
 
 namespace Backend_API.Controllers
 {
@@ -81,20 +82,23 @@ namespace Backend_API.Controllers
 
         [HttpDelete]
         [Route("/Customers/{id}")]
-        public string DeleteCustomer(long id)
+        public async Task<IActionResult> DeleteCustomer(long id)
         {
-            var isDeleted = string.Empty;
-
             try
             {
-                isDeleted = _repository.Customers.DeleteByIdAsync(id).Result;
+                var result = await _repository.Customers.DeleteByIdAsync(id);
+                if (result == 0)
+                {
+                    return Problem("No enities deleted!");
+                }
             }
             catch (Exception ex)
             {
                 //add loging
+                return StatusCode(500, ex.Message);
             }
 
-            return isDeleted;
+            return Ok(new ResponseBase());
         }
 
         [HttpPut]

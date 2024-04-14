@@ -1,32 +1,56 @@
 ﻿using Models.DTO;
-using System.Text.Json;
+using Models.Responses;
 
 namespace UI.Services
 {
     public class CustomerService : ICustomerService
     {
         private readonly ICommunicationService _customerService;
+        private readonly ICrmModalService _modalService;
 
-        public CustomerService(ICommunicationService communicationService)
+        public CustomerService(
+            ICommunicationService communicationService,
+            ICrmModalService modalService)
         {
             _customerService = communicationService;
+            _modalService = modalService;
         }
 
         public async Task<IAsyncEnumerable<CustomerDTO>> GetCustomersAsync()
         {
-            var request = _customerService.CreateRequest(HttpMethod.Get, "https://localhost:7076/Customers");
-            var response = await _customerService.SendRequestAsync<IAsyncEnumerable<CustomerDTO>>(request);
+            var request = _customerService.CreateRequest(HttpMethod.Get, "https://localhost:7076/Customers");            
 
-            return response;
+            try
+            {
+                var response = await _customerService.SendRequestAsync<IAsyncEnumerable<CustomerDTO>>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _modalService.ShowErrorMessage(ex.Message);
+
+                return null;
+            }
         }
 
         public async Task<CustomerDTO> GetCustomerByIdAsync(long customerID)
         {
             var url = string.Format("https://localhost:7076/Customers/{0}", customerID);
             var request = _customerService.CreateRequest(HttpMethod.Get, url);
-            var response = await _customerService.SendRequestAsync<CustomerDTO>(request);
 
-            return response;
+            try
+            {
+                var response = await _customerService.SendRequestAsync<CustomerDTO>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _modalService.ShowErrorMessage(ex.Message);
+
+                return new CustomerDTO();
+            }
         }
 
         public async Task<long> CreateNewCustomerAsync(CustomerDTO customerDTO)
@@ -44,6 +68,22 @@ namespace UI.Services
             }
 
             return 0;
+        }
+
+        public async Task DeleteCustomer(long customerID)
+        {
+            var url = string.Format("https://localhost:7076/Customers/{0}", customerID);
+            var request = _customerService.CreateRequest(HttpMethod.Delete, url);
+
+            try
+            {
+                var response = await _customerService.SendRequestAsync<ResponseBase>(request);
+            }
+            catch (Exception ex)
+            {
+                // loging
+                _modalService.ShowErrorMessage(ex.Message);
+            }
         }
 
     }

@@ -1,8 +1,6 @@
 ﻿using Backend_API.Data.DbContext;
 using Microsoft.EntityFrameworkCore;
-using Models.HelperMethods;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace Backend_API.Data.Repositories
 {
@@ -14,26 +12,21 @@ namespace Backend_API.Data.Repositories
             _context = context;
         }
 
-        public async Task<string> DeleteByIdAsync(long id)
+        public async Task<int> DeleteByIdAsync(long id)
         {
             var entity = await _context.Set<T>().FindAsync(id);
 
-            //entity can be null
-            var modelName = typeof(T).Name;
 
-            var message = new StringBuilder();
             if (entity == null)
             {
-                message.AppendFormat("No such {0}", modelName);
+                var modelName = typeof(T).Name;
+                throw new Exception(string.Format("No such {0}", modelName));
             }
             else
             {
                 _context.Remove(entity);
-                await _context.SaveChangesAsync();
-                message.AppendFormat("{0} by ID: {1} successfully deleted", modelName, id);
+                return await _context.SaveChangesAsync();
             }
-
-            return message.ToString();
         }
 
         public virtual IQueryable<T> Where(Expression<Func<T, bool>> predicate)
@@ -57,16 +50,10 @@ namespace Backend_API.Data.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task<long> InsertAsync(T entity)
+        public async Task InsertAsync(T entity)
         {
             _context.Set<T>().Add(entity);
             await _context.SaveChangesAsync();
-
-            var idProperty = entity.GetType().GetProperty("Id")?.GetValue(entity);
-
-            return idProperty.IsNullOrEmpty()
-                ? 0L
-                : (long)idProperty;
         }
 
         public async Task<int> SaveAsync()
@@ -79,6 +66,7 @@ namespace Backend_API.Data.Repositories
             //malo bolje ovo rješiti
             _context.Set<T>().Add(entity);
             _context.Entry(entity).State = EntityState.Modified;
+
             return await _context.SaveChangesAsync();
         }
 

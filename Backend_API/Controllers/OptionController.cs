@@ -63,7 +63,7 @@ namespace Backend_API.Controllers
 
             try
             {
-                isDeleted = _repository.Options.DeleteByIdAsync(id).Result;
+                //isDeleted = _repository.Options.DeleteByIdAsync(id).Result;
             }
             catch (Exception ex)
             {

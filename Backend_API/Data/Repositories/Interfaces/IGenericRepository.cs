@@ -19,8 +19,7 @@ namespace Backend_API.Data.Repositories
         /// <summary>
         /// Inserts an element asynchronously
         /// </summary>
-        /// <returns>Task of type long that contains the id of inserted element</returns>
-        Task<long> InsertAsync(T entity);
+        Task InsertAsync(T entity);
 
         /// <summary>
         /// Inserts an element synchronously
@@ -37,8 +36,8 @@ namespace Backend_API.Data.Repositories
         /// <summary>
         /// Deletes all elements for given id asynchronously
         /// </summary>
-        /// <returns>Task of type string with information of deleted elements</returns>
-        Task<string> DeleteByIdAsync(long id);
+        /// <returns>Task of type int with number of deleted elements</returns>
+        Task<int> DeleteByIdAsync(long id);
 
         /// <summary>
         /// Saves all elements asynchronously

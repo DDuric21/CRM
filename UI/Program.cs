@@ -1,3 +1,4 @@
+using Blazored.Modal;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -15,8 +16,10 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ICommunicationService, CommunicationService>();
+builder.Services.AddScoped<ICrmModalService, CrmModalService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CrmAuthenticationStateProvider>();
 builder.Services.AddScoped<ICookie, Cookie>();
 builder.Services.AddAuthorizationCore();
+builder.Services.AddBlazoredModal();
 
 await builder.Build().RunAsync();

@@ -1,9 +1,8 @@
-﻿@page "/customers"
+﻿@page "/Customers/Customers"
 
-@using UI.Services
-@using Models.DTO
 @inject NavigationManager navigationManager
 @inject ICustomerService _customerService
+@inject ICrmModalService modal
 
 <h3>Customers</h3>
 
@@ -32,6 +31,9 @@ else
                     <td>@customer.Name</td>
                     <td>@customer.Address?.FullAddress</td>
                     <td>@customer.Birthday.ToLocalTime()</td>
+                    <td>
+                        <button @onclick="() => DeleteCustomer(customer.Id)"></button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -54,8 +56,25 @@ else
         }
         catch (Exception ex)
         {
-            // show error modal
+            modal.ShowErrorMessage(ex.Message);
         }
+    }
+
+    protected async void DeleteCustomer(long id)
+    {
+        var result = await modal.ShowDialog("Are you sure?", ModalDialogType.Delete);
+
+        if (result.Cancelled)
+        {
+            return;
+        }
+
+        await _customerService.DeleteCustomer(id);
+    }
+
+    protected void RedirectToCustomer(long id)
+    {
+        navigationManager.NavigateTo("/Customers/" + id);
     }
 
     protected void Redirect()
