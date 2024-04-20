@@ -38,6 +38,8 @@ namespace Backend_API.Data.SeedData
 
             CreateCustomers(context);
 
+            CreateCustomerAddresses(context);
+
             CreateAssets(context);
 
             CreateUsers(context);
@@ -78,20 +80,45 @@ namespace Backend_API.Data.SeedData
                     new Customer
                     {
                         Name = "Test Name1",
-                        AddressId = 1,
                         Birthday = new DateTime(1995,05,16,0,0,0)
                     },
                     new Customer
                     {
                         Name = "Test Name2",
-                        AddressId = 2,
                         Birthday = new DateTime(1970,01,01,0,0,0)
                     },
                     new Customer
                     {
                         Name = "Test Name3",
-                        AddressId = 3,
                         Birthday = new DateTime(2000,03,21,0,0,0)
+                    }
+                });
+            }
+        }
+
+        private static void CreateCustomerAddresses(CrmDbContext context)
+        {
+            if (!context.CustomerAddresses.Any())
+            {
+                context.CustomerAddresses.AddRange(new List<CustomerAddresses>
+                {
+                    new CustomerAddresses
+                    {
+                        CustomerID = 1,
+                        AddressID = 1,
+                        IsLegal = true,
+                    },
+                    new CustomerAddresses
+                    {
+                        CustomerID = 2,
+                        AddressID = 2,
+                        IsLegal = true,
+                    },
+                    new CustomerAddresses
+                    {
+                        CustomerID = 3,
+                        AddressID = 2,
+                        IsLegal = true,
                     }
                 });
             }

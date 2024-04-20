@@ -11,5 +11,19 @@ namespace Backend_API.Services
         /// <param name="customer">Customer object</param>
         /// <returns>CustomerDTO object</returns>
         CustomerDTO MapCustomerToDTO(Customer customer);
+
+        /// <summary>
+        /// Maps property values from DTO to entity
+        /// </summary>
+        /// <param name="customerDTO">Customer data transfer object</param>
+        /// <returns>Customer object</returns>
+        Customer MapDtoToCustomer(CustomerDTO customerDTO);
+
+        /// <summary>
+        /// Retrives all data related to customer
+        /// </summary>
+        /// <param name="id">Id of customer</param>
+        /// <returns>Customer object</returns>
+        Customer GetCustomerData(long id);
     }
 }

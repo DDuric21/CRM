@@ -10,11 +10,7 @@ namespace Backend_API.Data.Model
 
         public string? Name { get; set; }
 
-        [ForeignKey("AdressId")]
-        public long AddressId { get; set; }
-
-        [NotMapped]
-        public Address? Address { get; set; }
+        public ICollection<Address> Addresses { get; set; }
 
         public DateTime Birthday { get; set; }
 

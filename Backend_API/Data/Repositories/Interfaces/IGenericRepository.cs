@@ -52,5 +52,14 @@ namespace Backend_API.Data.Repositories
         /// <returns>An System.Linq.IQueryable`1 that contains elements from the input sequence that satisfy the condition specified by predicate.</returns>
         /// <exceptions>T:System.ArgumentNullException: source or predicate is null.</exceptions>
         IQueryable<T> Where(Expression<Func<T, bool>> predicate);
+
+        /// <summary>
+        /// Filters a sequence of values based on a filter and includes data from connected objects
+        /// </summary>
+        /// <param name="filter">Expression of connditions for data</param>
+        /// <param name="include">Expression of tables to be included when fetching data</param>
+        /// <returns>An System.Linq.IQueryable`1 that contains elements from the input sequence that satisfy 
+        /// the conditions and includes related objects for given expression</returns>
+        IQueryable<T> Filter(Expression<Func<T, bool>> filter, Expression<Func<T, object>> include);
     }
 }

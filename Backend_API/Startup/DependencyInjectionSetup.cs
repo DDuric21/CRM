@@ -73,6 +73,8 @@ namespace Backend_API.Startup
                         .AllowAnyMethod();    
                     });
             });
+
+            builder.Services.AddAutoMapper(typeof(Program).Assembly);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Backend_API.Data.Model;
+﻿using AutoMapper;
+using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
 using Models.DTO;
 using Models.HelperMethods;
@@ -8,14 +9,25 @@ namespace Backend_API.Services
     public class CustomerService : ICustomerService
     {
         private readonly ICrmRepository _repository;
-        private readonly IAddressService _addressService;
+        private readonly IMapper _mapper;
 
         public CustomerService(
-            IAddressService addressService,
-            ICrmRepository repository)
+            ICrmRepository repository,
+            IMapper mapper)
         {
-            _addressService = addressService;
             _repository = repository;
+            _mapper = mapper;
+        }
+
+        public Customer GetCustomerData(long id)
+        {
+            var customer = _repository.Customers
+                .Filter(
+                    filter: x => x.Id == id, 
+                    include: x => x.Addresses)
+                .FirstOrDefault();
+
+            return customer;
         }
 
         public CustomerDTO MapCustomerToDTO(Customer customer)
@@ -25,14 +37,33 @@ namespace Backend_API.Services
                 return new CustomerDTO();
             }
 
-            var customerDTO = new CustomerDTO
+            var customerDTO = _mapper.Map<CustomerDTO>(customer);
+            customerDTO.Addresses = new List<AddressDTO>();
+
+            foreach (var address in customer.Addresses)
             {
-                Name = customer.Name,
-                Address = _addressService.MapAddressToDTO(customer.Address),
-                Birthday = customer.Birthday,
-            };
+                customerDTO.Addresses.Add(_mapper.Map<AddressDTO>(address));
+            }
 
             return customerDTO;
+        }
+
+        public Customer MapDtoToCustomer(CustomerDTO customerDTO)
+        {
+            if (customerDTO.IsNullOrEmpty())
+            {
+                return new Customer();
+            }
+
+            var customer = _mapper.Map<Customer>(customerDTO);
+            customer.Addresses = new List<Address>();
+
+            foreach (var addressDTO in customerDTO.Addresses)
+            {
+                customer.Addresses.Add(_mapper.Map<Address>(addressDTO));
+            }
+
+            return customer;
         }
     }
 }

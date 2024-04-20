@@ -3,16 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend_API.Data.Model
 {
-    public class Address
+    public class CustomerAddresses
     {
         [Key]
         public long Id { get; set; }
 
         public bool IsLegal { get; set; }
 
-        public string? FullAddress { get; set; }
+        [ForeignKey("CustomerId")]
+        public long CustomerID { get; set; }
 
-        [NotMapped]
-        public ICollection<Customer> Customers { get; set; }
+        [ForeignKey("AddressID")]
+        public long AddressID { get; set; }
     }
 }

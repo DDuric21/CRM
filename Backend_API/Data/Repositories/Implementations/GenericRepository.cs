@@ -7,6 +7,7 @@ namespace Backend_API.Data.Repositories
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected CrmDbContext _context;
+
         public GenericRepository(CrmDbContext context)
         {
             _context = context;
@@ -15,7 +16,6 @@ namespace Backend_API.Data.Repositories
         public async Task<int> DeleteByIdAsync(long id)
         {
             var entity = await _context.Set<T>().FindAsync(id);
-
 
             if (entity == null)
             {
@@ -27,6 +27,18 @@ namespace Backend_API.Data.Repositories
                 _context.Remove(entity);
                 return await _context.SaveChangesAsync();
             }
+        }
+
+        public virtual IQueryable<T> Filter(Expression<Func<T, bool>> filter, Expression<Func<T, object>> include)
+        {
+            var dbset = _context.Set<T>();
+
+            var select = dbset
+                .AsNoTracking()
+                .Where(filter)
+                .Include(include);
+
+            return select;
         }
 
         public virtual IQueryable<T> Where(Expression<Func<T, bool>> predicate)

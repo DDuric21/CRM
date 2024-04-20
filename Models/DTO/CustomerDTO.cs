@@ -4,9 +4,10 @@
     {
         // should be removed later
         public long Id { get; set; }
+
         public string? Name { get; set; }
 
-        public AddressDTO? Address { get; set; }
+        public ICollection<AddressDTO> Addresses { get; set; }
 
         public DateTime Birthday { get; set; }
 
@@ -14,7 +15,7 @@
 
         public CustomerDTO()
         {
-            Address = new AddressDTO();
+            Addresses = new List<AddressDTO>();
         }
     }
 }

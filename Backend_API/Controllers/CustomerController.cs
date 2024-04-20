@@ -35,19 +35,19 @@ namespace Backend_API.Controllers
 
         [HttpGet]
         [Route("/Customers/{id}")]
-        public async Task<CustomerDTO> GetById(long id)
+        public async Task<IActionResult> GetById(long id)
         {
-            var customer = await _repository.Customers.GetByIdAsync(id);
+            var customer = _customerService.GetCustomerData(id);
 
             if (customer.IsNullOrEmpty())
             {
                 //add loging
-                return new CustomerDTO();
+                return Problem();
             }
 
             var customerDTO = _customerService.MapCustomerToDTO(customer);
 
-            return customerDTO;
+            return Ok(customerDTO);
         }
 
         [HttpPost]
@@ -59,14 +59,7 @@ namespace Backend_API.Controllers
                 return BadRequest();
             }
 
-            var customer = new Customer();
-            customer.Name = customerDTO.Name;
-            customer.Birthday = customerDTO.Birthday;
-            if (!customerDTO.Address.IsNullOrEmpty())
-            {
-                customer.Address = new Address();
-                customer.Address.FullAddress = customerDTO.Address?.FullAddress;
-            }
+            var customer = _customerService.MapDtoToCustomer(customerDTO);
 
             try
             {
@@ -103,18 +96,31 @@ namespace Backend_API.Controllers
 
         [HttpPut]
         [Route("/Customers")]
-        public int UpdateCustomer(Customer customer)
+        public async Task<IActionResult> UpdateCustomer([FromBody] CustomerDTO customerDTO)
         {
+            if (!_dataValidationService.ValidateCustomerDTO(customerDTO))
+            {
+                return BadRequest();
+            }
+
+            var customer = _customerService.MapDtoToCustomer(customerDTO);
+
             try
             {
-                return _repository.Customers.UpdateAsync(customer).Result;
+                var result = await _repository.Customers.UpdateAsync(customer);
+
+                if (result == 0)
+                {
+                    return Problem("No elemets modified!");
+                }
             }
             catch (Exception ex)
             {
                 //add loging
+                return StatusCode(500, ex.Message);
             }
 
-            return 0;
+            return Ok(new ResponseBase());
         }
     }
 }

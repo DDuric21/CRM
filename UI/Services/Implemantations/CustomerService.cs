@@ -86,5 +86,21 @@ namespace UI.Services
             }
         }
 
+        public async Task UpdateCustomer(CustomerDTO customerDTO)
+        {
+            var url = string.Format("https://localhost:7076/Customers/");
+            var request = _customerService.CreateRequest(HttpMethod.Put, url, customerDTO);
+
+            try
+            {
+                var response = await _customerService.SendRequestAsync<ResponseBase>(request);
+            }
+            catch (Exception ex)
+            {
+                // loging
+                _modalService.ShowErrorMessage(ex.Message);
+            }
+        }
+
     }
 }

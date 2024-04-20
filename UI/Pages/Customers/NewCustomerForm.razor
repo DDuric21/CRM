@@ -16,7 +16,7 @@
         <EditForm class="newCustomer-form" Model="@customerDTO" OnSubmit="@CreateNewCustomer">
             <InputText placeholder="Firstname" @bind-Value="customerDTO.Name" /><br>
 			<InputDate placeholder="2018-07-22" @bind-Value="customerDTO.Birthday" /><br>
-            <InputText placeholder="Full address" @bind-Value="customerDTO.Address.FullAddress" /><br>
+            <InputText placeholder="Full address" @bind-Value="customerDTO.Addresses.First().FullAddress" /><br>
             <button type="submit" name="submit" class="button">Create</button>
         </EditForm>
     </div>

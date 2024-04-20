@@ -1,7 +1,7 @@
 ﻿@page "/Customers/Customers"
 
 @inject NavigationManager navigationManager
-@inject ICustomerService _customerService
+@inject ICustomerService customerService
 @inject ICrmModalService modal
 
 <h3>Customers</h3>
@@ -20,7 +20,6 @@ else
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Address</th>
                 <th>Birthday</th>
             </tr>
         </thead>
@@ -29,7 +28,6 @@ else
             {
                 <tr>
                     <td>@customer.Name</td>
-                    <td>@customer.Address?.FullAddress</td>
                     <td>@customer.Birthday.ToLocalTime()</td>
                     <td>
                         <button @onclick="() => DeleteCustomer(customer.Id)"></button>
@@ -47,7 +45,7 @@ else
     {
         try
         {            
-            var asyncCustomers = await _customerService.GetCustomersAsync();
+            var asyncCustomers = await customerService.GetCustomersAsync();
 
             await foreach(var customer in asyncCustomers)
             {
@@ -69,7 +67,7 @@ else
             return;
         }
 
-        await _customerService.DeleteCustomer(id);
+        await customerService.DeleteCustomer(id);
     }
 
     protected void RedirectToCustomer(long id)

@@ -1,26 +1,64 @@
 ﻿@page "/Customers/{customerId:long}"
 
 @inject ICustomerService customerService
+@inject ICrmModalService modal
 
-<label>@customer.Name</label>
-<label>@customer.Birthday</label>
-<label>@customer.Address.FullAddress</label>
+<h1>@customerDTO.Name</h1> <button @onclick="() => ChangeState()">Edit</button>
+<br />
+
+<EditForm Model="@customerDTO" OnSubmit="@SaveChanges">
+    <fieldset disabled="@isDisabled">
+        <InputText @bind-Value="customerDTO.Name"></InputText>
+        <InputDate @bind-Value="customerDTO.Birthday"></InputDate>
+        <button type="submit" name="submit" class="btn btn-primary">Save Changes</button>
+    </fieldset>
+</EditForm>
+
+<table>
+    <thead>
+        <tr>
+            <th>Primary</th>
+            <th>Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var addressDTO in customerDTO.Addresses)
+        {
+            <tr>
+                <td><input type="radio" id="legalAddress" checked="@(addressDTO.IsLegal)" @bind="addressDTO.IsLegal" name="legalRadio"/></td>
+                <td><label id="address" for="legalAddress">@addressDTO.FullAddress</label></td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @code {
+    private bool isDisabled = true;
+    private CustomerDTO customerDTO = new CustomerDTO();
+
     [Parameter]
-    public long customerId { get; set; }
-    
-    private CustomerDTO customer = new CustomerDTO();
+    public long CustomerId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {            
-            customer = await customerService.GetCustomerByIdAsync(customerId);
+            customerDTO = await customerService.GetCustomerByIdAsync(CustomerId);
         }
         catch (Exception ex)
         {
-            // show error modal
+            // add logging
+            modal.ShowErrorMessage(ex.Message);
         }
+    }
+
+    protected async Task SaveChanges()
+    {
+        await customerService.UpdateCustomer(customerDTO);
+    }
+
+    private void ChangeState()
+    {
+        isDisabled = !isDisabled;
     }
 }

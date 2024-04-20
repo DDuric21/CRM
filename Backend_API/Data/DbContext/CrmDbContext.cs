@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend_API.Data.DbContext
 {
-    public class CrmDbContext : IdentityDbContext 
+    public class CrmDbContext : IdentityDbContext
     {
         public static CrmDbContext _context;
 
@@ -36,11 +36,15 @@ namespace Backend_API.Data.DbContext
         {
             modelBuilder.Entity<Address>();
             modelBuilder.Entity<User>();
-            modelBuilder.Entity<Customer>();
+            modelBuilder.Entity<Customer>()
+                .HasMany(x => x.Addresses)
+                .WithMany(y => y.Customers)
+                .UsingEntity<CustomerAddresses>();
             modelBuilder.Entity<Asset>();
             modelBuilder.Entity<CustomerAssets>();
             modelBuilder.Entity<Option>();
             modelBuilder.Entity<RefreshToken>();
+            modelBuilder.Entity<CustomerAddresses>();
             base.OnModelCreating(modelBuilder);
         }
 
@@ -48,6 +52,7 @@ namespace Backend_API.Data.DbContext
         public DbSet<Asset> Assets { get; set; }
         public DbSet<CustomerAssets> CustomerAssets { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<CustomerAddresses> CustomerAddresses { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Option> Options { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }

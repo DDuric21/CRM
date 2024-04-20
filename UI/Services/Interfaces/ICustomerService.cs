@@ -11,5 +11,7 @@ namespace UI.Services
         Task<CustomerDTO> GetCustomerByIdAsync(long customerID);
 
         Task DeleteCustomer(long customerID);
+
+        Task UpdateCustomer(CustomerDTO customerDTO);
     }
 }
