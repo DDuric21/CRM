@@ -1,0 +1,33 @@
+﻿
+<table>
+    <thead>
+        <tr>
+            <th>Primary</th>
+            <th>Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var addressDTO in CustomerDTO.Addresses)
+        {
+            <tr>
+                <td><input type="radio" id="legalAddress" checked="@IsLegal(addressDTO.Id)" name="legalRadio"/></td>
+                <td><label id="address" for="legalAddress">@addressDTO.FullAddress</label></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [CascadingParameter]
+    public CustomerDTO CustomerDTO { get; set; }
+
+    private bool IsLegal(long id)
+    {
+        if (id == CustomerDTO.LegalAddressId)
+        {
+            return true;
+        }
+
+        return false;
+    }
+}

@@ -34,19 +34,23 @@ namespace Backend_API.Data.SeedData
 
         private static void CreateSeedData(CrmDbContext context)
         {
+
             CreateAddresses(context);
 
             CreateCustomers(context);
-
-            CreateCustomerAddresses(context);
 
             CreateAssets(context);
 
             CreateUsers(context);
 
-            CreateCustomerAssets(context);
-
             CreateOptions(context);
+
+            //needed so that FK constraints dont appear
+            context.SaveChanges(); 
+
+            CreateCustomerAddresses(context);
+
+            CreateCustomerAssets(context);
         }
 
         private static void CreateAddresses(CrmDbContext context)
@@ -80,16 +84,19 @@ namespace Backend_API.Data.SeedData
                     new Customer
                     {
                         Name = "Test Name1",
+                        LegalAddressId = 1,
                         Birthday = new DateTime(1995,05,16,0,0,0)
                     },
                     new Customer
                     {
                         Name = "Test Name2",
+                        LegalAddressId = 2,
                         Birthday = new DateTime(1970,01,01,0,0,0)
                     },
                     new Customer
                     {
                         Name = "Test Name3",
+                        LegalAddressId = 3,
                         Birthday = new DateTime(2000,03,21,0,0,0)
                     }
                 });
@@ -110,14 +117,29 @@ namespace Backend_API.Data.SeedData
                     },
                     new CustomerAddresses
                     {
+                        CustomerID = 1,
+                        AddressID = 2
+                    },
+                    new CustomerAddresses
+                    {
+                        CustomerID = 2,
+                        AddressID = 1
+                    },
+                    new CustomerAddresses
+                    {
                         CustomerID = 2,
                         AddressID = 2,
                         IsLegal = true,
                     },
                     new CustomerAddresses
                     {
+                        CustomerID = 2,
+                        AddressID = 3
+                    },
+                    new CustomerAddresses
+                    {
                         CustomerID = 3,
-                        AddressID = 2,
+                        AddressID = 3,
                         IsLegal = true,
                     }
                 });

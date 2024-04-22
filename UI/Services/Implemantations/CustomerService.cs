@@ -47,10 +47,10 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return new CustomerDTO();
+                //add logging
             }
+
+            return null;
         }
 
         public async Task<long> CreateNewCustomerAsync(CustomerDTO customerDTO)
@@ -64,7 +64,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
             }
 
             return 0;

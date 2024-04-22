@@ -28,24 +28,48 @@ namespace Backend_API.Controllers
         [Route("/Customers")]
         public async Task<IActionResult> GetAll()
         {
-            var customers = await _repository.Customers.GetAllAsync();
+            var customersDTOs = new List<CustomerDTO>();
 
-            return Ok(customers);
+            try
+            {
+                var customers = await _repository.Customers.GetAllAsync();
+
+                foreach (var customer in customers)
+                {
+                    customersDTOs.Add(_customerService.MapCustomerToDTO(customer));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+
+            return Ok(customersDTOs);
         }
 
         [HttpGet]
         [Route("/Customers/{id}")]
         public async Task<IActionResult> GetById(long id)
         {
-            var customer = _customerService.GetCustomerData(id);
+            var customerDTO = new CustomerDTO();
 
-            if (customer.IsNullOrEmpty())
+            try
+            {
+                var customer = _customerService.GetCustomerData(id);
+
+                if (customer.IsNullOrEmpty())
+                {
+                    //add loging
+                    return Problem();
+                }
+
+                customerDTO = _customerService.MapCustomerToDTO(customer);
+            }
+            catch (Exception ex)
             {
                 //add loging
-                return Problem();
+                return Problem(ex.Message);
             }
-
-            var customerDTO = _customerService.MapCustomerToDTO(customer);
 
             return Ok(customerDTO);
         }

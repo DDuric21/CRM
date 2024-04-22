@@ -40,7 +40,7 @@ namespace Backend_API.Services
             var customerDTO = _mapper.Map<CustomerDTO>(customer);
             customerDTO.Addresses = new List<AddressDTO>();
 
-            foreach (var address in customer.Addresses)
+            foreach (var address in customer.Addresses ?? Enumerable.Empty<Address>())
             {
                 customerDTO.Addresses.Add(_mapper.Map<AddressDTO>(address));
             }

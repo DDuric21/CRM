@@ -1,0 +1,36 @@
+﻿@page "/Customers/{customerId:long}"
+
+@inject ICustomerService customerService
+@inject ICrmModalService modal
+
+@if (customerDTO.IsNullOrEmpty())
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <CascadingValue Value="@customerDTO">
+        <Customer></Customer>
+        <CustomerAddresses></CustomerAddresses>
+    </CascadingValue>
+}
+
+@code {
+    private CustomerDTO customerDTO = new CustomerDTO();
+
+    [Parameter]
+    public long CustomerId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {            
+            customerDTO = await customerService.GetCustomerByIdAsync(CustomerId);
+        }
+        catch (Exception ex)
+        {
+            // add logging
+            modal.ShowErrorMessage(ex.Message);
+        }
+    }
+}

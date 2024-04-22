@@ -8,11 +8,8 @@ namespace Backend_API.Data.Model
         [Key]
         public long Id { get; set; }
 
-        public bool IsLegal { get; set; }
-
         public string? FullAddress { get; set; }
 
-        [NotMapped]
         public ICollection<Customer> Customers { get; set; }
     }
 }

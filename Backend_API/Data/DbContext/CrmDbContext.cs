@@ -34,17 +34,20 @@ namespace Backend_API.Data.DbContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Address>();
-            modelBuilder.Entity<User>();
+            modelBuilder.Entity<Address>()
+                .HasMany(x => x.Customers)
+                .WithMany(y => y.Addresses)
+                .UsingEntity<CustomerAddresses>();
             modelBuilder.Entity<Customer>()
                 .HasMany(x => x.Addresses)
                 .WithMany(y => y.Customers)
                 .UsingEntity<CustomerAddresses>();
+            modelBuilder.Entity<CustomerAddresses>();
+            modelBuilder.Entity<User>();
             modelBuilder.Entity<Asset>();
             modelBuilder.Entity<CustomerAssets>();
             modelBuilder.Entity<Option>();
             modelBuilder.Entity<RefreshToken>();
-            modelBuilder.Entity<CustomerAddresses>();
             base.OnModelCreating(modelBuilder);
         }
 

@@ -21,14 +21,16 @@ else
             <tr>
                 <th>Name</th>
                 <th>Birthday</th>
+                <th>Address</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var customer in customers)
             {
                 <tr>
-                    <td>@customer.Name</td>
-                    <td>@customer.Birthday.ToLocalTime()</td>
+                    <td @onclick="() => RedirectToCustomer(customer.Id)">@customer.Name</td>
+                    <td @onclick="() => RedirectToCustomer(customer.Id)">@customer.Birthday.ToLocalTime()</td>
+                    <td @onclick="() => RedirectToCustomer(customer.Id)">@customer.Addresses.FirstOrDefault(x => x.Id == customer.LegalAddressId)</td>
                     <td>
                         <button @onclick="() => DeleteCustomer(customer.Id)"></button>
                     </td>

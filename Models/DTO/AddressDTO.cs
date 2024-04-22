@@ -2,7 +2,7 @@
 {
     public class AddressDTO
     {
-        public bool IsLegal { get; set; }
+        public long Id { get; set; }
         public string? FullAddress { get; set; }
     }
 }
