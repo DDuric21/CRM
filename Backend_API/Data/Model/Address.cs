@@ -8,8 +8,12 @@ namespace Backend_API.Data.Model
         [Key]
         public long Id { get; set; }
 
+        public bool IsLegal { get; set; }
+
         public string? FullAddress { get; set; }
 
-        public ICollection<Customer> Customers { get; set; }
+        [ForeignKey("CustomerId")]
+        public long CustomerId { get; set; }
+        public Customer Customer { get; set; }
     }
 }

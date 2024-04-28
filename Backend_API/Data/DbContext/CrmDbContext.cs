@@ -34,15 +34,10 @@ namespace Backend_API.Data.DbContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Address>()
-                .HasMany(x => x.Customers)
-                .WithMany(y => y.Addresses)
-                .UsingEntity<CustomerAddresses>();
+            modelBuilder.Entity<Address>();
             modelBuilder.Entity<Customer>()
                 .HasMany(x => x.Addresses)
-                .WithMany(y => y.Customers)
-                .UsingEntity<CustomerAddresses>();
-            modelBuilder.Entity<CustomerAddresses>();
+                .WithOne(x => x.Customer);
             modelBuilder.Entity<User>();
             modelBuilder.Entity<Asset>();
             modelBuilder.Entity<CustomerAssets>();
@@ -55,7 +50,6 @@ namespace Backend_API.Data.DbContext
         public DbSet<Asset> Assets { get; set; }
         public DbSet<CustomerAssets> CustomerAssets { get; set; }
         public DbSet<Address> Addresses { get; set; }
-        public DbSet<CustomerAddresses> CustomerAddresses { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Option> Options { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }

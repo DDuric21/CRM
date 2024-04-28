@@ -26,13 +26,13 @@ namespace Backend_API.Controllers
 
         [HttpGet]
         [Route("/Customers")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllCustomers()
         {
             var customersDTOs = new List<CustomerDTO>();
 
             try
             {
-                var customers = await _repository.Customers.GetAllAsync();
+                var customers = await _repository.Customers.GetAllCustomersAsync();
 
                 foreach (var customer in customers)
                 {
@@ -49,7 +49,7 @@ namespace Backend_API.Controllers
 
         [HttpGet]
         [Route("/Customers/{id}")]
-        public async Task<IActionResult> GetById(long id)
+        public async Task<IActionResult> GetCustomer(long id)
         {
             var customerDTO = new CustomerDTO();
 
@@ -131,7 +131,7 @@ namespace Backend_API.Controllers
 
             try
             {
-                var result = await _repository.Customers.UpdateAsync(customer);
+                var result = await _repository.Customers.UpdateCustomerAsync(customer);
 
                 if (result == 0)
                 {

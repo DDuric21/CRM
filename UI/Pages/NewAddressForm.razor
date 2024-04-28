@@ -1,0 +1,54 @@
+﻿@using Models.DTO
+@using UI.Shared
+@using UI.Services
+
+@inject IAddressService addressService
+@inject ICrmModalService modalService
+
+<div class="modal-body">
+    <input type="text" placeholder="Full address" @bind-value="addressDTO.FullAddress" /><br>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Cancel" >Cancel</button>
+    <button type="button" class="btn btn-primary" @onclick="Close" >Create</button>
+</div>
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance modalInstance { get; set; }
+
+    [Parameter] 
+    public long CustomerId { get; set; }
+
+    private AddressDTO addressDTO = new AddressDTO();
+
+
+    protected override async Task OnInitializedAsync()
+    {        
+        addressDTO.CustomerId = CustomerId;
+        modalInstance.Title = "Create New Address";
+    }
+
+    private async Task<AddressDTO> CreateNewAddress()
+    {
+        var result = await addressService.CreateNewAddressAsync(addressDTO);
+
+        return result;
+    }
+
+    protected async Task Cancel() => await modalInstance.CancelAsync();
+
+    protected async Task Close()
+    {
+        var result = await CreateNewAddress();
+
+        if (result.IsNullOrEmpty())
+        {
+            modalService.ShowErrorMessage("Address is not created!");
+            Cancel();
+        }
+
+        await modalInstance.CloseAsync(ModalResult.Ok(result));
+    }
+}

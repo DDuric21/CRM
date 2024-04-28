@@ -4,8 +4,8 @@
 @using UI.Services
 
 @inject ICustomerService _customerService
-@inject IJSRuntime JsRuntime
 @inject NavigationManager navigationManager
+@inject ICrmModalService modal
 
 <PageTitle>New Customer Form</PageTitle>
 
@@ -31,8 +31,7 @@
 
         if (result == 0)
         {
-            // ovo treba pretvoriti u modal
-            await JsRuntime.InvokeVoidAsync("alert", "Customer not created!");
+            modal.ShowErrorMessage("Customer Not Created!");
             return;
         }
 

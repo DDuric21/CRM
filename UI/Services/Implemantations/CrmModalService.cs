@@ -52,5 +52,15 @@ namespace UI.Services
 
             _modalService.Show<ModalBase>(InfoTitle, parameters);
         }
+
+        public async Task<ModalResult> Show<TComponent>() where TComponent : IComponent
+        {
+            return await _modalService.Show<TComponent>().Result;
+        }
+
+        public async Task<ModalResult> Show<TComponent>(ModalParameters parameters) where TComponent : IComponent
+        {
+            return await _modalService.Show<TComponent>(parameters).Result;
+        }
     }
 }

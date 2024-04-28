@@ -11,5 +11,11 @@ namespace Backend_API.Services
         /// <param name="address">Address object</param>
         /// <returns>AddressDTO object</returns>
         AddressDTO MapAddressToDTO(Address address);
+
+        Address MapDtoToAddress(AddressDTO addressDTO);
+
+        Task<int> UpdateAddressesAsync(List<Address> addresses);
+
+        Task<AddressDTO> InsertAddressAsync(AddressDTO addressDTO);
     }
 }

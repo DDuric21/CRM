@@ -7,9 +7,7 @@
 
         public string? Name { get; set; }
 
-        public long? LegalAddressId { get; set; }
-
-        public ICollection<AddressDTO> Addresses { get; set; }
+        public List<AddressDTO> Addresses { get; set; }
 
         public DateTime Birthday { get; set; }
 

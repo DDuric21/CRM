@@ -34,10 +34,9 @@ namespace Backend_API.Data.SeedData
 
         private static void CreateSeedData(CrmDbContext context)
         {
+            CreateCustomers(context);
 
             CreateAddresses(context);
-
-            CreateCustomers(context);
 
             CreateAssets(context);
 
@@ -45,34 +44,7 @@ namespace Backend_API.Data.SeedData
 
             CreateOptions(context);
 
-            //needed so that FK constraints dont appear
-            context.SaveChanges(); 
-
-            CreateCustomerAddresses(context);
-
             CreateCustomerAssets(context);
-        }
-
-        private static void CreateAddresses(CrmDbContext context)
-        {
-            if (!context.Addresses.Any())
-            {
-                context.Addresses.AddRange(new List<Address>
-                {
-                    new Address
-                    {
-                        FullAddress = "Ulica Grada Chicaga 33, 10000, Zagreb"
-                    },
-                    new Address
-                    {
-                        FullAddress = "Trg Bana Josipa Jelačića 1, 10000, Zagreb"
-                    },
-                    new Address
-                    {
-                        FullAddress = "Avenija Dubrovnik 24, 10000, Zagreb"
-                    }
-                });
-            }
         }
 
         private static void CreateCustomers(CrmDbContext context)
@@ -84,65 +56,68 @@ namespace Backend_API.Data.SeedData
                     new Customer
                     {
                         Name = "Test Name1",
-                        LegalAddressId = 1,
                         Birthday = new DateTime(1995,05,16,0,0,0)
                     },
                     new Customer
                     {
                         Name = "Test Name2",
-                        LegalAddressId = 2,
                         Birthday = new DateTime(1970,01,01,0,0,0)
                     },
                     new Customer
                     {
                         Name = "Test Name3",
-                        LegalAddressId = 3,
                         Birthday = new DateTime(2000,03,21,0,0,0)
                     }
                 });
+
+                //needed so that FK constraints dont appear
+                context.SaveChanges();
             }
         }
 
-        private static void CreateCustomerAddresses(CrmDbContext context)
+        private static void CreateAddresses(CrmDbContext context)
         {
-            if (!context.CustomerAddresses.Any())
+            if (!context.Addresses.Any())
             {
-                context.CustomerAddresses.AddRange(new List<CustomerAddresses>
+                context.Addresses.AddRange(new List<Address>
                 {
-                    new CustomerAddresses
+                    new Address
                     {
-                        CustomerID = 1,
-                        AddressID = 1,
+                        CustomerId = 1,
                         IsLegal = true,
+                        FullAddress = "Ulica Grada Chicaga 33, 10000, Zagreb"
                     },
-                    new CustomerAddresses
+                    new Address
                     {
-                        CustomerID = 1,
-                        AddressID = 2
-                    },
-                    new CustomerAddresses
-                    {
-                        CustomerID = 2,
-                        AddressID = 1
-                    },
-                    new CustomerAddresses
-                    {
-                        CustomerID = 2,
-                        AddressID = 2,
+                        CustomerId = 2,
                         IsLegal = true,
+                        FullAddress = "Trg Bana Josipa Jelačića 1, 10000, Zagreb"
                     },
-                    new CustomerAddresses
+                    new Address
                     {
-                        CustomerID = 2,
-                        AddressID = 3
+                        CustomerId = 2,
+                        FullAddress = "Avenija Dubrovnik 24, 10000, Zagreb"
                     },
-                    new CustomerAddresses
+                    new Address
                     {
-                        CustomerID = 3,
-                        AddressID = 3,
+                        CustomerId = 3,
+                        FullAddress = "Trg Bana Josipa Jelačića 1, 10000, Zagreb"
+                    },
+                    new Address
+                    {
+                        CustomerId = 3,
+                        FullAddress = "Avenija Dubrovnik 24, 10000, Zagreb"
+                    },
+                    new Address
+                    {
+                        CustomerId = 3,
                         IsLegal = true,
+                        FullAddress = "Ulica Grada Chicaga 33, 10000, Zagreb"
                     }
                 });
+
+                //needed so that FK constraints dont appear
+                context.SaveChanges();
             }
         }
 

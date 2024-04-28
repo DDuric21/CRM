@@ -25,5 +25,25 @@ namespace Backend_API.Services
 
             return true;
         }
+
+        public bool ValidateAddressDTO(AddressDTO addressDTO)
+        {
+            if (addressDTO.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            if (addressDTO.CustomerId == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(addressDTO.FullAddress)) 
+            { 
+                return false; 
+            }
+
+            return true;
+        }
     }
 }

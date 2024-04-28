@@ -34,7 +34,7 @@ namespace UI.Services
             }
         }
 
-        public async Task<CustomerDTO> GetCustomerByIdAsync(long customerID)
+        public async Task<CustomerDTO> GetCustomerDataAsync(long customerID)
         {
             var url = string.Format("https://localhost:7076/Customers/{0}", customerID);
             var request = _customerService.CreateRequest(HttpMethod.Get, url);

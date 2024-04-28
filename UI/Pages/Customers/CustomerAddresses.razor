@@ -1,6 +1,10 @@
 ﻿
+@inject IAddressService addressesService
+@inject ICrmModalService modal
+
 <table>
     <thead>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => CreateNewAddress()" >New +</button>
         <tr>
             <th>Primary</th>
             <th>Address</th>
@@ -10,24 +14,65 @@
         @foreach (var addressDTO in CustomerDTO.Addresses)
         {
             <tr>
-                <td><input type="radio" id="legalAddress" checked="@IsLegal(addressDTO.Id)" name="legalRadio"/></td>
+                <td><input type="radio" id="legalAddress" checked="@addressDTO.IsLegal" name="legalRadio" @onchange="() => ChangeLegal(addressDTO.Id)"/></td>
                 <td><label id="address" for="legalAddress">@addressDTO.FullAddress</label></td>
+                <td><button class="btn btn-danger" @onclick="() => DeleteAddress(addressDTO.Id)">Delete</button></td>
             </tr>
         }
     </tbody>
+    <tfoot>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => UpdateAddresses()" >Save Changes</button>
+    </tfoot>
 </table>
 
 @code {
     [CascadingParameter]
     public CustomerDTO CustomerDTO { get; set; }
 
-    private bool IsLegal(long id)
+    private AddressDTO addressDTO;
+
+    private void ChangeLegal(long id)
     {
-        if (id == CustomerDTO.LegalAddressId)
+        CustomerDTO.Addresses.ForEach(x => x.IsLegal = false);
+        CustomerDTO.Addresses.First(x => x.Id == id).IsLegal = true;
+    }
+
+    private async Task UpdateAddresses()
+    {
+        await addressesService.UpdateAddressesAsync(CustomerDTO.Addresses);
+    }
+
+    private async Task CreateNewAddress()
+    {
+        var parameters = new ModalParameters()
+            .Add("CustomerId", CustomerDTO.Id);
+
+        var result = await modal.Show<NewAddressForm>(parameters);
+
+        if (result.Confirmed)
         {
-            return true;
+            var createdAddress = (AddressDTO)result.Data; 
+            CustomerDTO.Addresses.Add(createdAddress);
+        }
+    }
+
+    private async void DeleteAddress(long addressId)
+    {
+
+        var result = await modal.ShowDialog("Are you sure?", ModalDialogType.Delete);
+
+        if (result.Cancelled)
+        {
+            return;
         }
 
-        return false;
+        var isDeleted = await addressesService.DeleteAddressAsync(addressId) > 0 ? true : false;
+
+        if (isDeleted)
+        {
+            var deletedAddress = CustomerDTO.Addresses.FirstOrDefault(x => x.Id == addressId);
+            CustomerDTO.Addresses.Remove(deletedAddress);
+            StateHasChanged();
+        }
     }
 }
