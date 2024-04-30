@@ -1,11 +1,11 @@
 ﻿@inject ICustomerService customerService
 @inject ICrmModalService modal
 
-<h1>@CustomerDTO.Name</h1> <button @onclick="() => ChangeState()">Edit</button>
+<h1>@CustomerDTO.Name</h1>
 <br />
 
 <EditForm Model="@CustomerDTO" OnSubmit="@SaveChanges">
-    <fieldset disabled="@isDisabled">
+    <fieldset disabled="@(!IsAdmin)">
         <InputText @bind-Value="CustomerDTO.Name"></InputText>
         <InputDate @bind-Value="CustomerDTO.Birthday"></InputDate>
         <button type="submit" name="submit" class="btn btn-primary">Save Changes</button>
@@ -13,7 +13,8 @@
 </EditForm>
 
 @code {
-    private bool isDisabled = true;
+    [Parameter]
+    public bool IsAdmin { get; set; }
 
     [CascadingParameter]
     public CustomerDTO CustomerDTO { get; set; }
@@ -21,10 +22,5 @@
     protected async Task SaveChanges()
     {
         await customerService.UpdateCustomer(CustomerDTO);
-    }
-
-    private void ChangeState()
-    {
-        isDisabled = !isDisabled;
     }
 }

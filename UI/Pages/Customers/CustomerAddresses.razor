@@ -11,7 +11,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var addressDTO in CustomerDTO.Addresses)
+        @foreach (var addressDTO in Addresses)
         {
             <tr>
                 <td><input type="radio" id="legalAddress" checked="@addressDTO.IsLegal" name="legalRadio" @onchange="() => ChangeLegal(addressDTO.Id)"/></td>
@@ -26,33 +26,33 @@
 </table>
 
 @code {
-    [CascadingParameter]
-    public CustomerDTO CustomerDTO { get; set; }
+    [Parameter]
+    public List<AddressDTO> Addresses { get; set; }
 
     private AddressDTO addressDTO;
 
     private void ChangeLegal(long id)
     {
-        CustomerDTO.Addresses.ForEach(x => x.IsLegal = false);
-        CustomerDTO.Addresses.First(x => x.Id == id).IsLegal = true;
+        Addresses.ForEach(x => x.IsLegal = false);
+        Addresses.First(x => x.Id == id).IsLegal = true;
     }
 
     private async Task UpdateAddresses()
     {
-        await addressesService.UpdateAddressesAsync(CustomerDTO.Addresses);
+        await addressesService.UpdateAddressesAsync(Addresses);
     }
 
     private async Task CreateNewAddress()
     {
         var parameters = new ModalParameters()
-            .Add("CustomerId", CustomerDTO.Id);
+            .Add("CustomerId", Addresses.First().Id);
 
         var result = await modal.Show<NewAddressForm>(parameters);
 
         if (result.Confirmed)
         {
             var createdAddress = (AddressDTO)result.Data; 
-            CustomerDTO.Addresses.Add(createdAddress);
+            Addresses.Add(createdAddress);
         }
     }
 
@@ -70,8 +70,8 @@
 
         if (isDeleted)
         {
-            var deletedAddress = CustomerDTO.Addresses.FirstOrDefault(x => x.Id == addressId);
-            CustomerDTO.Addresses.Remove(deletedAddress);
+            var deletedAddress = Addresses.FirstOrDefault(x => x.Id == addressId);
+            Addresses.Remove(deletedAddress);
             StateHasChanged();
         }
     }

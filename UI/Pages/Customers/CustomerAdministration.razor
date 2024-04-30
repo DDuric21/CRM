@@ -1,4 +1,4 @@
-﻿@page "/Customers/{customerId:long}"
+﻿@page "/Customers/Admin/{customerId:long}"
 
 @inject ICustomerService customerService
 @inject ICrmModalService modal
@@ -9,14 +9,21 @@
     <p><em>Loading...</em></p>
 }
 else
-{    
+{
     <CascadingValue Value="@customerDTO">
-        <Customer></Customer>
-        <button class="btn btn-primary" @onclick="() => NavigateToCustomerAdministration()">Edit</button>
+        <Customer IsAdmin="true"></Customer>        
+        <button class="btn btn-primary" @onclick="() => NavigateToCustomerBase()">Return</button>
     </CascadingValue>
-    <CustomerNav DisplayComponent="ShowComponent"></CustomerNav>
+    <br />
+    <CustomerAdminNav DisplayComponent="ShowComponent"></CustomerAdminNav>
     switch (componentName)
     {
+        case nameof(CustomerAddresses) :
+            <CustomerAddresses Addresses="@customerDTO.Addresses"></CustomerAddresses>
+            break;
+        case nameof(CustomerProfiles) :
+            <CustomerProfiles></CustomerProfiles>
+            break;
         default:
             <h3>No component selected</h3>
             break;
@@ -28,8 +35,8 @@ else
 
     [Parameter]
     public long CustomerId { get; set; }
-    
-    private string componentName = string.Empty;
+
+    private string componentName = nameof(CustomerAddresses);
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,14 +51,14 @@ else
         }
     }
 
-    private async void NavigateToCustomerAdministration()
-    {
-        var partialUrl = string.Format("/Customers/Admin/{0}", CustomerId);
-        navigationManager.NavigateTo(partialUrl);
-    }    
-
     protected void ShowComponent(string selectedComponentName)
     {
         componentName = selectedComponentName;
+    }
+
+    protected void NavigateToCustomerBase()
+    {        
+        var partialUrl = string.Format("/Customers/{0}", CustomerId);
+        navigationManager.NavigateTo(partialUrl);
     }
 }
