@@ -13,15 +13,18 @@ namespace Backend_API.Controllers
         private readonly ICrmRepository _repository;
         private readonly ICustomerService _customerService;
         private readonly IDataValidationService _dataValidationService;
+        private readonly IAssetService _assetService;
 
         public CustomerController(
             ICrmRepository crmRepository,
             ICustomerService customerService,
-            IDataValidationService dataValidationService)
+            IDataValidationService dataValidationService,
+            IAssetService assetService)
         {
             _repository = crmRepository;
             _dataValidationService = dataValidationService;
             _customerService = customerService;
+            _assetService = assetService;
         }
 
         [HttpGet]
@@ -72,6 +75,22 @@ namespace Backend_API.Controllers
             }
 
             return Ok(customerDTO);
+        }
+
+        [HttpPost]
+        [Route("/Customers/Assets")]
+        public async Task<IActionResult> GetCustomerAssets([FromBody] long id)
+        {
+            var assets = _customerService.GetCustomerAssets(id);
+
+            if (assets.IsNullOrEmpty())
+            {
+                return Ok(new List<AssetDTO>());
+            }
+
+            var assetDTOs = _assetService.MapAssetsToDTOs(assets);
+
+            return Ok(assetDTOs);
         }
 
         [HttpPost]

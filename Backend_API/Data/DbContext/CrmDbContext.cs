@@ -39,7 +39,9 @@ namespace Backend_API.Data.DbContext
                 .HasMany(x => x.Addresses)
                 .WithOne(x => x.Customer);
             modelBuilder.Entity<User>();
-            modelBuilder.Entity<Asset>();
+            modelBuilder.Entity<Asset>()
+                .HasMany(x => x.Options)
+                .WithOne(x => x.Asset);
             modelBuilder.Entity<CustomerAssets>();
             modelBuilder.Entity<Option>();
             modelBuilder.Entity<RefreshToken>();

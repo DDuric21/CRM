@@ -1,0 +1,64 @@
+﻿@page "/order"
+
+@inject ILocalStorageService localStorageService
+@inject NavigationManager navigationManager
+@inject IOrderService orderService
+@implements IDisposable;
+
+@if (customerDTO == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h1>@customerDTO.Name</h1>
+    <br />
+
+    <div class="align-items-stretch">
+            <input type="text" @bind-value="customerDTO.Name" />
+            <input type="text" @bind-value="customerDTO.Birthday" />
+            <button type="submit" name="submit" class="btn btn-primary" @onclick="SaveChanges" >Save Changes</button>
+    </div>
+    <CascadingValue Value="@orderDTO">
+        <Asset AssetDTO="orderDTO.AssetDTO" @ref="orderAsset"></Asset>
+    </CascadingValue">
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "orderID")]
+    public Guid OrderID { get; set; }
+    private OrderDTO orderDTO { get; set; } = new OrderDTO();
+    private Asset orderAsset = new Asset();
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "customerID")]
+    public long CustomerID { get; set; }
+
+    private CustomerDTO customerDTO;
+
+    protected override async Task OnInitializedAsync()
+    {
+        customerDTO = await localStorageService.GetItemAsync<CustomerDTO>(OrderID.ToString());
+
+        if (customerDTO.IsNullOrEmpty())
+        {
+            navigationManager.NavigateTo($"/Customers/{CustomerID}");
+        }
+
+        orderDTO.OrderID = this.OrderID;
+        orderDTO.CustomerDTO = this.customerDTO;
+    }
+
+    public void Dispose()
+    {
+        // bad solution, this need fixing
+        localStorageService.RemoveItemAsync(OrderID.ToString());
+    }
+
+    private async Task SaveChanges()
+    {
+        orderDTO.AssetDTO = orderAsset.AssetDTO;
+        await orderService.AddAsset(orderDTO);
+    }
+}

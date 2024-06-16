@@ -41,6 +41,17 @@ namespace Backend_API.Data.Repositories
             return select;
         }
 
+        public virtual IQueryable<T> With(Expression<Func<T, object>> include)
+        {
+            var dbset = _context.Set<T>();
+
+            var select = dbset
+                .AsNoTracking()
+                .Include(include);
+
+            return select;
+        }
+
         public virtual IQueryable<T> Where(Expression<Func<T, bool>> predicate)
         {
             var dbset = _context.Set<T>();

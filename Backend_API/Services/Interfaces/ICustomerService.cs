@@ -25,5 +25,7 @@ namespace Backend_API.Services
         /// <param name="id">Id of customer</param>
         /// <returns>Customer object</returns>
         Customer GetCustomerData(long id);
+
+        List<Asset> GetCustomerAssets(long id);
     }
 }

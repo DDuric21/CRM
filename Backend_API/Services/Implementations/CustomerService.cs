@@ -65,5 +65,15 @@ namespace Backend_API.Services
 
             return customer;
         }
+
+        public List<Asset> GetCustomerAssets(long id)
+        {
+            var assets = _repository.CustomerAssets
+                .Where(x => x.CustomerID == id)
+                .Select(x => x.Asset)
+                .ToList();
+
+            return assets;
+        }
     }
 }

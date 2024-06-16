@@ -12,6 +12,10 @@ namespace Backend_API.Data.Mappings
             CreateMap<CustomerDTO, Customer>();
             CreateMap<AddressDTO, Address>();
             CreateMap<Address, AddressDTO>();
+            CreateMap<Asset, AssetDTO>();
+            CreateMap<AssetDTO, Asset>();
+            CreateMap<Option, OptionDTO>();
+            CreateMap<OptionDTO, Option>();
         }
     }
 }

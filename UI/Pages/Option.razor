@@ -1,0 +1,17 @@
+﻿
+<fieldset >
+    <input type="text" @bind-value="OptionDTO.Name"></input>
+    <input type="text" @bind-value="OptionDTO.Price"></input>
+    <button type="submit" name="submit" class="btn btn-danger" @onclick="RemoveOption">Delete</button>
+</fieldset>
+
+@code {
+    [Parameter]
+    public OptionDTO OptionDTO { get; set; } = new OptionDTO();
+
+    private void RemoveOption()
+    {
+        
+    }
+
+}

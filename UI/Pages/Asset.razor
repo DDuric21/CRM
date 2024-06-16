@@ -1,0 +1,88 @@
+﻿
+@inject IAssetService assetService
+
+<div class="mb-3">
+        <select id="selectedAsset" class="form-select" @bind="AssetDTO.Id">
+            @foreach (var asset in selectableAssets)
+            {
+                <option value="@asset.Id">@asset.Name</option>
+            }
+        </select>    
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="AddOption" >Add Option +</button>
+        @if (AssetDTO.Id != 0)
+        {
+            @foreach (var assetOption in AssetDTO.Options)
+            {
+                <select class="form-select" id="selectedOption" >
+                    @foreach (var opteion in selectableOptions)
+                    {            
+                        <option value="@opteion.Id">@opteion.Name</option>
+                    }
+                </select>
+            }        
+        }
+</div>
+
+@if (IsEdit)
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>        
+            <button type="submit" name="submit" class="btn btn-primary" >New +</button>
+            @foreach (var optionDTO in AssetDTO.Options)
+            {
+                <tr>
+                    <td><label id="asset" >@optionDTO.Name</label></td>
+                    <td><label id="asset" >@optionDTO.Price</label></td>
+                    <td><button type="button" class="btn btn-danger">Delete</button></td>
+                </tr>
+            }
+        </tbody>
+    </table> 
+}
+
+
+@code {
+    [Parameter]
+    public AssetDTO AssetDTO { get; set; } = new AssetDTO();
+
+    private bool IsEdit { get; set; } = false;
+
+    private List<AssetDTO> selectableAssets = new List<AssetDTO>();
+    private long selectedAsset => AssetDTO.Id == 0
+        ? selectableAssets.FirstOrDefault(x => x.Id != 0)
+            .Id
+        : AssetDTO.Id;
+    private List<OptionDTO> selectableOptions => selectableAssets
+        .FirstOrDefault(x => x.Id == selectedAsset)
+        .Options;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsEdit = !AssetDTO.IsNullOrEmpty() && AssetDTO.Id > 0;
+
+        if (IsEdit)
+        {
+            selectableAssets.Add(AssetDTO);
+        }
+        else
+        {
+            var assets = await assetService.GetAssetsAsync(true);
+            this.selectableAssets = await assets.ToListAsync();
+
+            //add empty item
+            this.selectableAssets.Insert(0, new AssetDTO());
+            AssetDTO.Options.Add(new OptionDTO());
+        }
+    }
+
+    private void AddOption()
+    {
+        AssetDTO.Options.Add(new OptionDTO());
+    }
+}

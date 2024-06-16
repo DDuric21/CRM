@@ -16,7 +16,6 @@ namespace Backend_API.Data.Model
 
         public long CurrencyID { get; set; }
 
-        [NotMapped]
         public ICollection<Option>? Options { get; set; }
     }
 }

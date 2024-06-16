@@ -11,11 +11,12 @@
 
         public DateTime Birthday { get; set; }
 
-        public ICollection<AssetDTO> Assets { get; set; }
+        public List<AssetDTO> Assets { get; set; }
 
         public CustomerDTO()
         {
             Addresses = new List<AddressDTO>();
+            Assets = new List<AssetDTO>();
         }
     }
 }

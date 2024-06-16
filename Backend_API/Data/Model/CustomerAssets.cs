@@ -10,8 +10,12 @@ namespace Backend_API.Data.Model
 
         [ForeignKey("CustomerId")]
         public long CustomerID { get; set; }
+        public Customer Customer { get; set; }
+
+        public long AssetAddressID{ get; set; }
 
         [ForeignKey("AssetID")]
         public long AssetID { get; set; }
+        public Asset Asset { get; set; }
     }
 }

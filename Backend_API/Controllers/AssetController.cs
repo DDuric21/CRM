@@ -1,25 +1,53 @@
 ﻿using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
+using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Models.DTO;
 
 namespace Backend_API.Controllers
 {
     public class AssetController : Controller
     {
         private readonly ICrmRepository _repository;
+        private readonly IAssetService _assetService;
 
-        public AssetController(ICrmRepository crmRepository)
+        public AssetController(
+            ICrmRepository crmRepository,
+            IAssetService assetService)
         {
             _repository = crmRepository;
+            _assetService = assetService;
         }
 
         [HttpGet]
         [Route("/Assets")]
-        public IEnumerable<Asset> GetAll()
+        public async Task<IActionResult> GetAll(bool withOptions)
         {
-            var assets = _repository.Assets.GetAllAsync();
+            var assetDTOs = new List<AssetDTO>();
 
-            return assets.Result;
+            try
+            {
+                IEnumerable<Asset> assets;
+                if (withOptions)
+                {
+                    assets = _assetService.GetAssetsWithOptions();
+                }
+                else
+                {
+                    assets = await _repository.Assets.GetAllAsync();
+                }
+
+                foreach (var asset in assets)
+                {
+                    assetDTOs.Add(_assetService.MapAssetToDTO(asset));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+
+            return Ok(assetDTOs);
         }
 
         [HttpGet]

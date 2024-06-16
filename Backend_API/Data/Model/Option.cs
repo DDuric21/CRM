@@ -18,5 +18,6 @@ namespace Backend_API.Data.Model
 
         [ForeignKey("AssetID")]
         public long AssetID { get; set; }
+        public Asset Asset { get; set; }
     }
 }

@@ -1,0 +1,61 @@
+﻿
+@inject ICustomerService customerService
+@inject ILocalStorageService localStorageService
+@inject NavigationManager navigationManager
+@inject ICrmModalService modal
+
+<table>
+    <thead>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewAsset()" >New +</button>
+        <tr>
+            <th>Primary</th>
+            <th>Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var assetDTO in assets)
+        {
+            <tr>
+                <td><label id="asset" >@assetDTO.Name</label></td>
+                <td><label id="asset" >@assetDTO.Price</label></td>
+                <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset()" >Edit</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [CascadingParameter]
+    public CustomerDTO CustomerDTO { get; set; }
+
+    private List<AssetDTO> assets { get; set; } = new List<AssetDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {            
+            var customerAssets = await customerService.GetCustomerAssetsAsync(CustomerDTO.Id);
+
+            await foreach(var asset in customerAssets)
+            {
+                assets.Add(asset);
+            }
+        }
+        catch (Exception ex)
+        {
+            modal.ShowErrorMessage(ex.Message);
+        }
+    }
+
+    private async void AddNewAsset()
+    {
+        var orderID = Guid.NewGuid();
+        await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
+        navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}");
+    }
+
+    private void EditAsset()
+    {
+        
+    }
+}

@@ -61,5 +61,7 @@ namespace Backend_API.Data.Repositories
         /// <returns>An System.Linq.IQueryable`1 that contains elements from the input sequence that satisfy 
         /// the conditions and includes related objects for given expression</returns>
         IQueryable<T> Filter(Expression<Func<T, bool>> filter, Expression<Func<T, object>> include);
+
+        IQueryable<T> With(Expression<Func<T, object>> include);
     }
 }
