@@ -8,17 +8,18 @@
     <thead>
         <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewAsset()" >New +</button>
         <tr>
-            <th>Primary</th>
-            <th>Address</th>
+            <th>Name</th>
+            <th>Price</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var assetDTO in assets)
         {
             <tr>
-                <td><label id="asset" >@assetDTO.Name</label></td>
-                <td><label id="asset" >@assetDTO.Price</label></td>
-                <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset()" >Edit</button></td>
+                <td><label id="@assetDTO.Id" >@assetDTO.Name</label></td>
+                <td><label id="@assetDTO.Id" >@assetDTO.Price</label></td>
+                <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)" >Edit</button></td>
+                <td><button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)" >Delete</button></td>
             </tr>
         }
     </tbody>
@@ -32,6 +33,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (CustomerDTO.Assets.IsNullOrEmpty())
+        {
+            return;
+        }
+
         try
         {            
             var customerAssets = await customerService.GetCustomerAssetsAsync(CustomerDTO.Id);
@@ -40,6 +46,8 @@
             {
                 assets.Add(asset);
             }
+
+            CustomerDTO.Assets = assets;
         }
         catch (Exception ex)
         {
@@ -54,8 +62,13 @@
         navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}");
     }
 
-    private void EditAsset()
+    private async void EditAsset(bool isDelete, long customerAssetID)
     {
-        
+        var orderID = Guid.NewGuid();
+        var action = isDelete
+            ? $"{(int)CrudAction.Delete}:{customerAssetID}"
+            : $"{(int)CrudAction.Update}:{customerAssetID}";
+        await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
+        navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={action}");        
     }
 }

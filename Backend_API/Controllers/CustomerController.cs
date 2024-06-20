@@ -93,6 +93,28 @@ namespace Backend_API.Controllers
             return Ok(assetDTOs);
         }
 
+
+        [HttpGet]
+        [Route("/Customers/Assets/{customerAssetsID}")]
+        public async Task<IActionResult> GetCustomerAssetData(long customerAssetsID)
+        {
+            if (customerAssetsID <= 0)
+            {
+                return BadRequest("Incorrect ID");
+            }
+
+            var asset = _customerService.GetCustomerAssetData(customerAssetsID);
+
+            if (asset.IsNullOrEmpty())
+            {
+                return Ok(new AssetDTO());
+            }
+
+            var assetDTO = _assetService.MapAssetToDTO(asset, customerAssetsID);
+
+            return Ok(assetDTO);
+        }
+
         [HttpPost]
         [Route("/Customers")]
         public async Task<IActionResult> InsertCustomer([FromBody] CustomerDTO customerDTO)

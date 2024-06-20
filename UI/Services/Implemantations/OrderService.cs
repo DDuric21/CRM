@@ -31,5 +31,29 @@ namespace UI.Services
                 _modalService.ShowErrorMessage(ex.Message);
             }
         }
+
+        public async Task UpdateAsset(OrderDTO orderDTO)
+        {
+            
+        }
+
+        public async Task<int> DeleteAsset(long custoemrAssetID)
+        {
+            var url = string.Format("https://localhost:7076/Order");
+            var request = _communicationService.CreateRequest(HttpMethod.Delete, url, custoemrAssetID);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<int>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                // loging
+                _modalService.ShowErrorMessage(ex.Message);
+                return 0;
+            }
+        }
     }
 }

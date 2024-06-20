@@ -5,7 +5,14 @@ namespace Backend_API.Services
 {
     public interface IOrderService
     {
-        Task CreateOrder(CustomerAssets customerAsset);
-        CustomerAssets MapToOrderData(OrderDTO orderDTO);
+        Task CreateOrderAssetAsync(CustomerAssets customerAsset);
+
+        Task CreateOrderAssetOptionsAsync(List<CustomerAssetOptions> customerAssetOptions);
+
+        Task<int> DeleteCustomerAssetAsync(long customerAssetsID);
+
+        CustomerAssets MapToCustomerAsset(OrderDTO orderDTO);
+
+        List<CustomerAssetOptions> MapToCustomerAssetOptions(OrderDTO orderDTO, CustomerAssets customerAssets);
     }
 }

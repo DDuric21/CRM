@@ -3,6 +3,8 @@
 @inject ILocalStorageService localStorageService
 @inject NavigationManager navigationManager
 @inject IOrderService orderService
+@inject ICustomerService customerService
+@inject ICrmModalService modalService
 @implements IDisposable;
 
 @if (customerDTO == null)
@@ -19,9 +21,10 @@ else
             <input type="text" @bind-value="customerDTO.Birthday" />
             <button type="submit" name="submit" class="btn btn-primary" @onclick="SaveChanges" >Save Changes</button>
     </div>
+
     <CascadingValue Value="@orderDTO">
-        <Asset AssetDTO="orderDTO.AssetDTO" @ref="orderAsset"></Asset>
-    </CascadingValue">
+        <Asset AssetDTO="orderDTO.AssetDTO" ActionID="actionID" @ref="orderAsset"></Asset>
+    </CascadingValue>
 }
 
 @code {
@@ -34,6 +37,12 @@ else
     [Parameter]
     [SupplyParameterFromQuery(Name = "customerID")]
     public long CustomerID { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "action")]
+    public string Action { get; set; } = string.Empty;
+
+    private int actionID => ParseActionParameter().Item1;
 
     private CustomerDTO customerDTO;
 
@@ -48,6 +57,12 @@ else
 
         orderDTO.OrderID = this.OrderID;
         orderDTO.CustomerDTO = this.customerDTO;
+
+        if (!string.IsNullOrWhiteSpace(Action))
+        {
+            (var actionID , var customerAssetID) = ParseActionParameter();
+            orderDTO.AssetDTO = await customerService.GetCustomerAssetDataAsync(customerAssetID);
+        }
     }
 
     public void Dispose()
@@ -58,7 +73,38 @@ else
 
     private async Task SaveChanges()
     {
-        orderDTO.AssetDTO = orderAsset.AssetDTO;
-        await orderService.AddAsset(orderDTO);
+        switch (actionID)
+        {
+            case (int)CrudAction.Update:
+                await orderService.UpdateAsset(orderDTO);
+                break;
+            case (int)CrudAction.Delete:
+                var result = await orderService.DeleteAsset(orderDTO.AssetDTO.CustomerAssetID);
+                if (result <= 0)
+                {
+                    modalService.ShowErrorMessage("Asset not deleted!");
+                }
+                break;
+            default :
+                orderDTO.AssetDTO = orderAsset.AssetDTO;
+                await orderService.AddAsset(orderDTO);
+                break;
+        }
+    }
+
+    private (int, long) ParseActionParameter()
+    {
+        var actionID = 0;
+        var customerAssetID = 0L; 
+        if (string.IsNullOrWhiteSpace(Action))
+        {
+            return (actionID, customerAssetID);            
+        }
+
+        string[] ids = Action.Split(":");
+        int.TryParse(ids[0], out actionID);
+        long.TryParse(ids[1], out customerAssetID);
+
+        return (actionID, customerAssetID);
     }
 }

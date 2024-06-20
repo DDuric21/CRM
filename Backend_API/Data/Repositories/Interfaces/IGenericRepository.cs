@@ -22,6 +22,11 @@ namespace Backend_API.Data.Repositories
         Task InsertAsync(T entity);
 
         /// <summary>
+        /// Inserts multiple elements all at once
+        /// </summary>
+        Task InsertRange(IEnumerable<T> entities);
+
+        /// <summary>
         /// Inserts an element synchronously
         /// </summary>
         void Insert(T entity);

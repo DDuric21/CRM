@@ -1,7 +1,10 @@
 ﻿
 @inject IAssetService assetService
+@inject ICrmModalService modalService
 
-<div class="mb-3">
+@if (ActionID <= 0)
+{
+    <div class="mb-3">
         <select id="selectedAsset" class="form-select" @bind="AssetDTO.Id">
             @foreach (var asset in selectableAssets)
             {
@@ -13,18 +16,24 @@
         {
             @foreach (var assetOption in AssetDTO.Options)
             {
-                <select class="form-select" id="selectedOption" >
-                    @foreach (var opteion in selectableOptions)
+                <select class="form-select" id="selectedOption" @bind="assetOption.Id">
+                    @foreach (var option in selectableOptions)
                     {            
-                        <option value="@opteion.Id">@opteion.Name</option>
+                        <option value="@option.Id">@option.Name</option>
                     }
                 </select>
             }        
         }
-</div>
+    </div>
+}
 
-@if (IsEdit)
+@if (ActionID == (int)CrudAction.Update)
 {
+    <div class="align-items-stretch">
+        <fieldset disabled="@true">
+            <input type="text" @bind-value="AssetDTO.Name" /><br>
+        </fieldset>
+    </div>
     <table>
         <thead>
             <tr>
@@ -33,7 +42,7 @@
             </tr>
         </thead>
         <tbody>        
-            <button type="submit" name="submit" class="btn btn-primary" >New +</button>
+            <button type="submit" name="submit" class="btn btn-primary" >Add +</button>
             @foreach (var optionDTO in AssetDTO.Options)
             {
                 <tr>
@@ -46,27 +55,55 @@
     </table> 
 }
 
+@if (ActionID == (int)CrudAction.Delete)
+{
+    <div class="align-items-stretch">
+        <fieldset disabled="@true">
+            <input type="text" @bind-value="AssetDTO.Name" /><br>
+        </fieldset>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>        
+            @foreach (var optionDTO in AssetDTO.Options)
+            {
+                <tr>
+                    <td><label id="asset" >@optionDTO.Name</label></td>
+                    <td><label id="asset" >@optionDTO.Price</label></td>
+                </tr>
+            }
+        </tbody>
+    </table> 
+}
+
 
 @code {
     [Parameter]
     public AssetDTO AssetDTO { get; set; } = new AssetDTO();
 
-    private bool IsEdit { get; set; } = false;
+    [Parameter]
+    public int ActionID { get; set; }
 
     private List<AssetDTO> selectableAssets = new List<AssetDTO>();
     private long selectedAsset => AssetDTO.Id == 0
         ? selectableAssets.FirstOrDefault(x => x.Id != 0)
             .Id
         : AssetDTO.Id;
+
     private List<OptionDTO> selectableOptions => selectableAssets
         .FirstOrDefault(x => x.Id == selectedAsset)
         .Options;
 
+    private IDictionary<long, int> selectedOptions = new Dictionary<long, int>();
+
     protected override async Task OnInitializedAsync()
     {
-        IsEdit = !AssetDTO.IsNullOrEmpty() && AssetDTO.Id > 0;
-
-        if (IsEdit)
+        if (ActionID > 0)
         {
             selectableAssets.Add(AssetDTO);
         }
@@ -84,5 +121,18 @@
     private void AddOption()
     {
         AssetDTO.Options.Add(new OptionDTO());
+    }
+
+    private void OptionSelected(ChangeEventArgs e)
+    {
+        var selectedOption = e.Value;
+        if (selectedOption.IsNullOrEmpty()
+            || selectedOption.GetType() != typeof(int))
+        {
+            modalService.ShowErrorMessage("Selected option is not valid!");
+            return;
+        }
+
+
     }
 }

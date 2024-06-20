@@ -11,9 +11,9 @@ namespace Backend_API.Services
         /// </summary>
         /// <param name="asset">Asset object</param>
         /// <returns>AssetDTO object</returns>
-        AssetDTO MapAssetToDTO(Asset asset);
+        AssetDTO MapAssetToDTO(Asset asset, long customerAssetsID = 0);
 
-        IEnumerable<AssetDTO> MapAssetsToDTOs(IEnumerable<Asset> assets);
+        IEnumerable<AssetDTO> MapAssetsToDTOs(IDictionary<long, Asset> assets);
 
         /// <summary>
         /// Maps property values from DTO to entity

@@ -28,7 +28,7 @@ namespace Backend_API.Services
             return assets;
         }
 
-        public IEnumerable<AssetDTO> MapAssetsToDTOs(IEnumerable<Asset> assets)
+        public IEnumerable<AssetDTO> MapAssetsToDTOs(IDictionary<long, Asset> assets)
         {
             var assetDTOs = new List<AssetDTO>();
 
@@ -41,7 +41,9 @@ namespace Backend_API.Services
             {
                 foreach (var asset in assets)
                 {
-                    assetDTOs.Add(_mapper.Map<AssetDTO>(asset));
+                    var dto = _mapper.Map<AssetDTO>(asset.Value);
+                    dto.CustomerAssetID = asset.Key;
+                    assetDTOs.Add(dto);
                 }
 
                 return assetDTOs;
@@ -53,7 +55,7 @@ namespace Backend_API.Services
             }
         }
 
-        public AssetDTO MapAssetToDTO(Asset asset)
+        public AssetDTO MapAssetToDTO(Asset asset, long customerAssetsID = 0)
         {
             if (asset.IsNullOrEmpty())
             {
@@ -67,6 +69,8 @@ namespace Backend_API.Services
             {
                 assetDTO.Options.Add(_mapper.Map<OptionDTO>(option));
             }
+
+            assetDTO.CustomerAssetID = customerAssetsID;
 
             return assetDTO;
         }

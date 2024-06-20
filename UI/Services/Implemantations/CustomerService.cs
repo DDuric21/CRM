@@ -121,5 +121,25 @@ namespace UI.Services
                 return null;
             }
         }
+
+        public async Task<AssetDTO> GetCustomerAssetDataAsync(long customerAssetid)
+        {
+            var url = string.Format("https://localhost:7076/Customers/Assets/{0}", customerAssetid);
+            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<AssetDTO>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                //add logging
+                _modalService.ShowErrorMessage(ex.Message);
+
+                return null;
+            }
+        }
     }
 }

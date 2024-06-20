@@ -4,6 +4,8 @@
     {
         public long Id { get; set; }
 
+        public long CustomerAssetID { get; set; }
+
         public string Name { get; set; }
 
         public decimal Price { get; set; }

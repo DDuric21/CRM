@@ -79,6 +79,12 @@ namespace Backend_API.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task InsertRange(IEnumerable<T> entities)
+        {
+            await _context.Set<T>().AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<int> SaveAsync()
         {
             return await _context.SaveChangesAsync();

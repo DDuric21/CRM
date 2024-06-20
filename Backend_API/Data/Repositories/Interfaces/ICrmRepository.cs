@@ -6,6 +6,7 @@
         IAddressRepository Addresses { get; }
         IAssetRepository Assets { get; }
         ICustomerAssetsRepository CustomerAssets { get; }
+        ICustomerAssetOptionsRepository CustomerAssetOptions { get; }
         IOptionRepository Options { get; }
         IUserRepository Users { get; }
         IRefreshTokenRepository RefreshTokens { get; }

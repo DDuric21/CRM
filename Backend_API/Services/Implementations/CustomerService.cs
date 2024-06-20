@@ -66,14 +66,36 @@ namespace Backend_API.Services
             return customer;
         }
 
-        public List<Asset> GetCustomerAssets(long id)
+        public Dictionary<long, Asset> GetCustomerAssets(long id)
         {
             var assets = _repository.CustomerAssets
+                .With(x => x.Asset)
                 .Where(x => x.CustomerID == id)
-                .Select(x => x.Asset)
-                .ToList();
+                .ToDictionary(x => x.Id, x => x.Asset);
 
             return assets;
+        }
+
+        public Asset GetCustomerAssetData(long customerAssetsID)
+        {
+            var retrievedData = _repository.CustomerAssets
+                .Where(x => x.Id == customerAssetsID)
+                .Select(y => new
+                {
+                    Asset = y.Asset,
+                    Options = y.CustomerAssetOptions.Select(z => z.Option).ToList()
+                })
+                .FirstOrDefault();
+
+            var asset = new Asset();
+
+            if (!retrievedData.IsNullOrEmpty())
+            {
+                asset = retrievedData.Asset;
+                asset.Options = retrievedData.Options;
+            }
+
+            return asset;
         }
     }
 }

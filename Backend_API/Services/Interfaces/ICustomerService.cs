@@ -26,6 +26,8 @@ namespace Backend_API.Services
         /// <returns>Customer object</returns>
         Customer GetCustomerData(long id);
 
-        List<Asset> GetCustomerAssets(long id);
+        Dictionary<long, Asset> GetCustomerAssets(long id);
+
+        Asset GetCustomerAssetData(long customerAssetsID);
     }
 }

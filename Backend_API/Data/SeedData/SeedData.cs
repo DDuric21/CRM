@@ -45,6 +45,8 @@ namespace Backend_API.Data.SeedData
             CreateOptions(context);
 
             CreateCustomerAssets(context);
+
+            CreateCustomerAssetOptions(context);
         }
 
         private static void CreateCustomers(CrmDbContext context)
@@ -146,6 +148,9 @@ namespace Backend_API.Data.SeedData
                         CurrencyID = 0
                     },
                 });
+
+                //needed so that FK constraints dont appear
+                context.SaveChanges();
             }
         }
 
@@ -190,29 +195,37 @@ namespace Backend_API.Data.SeedData
                     new CustomerAssets
                     {
                         CustomerID = 1,
-                        AssetID = 1
+                        AssetID = 1,
+                        AssetAddressID = 1
                     },
                     new CustomerAssets
                     {
                         CustomerID = 1,
-                        AssetID = 2
+                        AssetID = 2,
+                        AssetAddressID = 1
                     },
                     new CustomerAssets
                     {
                         CustomerID = 2,
-                        AssetID = 2
+                        AssetID = 2,
+                        AssetAddressID = 2
                     },
                     new CustomerAssets
                     {
                         CustomerID = 3,
-                        AssetID = 1
+                        AssetID = 1,
+                        AssetAddressID = 4
                     },
                     new CustomerAssets
                     {
                         CustomerID = 3,
-                        AssetID = 3
+                        AssetID = 3,
+                        AssetAddressID = 5
                     }
                 });
+
+                //needed so that FK constraints dont appear
+                context.SaveChanges();
             }
         }
 
@@ -257,6 +270,49 @@ namespace Backend_API.Data.SeedData
                         CurrencyID = 0,
                         AssetID = 2
                     },
+                });
+
+                //needed so that FK constraints dont appear
+                context.SaveChanges();
+            }
+        }
+
+        private static void CreateCustomerAssetOptions(CrmDbContext context)
+        {
+            if (!context.CustomerAssetOptions.Any())
+            {
+                context.CustomerAssetOptions.AddRange(new List<CustomerAssetOptions>
+                {
+                    new CustomerAssetOptions
+                    {
+                        CustomerAssetsID = 1,
+                        OptionID = 1,
+                    },
+                    new CustomerAssetOptions
+                    {
+                        CustomerAssetsID = 2,
+                        OptionID = 3,
+                    },
+                    new CustomerAssetOptions
+                    {
+                        CustomerAssetsID = 2,
+                        OptionID = 5,
+                    },
+                    new CustomerAssetOptions
+                    {
+                        CustomerAssetsID = 3,
+                        OptionID = 4,
+                    },
+                    new CustomerAssetOptions
+                    {
+                        CustomerAssetsID = 3,
+                        OptionID = 3,
+                    },
+                    new CustomerAssetOptions
+                    {
+                        CustomerAssetsID = 4,
+                        OptionID = 2,
+                    }
                 });
             }
         }

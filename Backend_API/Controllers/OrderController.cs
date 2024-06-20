@@ -27,15 +27,40 @@ namespace Backend_API.Controllers
 
             try
             {
-                var orderData = _orderService.MapToOrderData(orderDTO);
-                await _orderService.CreateOrder(orderData);
+                var orderAsset = _orderService.MapToCustomerAsset(orderDTO);
+                await _orderService.CreateOrderAssetAsync(orderAsset);
 
-                if (orderData.Id > 0)
+                if (orderAsset.Id > 0)
                 {
+                    var orderAssetOptions = _orderService.MapToCustomerAssetOptions(orderDTO, orderAsset);
+                    await _orderService.CreateOrderAssetOptionsAsync(orderAssetOptions); // nemam provjere da li su uneseni
+
                     return Ok(new ResponseBase());
                 }
 
                 return Problem("No order created!");
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("/Order")]
+        public async Task<IActionResult> DeleteCustomerAsset([FromBody] long customerAssetID)
+        {
+            if (customerAssetID <= 0)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var result = await _orderService.DeleteCustomerAssetAsync(customerAssetID);
+
+                return Ok(result);
             }
             catch (Exception ex)
             {

@@ -70,6 +70,21 @@ namespace Backend_API.Data.Repositories
             }
         }
 
+        private ICustomerAssetOptionsRepository _customerAssetOptions;
+
+        public ICustomerAssetOptionsRepository CustomerAssetOptions
+        {
+            get
+            {
+                if (_customerAssetOptions == null)
+                {
+                    _customerAssetOptions = new CustomerAssetOptionsRepository(_context);
+                }
+
+                return _customerAssetOptions;
+            }
+        }
+
         private IOptionRepository _options;
 
         public IOptionRepository Options

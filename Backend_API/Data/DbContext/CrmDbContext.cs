@@ -42,6 +42,14 @@ namespace Backend_API.Data.DbContext
             modelBuilder.Entity<Asset>()
                 .HasMany(x => x.Options)
                 .WithOne(x => x.Asset);
+            modelBuilder.Entity<CustomerAssetOptions>()
+                .HasKey(x => new { x.CustomerAssetsID, x.OptionID });
+            modelBuilder.Entity<CustomerAssetOptions>()
+                .HasOne(x => x.CustomerAssets)
+                .WithMany(x => x.CustomerAssetOptions);
+            modelBuilder.Entity<CustomerAssetOptions>()
+                .HasOne(x => x.Option)
+                .WithMany(x => x.CustomerAssetOptions);
             modelBuilder.Entity<CustomerAssets>();
             modelBuilder.Entity<Option>();
             modelBuilder.Entity<RefreshToken>();
@@ -51,6 +59,7 @@ namespace Backend_API.Data.DbContext
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Asset> Assets { get; set; }
         public DbSet<CustomerAssets> CustomerAssets { get; set; }
+        public DbSet<CustomerAssetOptions> CustomerAssetOptions { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Option> Options { get; set; }
