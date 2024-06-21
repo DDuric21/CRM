@@ -43,7 +43,7 @@ namespace Backend_API.Controllers
             catch (Exception ex)
             {
                 //add loging
-                return Problem(ex.Message);
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -65,9 +65,34 @@ namespace Backend_API.Controllers
             catch (Exception ex)
             {
                 //add loging
-                return Problem(ex.Message);
+                return StatusCode(500, ex.Message);
             }
         }
 
+        [HttpPut]
+        [Route("/Order")]
+        public async Task<IActionResult> UpdateCustomerAsset([FromBody] OrderDTO orderDTO)
+        {
+            if (orderDTO.IsNullOrEmpty()
+                || orderDTO.AssetDTO.IsNullOrEmpty()
+                || orderDTO.AssetDTO.CustomerAssetID <= 0)
+            {
+                return BadRequest();
+            }
+
+            var customerAsset = _orderService.MapToCustomerAssetData(orderDTO);
+
+            try
+            {
+                var result = await _orderService.UpdateCustomerAssetAsync(customerAsset);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

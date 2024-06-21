@@ -2,7 +2,7 @@
 {
     public static class Helper
     {
-        public static bool IsNullOrEmpty<T>(this T obj)
+        public static bool IsNullOrEmpty(this object obj)
         {
             if (obj == null)
             {
@@ -13,6 +13,11 @@
                      .GetProperties() //get all properties on object
                      .Select(x => x.GetValue(obj)) //get value for the property
                      .Any(y => y != null);
+        }
+
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> list)
+        {
+            return list == null || !list.Any();
         }
 
         public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source, CancellationToken cancellationToken = default)

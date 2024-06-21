@@ -6,7 +6,7 @@ namespace UI.Services
     {
         Task AddAsset(OrderDTO orderDTO);
 
-        Task UpdateAsset(OrderDTO orderDTO);
+        Task<int> UpdateAsset(OrderDTO orderDTO);
 
         Task<int> DeleteAsset(long customerAssetID);
     }

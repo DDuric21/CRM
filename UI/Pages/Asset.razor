@@ -42,14 +42,24 @@
             </tr>
         </thead>
         <tbody>        
-            <button type="submit" name="submit" class="btn btn-primary" >Add +</button>
+            <button type="submit" name="submit" class="btn btn-primary" @onclick="AddOption">Add +</button>
             @foreach (var optionDTO in AssetDTO.Options)
             {
                 <tr>
                     <td><label id="asset" >@optionDTO.Name</label></td>
                     <td><label id="asset" >@optionDTO.Price</label></td>
-                    <td><button type="button" class="btn btn-danger">Delete</button></td>
+                    <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">Delete</button></td>
                 </tr>
+            }
+            @foreach (var assetOption in selectedOptions)
+            {
+                <select class="form-select" id="selectedOption" @onchange="OptionSelected" >
+                    @foreach (var option in selectableOptions)
+                    {            
+                        <option value="@option.Id">@option.Name</option>
+                    }
+                </select>    
+                <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))" >Delete</button>
             }
         </tbody>
     </table> 
@@ -90,49 +100,70 @@
     public int ActionID { get; set; }
 
     private List<AssetDTO> selectableAssets = new List<AssetDTO>();
-    private long selectedAsset => AssetDTO.Id == 0
-        ? selectableAssets.FirstOrDefault(x => x.Id != 0)
-            .Id
-        : AssetDTO.Id;
 
     private List<OptionDTO> selectableOptions => selectableAssets
-        .FirstOrDefault(x => x.Id == selectedAsset)
+        .FirstOrDefault(x => x.Id == GetSelectedAsset())
         .Options;
-
-    private IDictionary<long, int> selectedOptions = new Dictionary<long, int>();
+    private List<OptionDTO> selectedOptions = new List<OptionDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        if (ActionID > 0)
-        {
-            selectableAssets.Add(AssetDTO);
-        }
-        else
-        {
-            var assets = await assetService.GetAssetsAsync(true);
-            this.selectableAssets = await assets.ToListAsync();
+        var assets = await assetService.GetAssetsAsync(true);
+        this.selectableAssets = await assets.ToListAsync();
 
-            //add empty item
-            this.selectableAssets.Insert(0, new AssetDTO());
-            AssetDTO.Options.Add(new OptionDTO());
-        }
+        //add empty items for better UX
+        this.selectableAssets.ForEach(x => x.Options.Insert(0, new OptionDTO()));        
+        this.selectableAssets.Insert(0, new AssetDTO());
     }
 
     private void AddOption()
     {
-        AssetDTO.Options.Add(new OptionDTO());
+        selectedOptions.Add(new OptionDTO());
+    }
+
+    private void RemoveOption(long optionID)
+    {
+        var deletedOption = AssetDTO.Options.FirstOrDefault(x => x.Id == optionID);     
+        AssetDTO.Options.Remove(deletedOption);
+
+        var tempOption = selectedOptions.FirstOrDefault(x => x.Id == optionID);
+        selectedOptions.Remove(tempOption);
+
+        StateHasChanged();
     }
 
     private void OptionSelected(ChangeEventArgs e)
     {
-        var selectedOption = e.Value;
-        if (selectedOption.IsNullOrEmpty()
-            || selectedOption.GetType() != typeof(int))
+        if (!ValidateEventArgID(e, out var id))
         {
             modalService.ShowErrorMessage("Selected option is not valid!");
             return;
-        }
+        }   
+        
+        AssetDTO.Options.RemoveAll(x => x.Id == id);
+        var selectedOption = selectableOptions.FirstOrDefault(x => x.Id == id);
+        AssetDTO.Options.Add(selectedOption);
+        selectedOptions.Clear();
 
+        StateHasChanged();
+    }
 
+    private long GetSelectedAsset()
+    {
+        var selectedAsset = AssetDTO.Id == 0
+            ? selectableAssets.FirstOrDefault(x => x.Id != 0)
+                .Id
+            : AssetDTO.Id;
+
+        return selectedAsset;
+    }
+
+    public static bool ValidateEventArgID(ChangeEventArgs e, out long id)
+    {
+        id = 0;
+        var isValid = e != null
+            && long.TryParse(e.Value.ToString(), out id);
+
+        return isValid;
     }
 }

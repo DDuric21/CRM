@@ -11,8 +11,12 @@ namespace Backend_API.Services
 
         Task<int> DeleteCustomerAssetAsync(long customerAssetsID);
 
+        Task<int> UpdateCustomerAssetAsync(CustomerAssets customerAssets);
+
         CustomerAssets MapToCustomerAsset(OrderDTO orderDTO);
 
         List<CustomerAssetOptions> MapToCustomerAssetOptions(OrderDTO orderDTO, CustomerAssets customerAssets);
+
+        CustomerAssets MapToCustomerAssetData(OrderDTO orderDTO);
     }
 }

@@ -33,11 +33,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (CustomerDTO.Assets.IsNullOrEmpty())
-        {
-            return;
-        }
-
         try
         {            
             var customerAssets = await customerService.GetCustomerAssetsAsync(CustomerDTO.Id);
