@@ -9,5 +9,7 @@ namespace UI.Services
         Task<int> UpdateAsset(OrderDTO orderDTO);
 
         Task<int> DeleteAsset(long customerAssetID);
+
+        Task CreateOrderAsync(Guid orderID, long customerID, long customerAssetID = 0);
     }
 }

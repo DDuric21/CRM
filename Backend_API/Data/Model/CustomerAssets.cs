@@ -19,5 +19,7 @@ namespace Backend_API.Data.Model
         public Asset Asset { get; set; }
 
         public ICollection<CustomerAssetOptions> CustomerAssetOptions { get; set; }
+
+        public ICollection<Order> Orders { get; set; }
     }
 }

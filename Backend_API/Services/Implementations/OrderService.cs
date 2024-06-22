@@ -3,6 +3,7 @@ using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
 using Models.DTO;
 using Models.HelperMethods;
+using Newtonsoft.Json;
 
 namespace Backend_API.Services
 {
@@ -20,7 +21,7 @@ namespace Backend_API.Services
         }
 
 
-        public async Task CreateOrderAssetAsync(CustomerAssets customerAsset)
+        public async Task SubmitOrderAsync(CustomerAssets customerAsset)
         {
             await _repository.CustomerAssets.InsertAsync(customerAsset);
         }
@@ -40,6 +41,13 @@ namespace Backend_API.Services
             return await _repository.CustomerAssets.UpdateCustomerAssetDataAsync(customerAssets);
         }
 
+        public async Task CreateOrderAsync(Order order)
+        {
+            order.CustomerAssets = null;
+
+            await _repository.Orders.InsertAsync(order);
+        }
+
         public CustomerAssets MapToCustomerAsset(OrderDTO orderDTO)
         {
             var customerAsset = new CustomerAssets();
@@ -48,6 +56,25 @@ namespace Backend_API.Services
             customerAsset.CustomerID = orderDTO.CustomerDTO.Id; 
 
             return customerAsset;
+        }
+
+        public Order MapDtoToOrder(OrderDTO orderDTO)
+        {
+            var customerAsset = MapToCustomerAssetData(orderDTO);
+
+            var orderParameters = JsonConvert.SerializeObject(customerAsset);
+
+            var order = new Order
+            {
+                OrderID = orderDTO.OrderID,
+                CustomerAssetsID = customerAsset.Id == 0
+                    ? null
+                    : customerAsset.Id,
+                CustomerAssets = customerAsset,
+                Parameters = orderParameters
+            };
+
+            return order;
         }
 
         public CustomerAssets MapToCustomerAssetData(OrderDTO orderDTO)

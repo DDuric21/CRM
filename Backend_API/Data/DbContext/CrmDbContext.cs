@@ -53,6 +53,9 @@ namespace Backend_API.Data.DbContext
             modelBuilder.Entity<CustomerAssets>();
             modelBuilder.Entity<Option>();
             modelBuilder.Entity<RefreshToken>();
+            modelBuilder.Entity<Order>()
+                .HasOne(x => x.CustomerAssets)
+                .WithMany(x => x.Orders);
             base.OnModelCreating(modelBuilder);
         }
 

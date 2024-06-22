@@ -100,6 +100,21 @@ namespace Backend_API.Data.Repositories
             }
         }
 
+        private IOrderRepository _orders;
+
+        public IOrderRepository Orders
+        {
+            get
+            {
+                if (_orders == null)
+                {
+                    _orders = new OrderRepository(_context);
+                }
+
+                return _orders;
+            }
+        }
+
         private IUserRepository _users;
 
         public IUserRepository Users

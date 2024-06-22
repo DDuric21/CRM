@@ -4,6 +4,7 @@ using Backend_API.Data.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend_API.Migrations
 {
     [DbContext(typeof(CrmDbContext))]
-    partial class CrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240622164906_Create order table")]
+    partial class Createordertable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +45,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.Asset", b =>
@@ -67,7 +69,7 @@ namespace Backend_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Assets", (string)null);
+                    b.ToTable("Assets");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.Customer", b =>
@@ -86,7 +88,7 @@ namespace Backend_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.CustomerAssetOptions", b =>
@@ -101,7 +103,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("OptionID");
 
-                    b.ToTable("CustomerAssetOptions", (string)null);
+                    b.ToTable("CustomerAssetOptions");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.CustomerAssets", b =>
@@ -127,7 +129,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.ToTable("CustomerAssets", (string)null);
+                    b.ToTable("CustomerAssets");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.Option", b =>
@@ -156,7 +158,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("AssetID");
 
-                    b.ToTable("Options", (string)null);
+                    b.ToTable("Options");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.Order", b =>
@@ -169,13 +171,14 @@ namespace Backend_API.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Parameters")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("OrderID");
 
                     b.HasIndex("CustomerAssetsID");
 
-                    b.ToTable("Order", (string)null);
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.RefreshToken", b =>
@@ -212,7 +215,7 @@ namespace Backend_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.User", b =>
@@ -237,7 +240,7 @@ namespace Backend_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

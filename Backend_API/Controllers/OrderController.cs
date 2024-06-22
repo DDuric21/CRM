@@ -15,7 +15,6 @@ namespace Backend_API.Controllers
         {
             _orderService = orderService;
         }
-
         [HttpPost]
         [Route("/Order")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDTO orderDTO)
@@ -27,8 +26,31 @@ namespace Backend_API.Controllers
 
             try
             {
+                var order = _orderService.MapDtoToOrder(orderDTO);
+                await _orderService.CreateOrderAsync(order);
+
+                return Ok(new ResponseBase());
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("/Order/{orderID}")]
+        public async Task<IActionResult> SubmitOrder([FromBody] OrderDTO orderDTO)
+        {
+            if (orderDTO.IsNullOrEmpty())
+            {
+                return BadRequest();
+            }
+
+            try
+            {
                 var orderAsset = _orderService.MapToCustomerAsset(orderDTO);
-                await _orderService.CreateOrderAssetAsync(orderAsset);
+                await _orderService.SubmitOrderAsync(orderAsset);
 
                 if (orderAsset.Id > 0)
                 {

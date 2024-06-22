@@ -16,6 +16,8 @@ namespace Backend_API.Data.Mappings
             CreateMap<AssetDTO, Asset>();
             CreateMap<Option, OptionDTO>();
             CreateMap<OptionDTO, Option>();
+            CreateMap<Order, OrderDTO>();
+            CreateMap<OrderDTO, Order>();
         }
     }
 }

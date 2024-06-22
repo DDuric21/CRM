@@ -18,12 +18,41 @@ namespace UI.Services
 
         public async Task AddAsset(OrderDTO orderDTO)
         {
-            var url = string.Format("https://localhost:7076/Order");
+            var url = string.Format("https://localhost:7076/Order/{0}", orderDTO.OrderID);
             var request = _communicationService.CreateRequest(HttpMethod.Post, url, orderDTO);
 
             try
             {
                 var response = await _communicationService.SendRequestAsync<ResponseBase>(request);                
+            }
+            catch (Exception ex)
+            {
+                // loging
+                _modalService.ShowErrorMessage(ex.Message);
+            }
+        }
+
+        public async Task CreateOrderAsync(Guid orderID, long customerID, long customerAssetID = 0)
+        {
+            var url = string.Format("https://localhost:7076/Order");
+            var orderDTO = new OrderDTO
+            {
+                OrderID = orderID,
+                CustomerDTO = new CustomerDTO
+                {
+                    Id = customerID,
+                },
+                AssetDTO = new AssetDTO
+                {
+                    CustomerAssetID = customerAssetID
+                }
+            };
+
+            var request = _communicationService.CreateRequest(HttpMethod.Post, url, orderDTO);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
             }
             catch (Exception ex)
             {

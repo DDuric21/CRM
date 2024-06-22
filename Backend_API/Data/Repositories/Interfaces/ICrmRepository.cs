@@ -8,6 +8,7 @@
         ICustomerAssetsRepository CustomerAssets { get; }
         ICustomerAssetOptionsRepository CustomerAssetOptions { get; }
         IOptionRepository Options { get; }
+        IOrderRepository Orders { get; }
         IUserRepository Users { get; }
         IRefreshTokenRepository RefreshTokens { get; }
     }

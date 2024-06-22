@@ -1,5 +1,6 @@
 ﻿
 @inject ICustomerService customerService
+@inject IOrderService orderService
 @inject ILocalStorageService localStorageService
 @inject NavigationManager navigationManager
 @inject ICrmModalService modal
@@ -53,6 +54,7 @@
     private async void AddNewAsset()
     {
         var orderID = Guid.NewGuid();
+        orderService.CreateOrderAsync(orderID, CustomerDTO.Id);
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
         navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}");
     }
@@ -60,6 +62,7 @@
     private async void EditAsset(bool isDelete, long customerAssetID)
     {
         var orderID = Guid.NewGuid();
+        orderService.CreateOrderAsync(orderID, CustomerDTO.Id, customerAssetID);
         var action = isDelete
             ? $"{(int)CrudAction.Delete}:{customerAssetID}"
             : $"{(int)CrudAction.Update}:{customerAssetID}";
