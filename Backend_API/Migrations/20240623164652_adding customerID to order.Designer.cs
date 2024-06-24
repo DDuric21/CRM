@@ -4,6 +4,7 @@ using Backend_API.Data.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend_API.Migrations
 {
     [DbContext(typeof(CrmDbContext))]
-    partial class CrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240623164652_adding customerID to order")]
+    partial class addingcustomerIDtoorder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -166,6 +168,7 @@ namespace Backend_API.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<long?>("CustomerAssetsID")
+                        .IsRequired()
                         .HasColumnType("bigint");
 
                     b.Property<long>("CustomerID")
@@ -511,10 +514,12 @@ namespace Backend_API.Migrations
                 {
                     b.HasOne("Backend_API.Data.Model.CustomerAssets", "CustomerAssets")
                         .WithMany("Orders")
-                        .HasForeignKey("CustomerAssetsID");
+                        .HasForeignKey("CustomerAssetsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend_API.Data.Model.Customer", "Customer")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -583,8 +588,6 @@ namespace Backend_API.Migrations
             modelBuilder.Entity("Backend_API.Data.Model.Customer", b =>
                 {
                     b.Navigation("Addresses");
-
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.CustomerAssets", b =>

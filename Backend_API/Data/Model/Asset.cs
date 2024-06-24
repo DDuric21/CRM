@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend_API.Data.Model
 {
@@ -16,6 +15,6 @@ namespace Backend_API.Data.Model
 
         public long CurrencyID { get; set; }
 
-        public ICollection<Option>? Options { get; set; }
+        public virtual ICollection<Option>? Options { get; set; }
     }
 }

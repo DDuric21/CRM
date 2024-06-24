@@ -14,6 +14,6 @@ namespace Backend_API.Data.Model
 
         [ForeignKey("CustomerId")]
         public long CustomerId { get; set; }
-        public Customer Customer { get; set; }
+        public virtual Customer Customer { get; set; }
     }
 }

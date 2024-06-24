@@ -10,11 +10,12 @@ namespace Backend_API.Data.Model
 
         public string? Name { get; set; }
 
-        public ICollection<Address> Addresses { get; set; }
+        public virtual ICollection<Address> Addresses { get; set; }
 
         public DateTime Birthday { get; set; }
-
         [NotMapped]
-        public ICollection<Asset> Assets { get; set; }
+        public virtual ICollection<Asset> Assets { get; set; }
+
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

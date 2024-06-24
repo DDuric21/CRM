@@ -5,7 +5,7 @@ namespace Backend_API.Services
 {
     public interface IOrderService
     {
-        Task SubmitOrderAsync(CustomerAssets customerAsset);
+        Task SubmitOrderAsync(Order order);
 
         Task CreateOrderAssetOptionsAsync(List<CustomerAssetOptions> customerAssetOptions);
 

@@ -56,6 +56,9 @@ namespace Backend_API.Data.DbContext
             modelBuilder.Entity<Order>()
                 .HasOne(x => x.CustomerAssets)
                 .WithMany(x => x.Orders);
+            modelBuilder.Entity<Order>()
+                .Property(x => x.CustomerAssetsID)
+                .IsRequired(false);
             base.OnModelCreating(modelBuilder);
         }
 

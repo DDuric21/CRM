@@ -18,9 +18,9 @@ namespace Backend_API.Data.Model
 
         [ForeignKey("AssetID")]
         public long AssetID { get; set; }
-        public Asset Asset { get; set; }
+        public virtual Asset Asset { get; set; }
 
         [NotMapped]
-        public ICollection<CustomerAssetOptions> CustomerAssetOptions { get; set; }
+        public virtual ICollection<CustomerAssetOptions> CustomerAssetOptions { get; set; }
     }
 }

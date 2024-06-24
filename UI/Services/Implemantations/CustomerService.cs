@@ -141,5 +141,25 @@ namespace UI.Services
                 return null;
             }
         }
+
+        public async Task<IAsyncEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID)
+        {
+            var url = string.Format("https://localhost:7076/Customers/Orders/{0}", customerID);
+            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<IAsyncEnumerable<OrderDTO>>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                //add logging
+                _modalService.ShowErrorMessage(ex.Message);
+
+                return null;
+            }
+        }
     }
 }

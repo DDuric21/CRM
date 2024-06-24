@@ -1,0 +1,42 @@
+﻿
+@inject ICustomerService customerService
+
+<table>
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Asset Name</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var orderDTO in orders)
+        {
+            <tr>
+                <td><label id="@orderDTO.OrderID" >@orderDTO.OrderID</label></td>
+                <td><label id="@orderDTO.OrderID" >@orderDTO.AssetDTO.Name</label></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+@code {
+    [CascadingParameter]
+    public CustomerDTO CustomerDTO { get; set; }
+
+    private List<OrderDTO> orders = new List<OrderDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {        
+        var customerOrders = await customerService.GetCustomerOrdersAsync(CustomerDTO.Id);
+
+        await foreach(var order in customerOrders)
+        {
+            orders.Add(order);
+        }
+    }
+
+}

@@ -6,10 +6,10 @@ namespace Backend_API.Data.Model
     {
         [ForeignKey("CustomerAssetsID")]
         public long CustomerAssetsID { get; set; }
-        public CustomerAssets CustomerAssets { get; set; }
+        public virtual CustomerAssets CustomerAssets { get; set; }
 
         [ForeignKey("OptionID")]
         public long OptionID { get; set; }
-        public Option Option { get; set; }
+        public virtual Option Option { get; set; }
     }
 }

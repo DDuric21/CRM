@@ -10,16 +10,16 @@ namespace Backend_API.Data.Model
 
         [ForeignKey("CustomerId")]
         public long CustomerID { get; set; }
-        public Customer Customer { get; set; }
+        public virtual Customer Customer { get; set; }
 
         public long AssetAddressID{ get; set; }
 
         [ForeignKey("AssetID")]
         public long AssetID { get; set; }
-        public Asset Asset { get; set; }
+        public virtual Asset Asset { get; set; }
 
-        public ICollection<CustomerAssetOptions> CustomerAssetOptions { get; set; }
+        public virtual ICollection<CustomerAssetOptions> CustomerAssetOptions { get; set; }
 
-        public ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

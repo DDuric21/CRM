@@ -21,14 +21,14 @@ namespace Backend_API.Services
         }
 
 
-        public async Task SubmitOrderAsync(CustomerAssets customerAsset)
+        public async Task SubmitOrderAsync(Order order)
         {
-            await _repository.CustomerAssets.InsertAsync(customerAsset);
+            await _repository.Orders.UpdateAsync(order);
         }
 
         public async Task CreateOrderAssetOptionsAsync(List<CustomerAssetOptions> customerAssetOptions)
         {
-            await _repository.CustomerAssetOptions.InsertRange(customerAssetOptions);
+            await _repository.CustomerAssetOptions.InsertRangeAsync(customerAssetOptions);
         }
 
         public async Task<int> DeleteCustomerAssetAsync(long customerAssetsID)
@@ -44,7 +44,6 @@ namespace Backend_API.Services
         public async Task CreateOrderAsync(Order order)
         {
             order.CustomerAssets = null;
-
             await _repository.Orders.InsertAsync(order);
         }
 
@@ -53,28 +52,45 @@ namespace Backend_API.Services
             var customerAsset = new CustomerAssets();
 
             customerAsset.AssetID = orderDTO.AssetDTO.Id;
-            customerAsset.CustomerID = orderDTO.CustomerDTO.Id; 
+            customerAsset.CustomerID = orderDTO.CustomerDTO.Id;
 
             return customerAsset;
         }
 
         public Order MapDtoToOrder(OrderDTO orderDTO)
         {
-            var customerAsset = MapToCustomerAssetData(orderDTO);
+            var customerAssetData = MapToCustomerAssetData(orderDTO);
+            // neede so EF wont start creating child object in DB
+            var customerAssetBasicData = MapToCustomerAssetBasicData(orderDTO);
 
-            var orderParameters = JsonConvert.SerializeObject(customerAsset);
+            var orderParameters = JsonConvert.SerializeObject(customerAssetData);
 
             var order = new Order
             {
                 OrderID = orderDTO.OrderID,
-                CustomerAssetsID = customerAsset.Id == 0
+                CustomerID = orderDTO.CustomerDTO.Id,
+                CustomerAssetsID = customerAssetData.Id == 0
                     ? null
-                    : customerAsset.Id,
-                CustomerAssets = customerAsset,
+                    : customerAssetData.Id,
+                CustomerAssets = customerAssetBasicData,
                 Parameters = orderParameters
             };
 
             return order;
+        }
+
+        public OrderDTO MapToDTO(Order order)
+        {
+            var customerAssets = JsonConvert.DeserializeObject<CustomerAssets>(order.Parameters);
+
+            var orderDTO = new OrderDTO
+            {
+                OrderID = order.OrderID,
+                CustomerDTO = new CustomerDTO(),
+                AssetDTO = new AssetDTO()
+            };
+
+            return orderDTO;
         }
 
         public CustomerAssets MapToCustomerAssetData(OrderDTO orderDTO)
@@ -82,7 +98,17 @@ namespace Backend_API.Services
             var customerAsset = new CustomerAssets();
 
             customerAsset.AssetID = orderDTO.AssetDTO.Id;
+            if (!orderDTO.AssetDTO.IsNullOrEmpty())
+            {
+                var assetDTO = orderDTO.AssetDTO.Clone();
+                customerAsset.Asset = _mapper.Map<Asset>(assetDTO);
+            }
             customerAsset.CustomerID = orderDTO.CustomerDTO.Id;
+            if (!orderDTO.CustomerDTO.IsNullOrEmpty())
+            {
+                var customerDTO = orderDTO.CustomerDTO.Clone();
+                customerAsset.Customer = _mapper.Map<Customer>(customerDTO);
+            }
             customerAsset.Id = orderDTO.AssetDTO.CustomerAssetID;
 
             if (!orderDTO.AssetDTO.Options.IsNullOrEmpty())
@@ -94,7 +120,8 @@ namespace Backend_API.Services
                     var assetOption = new CustomerAssetOptions
                     {
                         CustomerAssetsID = orderDTO.AssetDTO.CustomerAssetID,
-                        OptionID = optionDTO.Id
+                        OptionID = optionDTO.Id,
+                        Option = _mapper.Map<Option>(optionDTO).Clone()
                     };
 
                     customerAsset.CustomerAssetOptions.Add(assetOption);
@@ -119,6 +146,33 @@ namespace Backend_API.Services
             }
 
             return customerAssetOptions;
+        }
+
+        private CustomerAssets MapToCustomerAssetBasicData(OrderDTO orderDTO) 
+        {
+            var customerAsset = new CustomerAssets();
+
+            customerAsset.AssetID = orderDTO.AssetDTO.Id;
+            customerAsset.CustomerID = orderDTO.CustomerDTO.Id;
+            customerAsset.Id = orderDTO.AssetDTO.CustomerAssetID;
+
+            if (!orderDTO.AssetDTO.Options.IsNullOrEmpty())
+            {
+                customerAsset.CustomerAssetOptions = new List<CustomerAssetOptions>();
+
+                foreach (var optionDTO in orderDTO.AssetDTO.Options)
+                {
+                    var assetOption = new CustomerAssetOptions
+                    {
+                        CustomerAssetsID = orderDTO.AssetDTO.CustomerAssetID,
+                        OptionID = optionDTO.Id,
+                    };
+
+                    customerAsset.CustomerAssetOptions.Add(assetOption);
+                }
+            }
+
+            return customerAsset;
         }
     }
 }

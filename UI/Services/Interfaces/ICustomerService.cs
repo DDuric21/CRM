@@ -15,6 +15,9 @@ namespace UI.Services
         Task UpdateCustomer(CustomerDTO customerDTO);
 
         Task<IAsyncEnumerable<AssetDTO>> GetCustomerAssetsAsync(long id);
+
         Task<AssetDTO> GetCustomerAssetDataAsync(long customerAssetid);
+
+        Task<IAsyncEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID);
     }
 }

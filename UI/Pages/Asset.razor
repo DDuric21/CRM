@@ -5,23 +5,42 @@
 @if (ActionID <= 0)
 {
     <div class="mb-3">
-        <select id="selectedAsset" class="form-select" @bind="AssetDTO.Id">
+        <select id="selectedAsset" class="form-select" @onchange="AssetSelected">
             @foreach (var asset in selectableAssets)
             {
                 <option value="@asset.Id">@asset.Name</option>
             }
-        </select>    
+        </select> 
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>        
+                @foreach (var optionDTO in AssetDTO.Options)
+                {
+                    <tr>
+                        <td><label id="asset" >@optionDTO.Name</label></td>
+                        <td><label id="asset" >@optionDTO.Price</label></td>
+                        <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">Delete</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table> 
         <button type="submit" name="submit" class="btn btn-primary" @onclick="AddOption" >Add Option +</button>
         @if (AssetDTO.Id != 0)
         {
-            @foreach (var assetOption in AssetDTO.Options)
+            @foreach (var assetOption in selectedOptions)
             {
-                <select class="form-select" id="selectedOption" @bind="assetOption.Id">
+                <select class="form-select" id="selectedOption" @onchange="OptionSelected" >
                     @foreach (var option in selectableOptions)
                     {            
                         <option value="@option.Id">@option.Name</option>
                     }
                 </select>
+                <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))" >Delete</button>
             }        
         }
     </div>
@@ -139,10 +158,24 @@
             modalService.ShowErrorMessage("Selected option is not valid!");
             return;
         }   
-        
+
         AssetDTO.Options.RemoveAll(x => x.Id == id);
         var selectedOption = selectableOptions.FirstOrDefault(x => x.Id == id);
         AssetDTO.Options.Add(selectedOption);
+        selectedOptions.Clear();
+
+        StateHasChanged();
+    }    
+
+    private void AssetSelected(ChangeEventArgs e)
+    {
+        if (!ValidateEventArgID(e, out var id))
+        {
+            modalService.ShowErrorMessage("Selected asset is not valid!");
+            return;
+        }
+
+        AssetDTO = selectableAssets.FirstOrDefault(x => x.Id == id).Clone();
         selectedOptions.Clear();
 
         StateHasChanged();

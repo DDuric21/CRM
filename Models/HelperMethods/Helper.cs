@@ -1,4 +1,6 @@
-﻿namespace Models.HelperMethods
+﻿using System.Reflection;
+
+namespace Models.HelperMethods
 {
     public static class Helper
     {
@@ -45,6 +47,38 @@
             }
 
             return expiryDate;
+        }
+
+        public static T Clone<T>(this T source) where T : new()
+        {
+            if (source is null)
+            {
+                return default;
+            }
+
+            T clone = new T();
+            var sourceType = source.GetType();
+            var sourceProperties = sourceType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var property in sourceProperties)
+            {
+                if (property.CanRead 
+                    && property.CanWrite
+                    && (property.PropertyType.IsValueType || property.PropertyType == typeof(string)))
+                {
+                    property.SetValue(clone, property.GetValue(source));
+                }
+            }
+
+            var sourceFields = sourceType.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var field in sourceFields)
+            {
+                if (field.FieldType.IsValueType || field.FieldType == typeof(string))
+                {
+                    field.SetValue(clone, field.GetValue(source));
+                }
+            }
+
+            return clone;
         }
     }
 }

@@ -29,5 +29,7 @@ namespace Backend_API.Services
         Dictionary<long, Asset> GetCustomerAssets(long id);
 
         Asset GetCustomerAssetData(long customerAssetsID);
+
+        List<Order> GetCustomerOrders(long customerID);
     }
 }

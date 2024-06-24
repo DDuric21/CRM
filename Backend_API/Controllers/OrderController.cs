@@ -49,14 +49,11 @@ namespace Backend_API.Controllers
 
             try
             {
-                var orderAsset = _orderService.MapToCustomerAsset(orderDTO);
-                await _orderService.SubmitOrderAsync(orderAsset);
+                var order = _orderService.MapDtoToOrder(orderDTO);
+                await _orderService.SubmitOrderAsync(order);
 
-                if (orderAsset.Id > 0)
+                if (order.CustomerAssetsID > 0)
                 {
-                    var orderAssetOptions = _orderService.MapToCustomerAssetOptions(orderDTO, orderAsset);
-                    await _orderService.CreateOrderAssetOptionsAsync(orderAssetOptions); // nemam provjere da li su uneseni
-
                     return Ok(new ResponseBase());
                 }
 

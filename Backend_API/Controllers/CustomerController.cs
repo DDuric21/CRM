@@ -187,5 +187,38 @@ namespace Backend_API.Controllers
 
             return Ok(new ResponseBase());
         }
+
+        [HttpGet]
+        [Route("/Customers/Orders/{customerID}")]
+        public async Task<IActionResult> GetCustomerOrders(long customerID)
+        {
+            var orderDTOs = new List<OrderDTO>();
+
+            try
+            {
+                var orders = _customerService.GetCustomerOrders(customerID);
+
+                if (orders.IsNullOrEmpty())
+                {
+                    return Ok(new List<OrderDTO>());
+                }
+
+                foreach (var order in orders)
+                {
+                    var orderDTO = new OrderDTO
+                    {
+                        OrderID = order.OrderID,
+                    };
+
+                    orderDTOs.Add(orderDTO);
+                }
+
+                return Ok(orderDTOs);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

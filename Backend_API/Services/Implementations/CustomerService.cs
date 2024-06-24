@@ -97,5 +97,14 @@ namespace Backend_API.Services
 
             return asset;
         }
+
+        public List<Order> GetCustomerOrders(long customerID)
+        {
+            var retrievedData = _repository.Orders
+                .Where(x => x.CustomerID == customerID)
+                .ToList();
+
+            return retrievedData;
+        }
     }
 }
