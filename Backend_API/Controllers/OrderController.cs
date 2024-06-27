@@ -99,7 +99,7 @@ namespace Backend_API.Controllers
                 return BadRequest();
             }
 
-            var customerAsset = _orderService.MapToCustomerAssetData(orderDTO);
+            var customerAsset = _orderService.MapToCustomerAssetBasicData(orderDTO);
 
             try
             {

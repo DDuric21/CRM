@@ -22,5 +22,9 @@ namespace Backend_API.Services
         Order MapDtoToOrder(OrderDTO orderDTO);
 
         Task CreateOrderAsync(Order order);
+
+        OrderDTO MapToDTO(Order order);
+
+        CustomerAssets MapToCustomerAssetBasicData(OrderDTO orderDTO);
     }
 }

@@ -14,17 +14,20 @@ namespace Backend_API.Controllers
         private readonly ICustomerService _customerService;
         private readonly IDataValidationService _dataValidationService;
         private readonly IAssetService _assetService;
+        private readonly IOrderService _orderService;
 
         public CustomerController(
             ICrmRepository crmRepository,
             ICustomerService customerService,
             IDataValidationService dataValidationService,
-            IAssetService assetService)
+            IAssetService assetService,
+            IOrderService orderService)
         {
             _repository = crmRepository;
             _dataValidationService = dataValidationService;
             _customerService = customerService;
             _assetService = assetService;
+            _orderService = orderService;
         }
 
         [HttpGet]
@@ -205,10 +208,7 @@ namespace Backend_API.Controllers
 
                 foreach (var order in orders)
                 {
-                    var orderDTO = new OrderDTO
-                    {
-                        OrderID = order.OrderID,
-                    };
+                    var orderDTO = _orderService.MapToDTO(order);
 
                     orderDTOs.Add(orderDTO);
                 }

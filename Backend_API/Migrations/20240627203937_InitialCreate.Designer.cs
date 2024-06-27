@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend_API.Migrations
 {
     [DbContext(typeof(CrmDbContext))]
-    [Migration("20240107005241_Adding identity tables")]
-    partial class Addingidentitytables
+    [Migration("20240627203937_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,10 +32,18 @@ namespace Backend_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("FullAddress")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsLegal")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Addresses");
                 });
@@ -72,9 +80,6 @@ namespace Backend_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<long>("AddressId")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("Birthday")
                         .HasColumnType("datetime2");
 
@@ -86,6 +91,21 @@ namespace Backend_API.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("Backend_API.Data.Model.CustomerAssetOptions", b =>
+                {
+                    b.Property<long>("CustomerAssetsID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("OptionID")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("CustomerAssetsID", "OptionID");
+
+                    b.HasIndex("OptionID");
+
+                    b.ToTable("CustomerAssetOptions");
+                });
+
             modelBuilder.Entity("Backend_API.Data.Model.CustomerAssets", b =>
                 {
                     b.Property<long>("Id")
@@ -94,6 +114,9 @@ namespace Backend_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
+                    b.Property<long>("AssetAddressID")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("AssetID")
                         .HasColumnType("bigint");
 
@@ -101,6 +124,10 @@ namespace Backend_API.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AssetID");
+
+                    b.HasIndex("CustomerID");
 
                     b.ToTable("CustomerAssets");
                 });
@@ -129,7 +156,70 @@ namespace Backend_API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AssetID");
+
                     b.ToTable("Options");
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.Order", b =>
+                {
+                    b.Property<Guid>("OrderID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long?>("CustomerAssetsID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("CustomerID")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Parameters")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("OrderID");
+
+                    b.HasIndex("CustomerAssetsID");
+
+                    b.HasIndex("CustomerID");
+
+                    b.ToTable("Order");
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.RefreshToken", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TokenId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.User", b =>
@@ -302,10 +392,12 @@ namespace Backend_API.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -342,10 +434,12 @@ namespace Backend_API.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -353,6 +447,83 @@ namespace Backend_API.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.Address", b =>
+                {
+                    b.HasOne("Backend_API.Data.Model.Customer", "Customer")
+                        .WithMany("Addresses")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.CustomerAssetOptions", b =>
+                {
+                    b.HasOne("Backend_API.Data.Model.CustomerAssets", "CustomerAssets")
+                        .WithMany("CustomerAssetOptions")
+                        .HasForeignKey("CustomerAssetsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend_API.Data.Model.Option", "Option")
+                        .WithMany("CustomerAssetOptions")
+                        .HasForeignKey("OptionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomerAssets");
+
+                    b.Navigation("Option");
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.CustomerAssets", b =>
+                {
+                    b.HasOne("Backend_API.Data.Model.Asset", "Asset")
+                        .WithMany()
+                        .HasForeignKey("AssetID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend_API.Data.Model.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Asset");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.Option", b =>
+                {
+                    b.HasOne("Backend_API.Data.Model.Asset", "Asset")
+                        .WithMany("Options")
+                        .HasForeignKey("AssetID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Asset");
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.Order", b =>
+                {
+                    b.HasOne("Backend_API.Data.Model.CustomerAssets", "CustomerAssets")
+                        .WithMany("Orders")
+                        .HasForeignKey("CustomerAssetsID");
+
+                    b.HasOne("Backend_API.Data.Model.Customer", "Customer")
+                        .WithMany("Orders")
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("CustomerAssets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -404,6 +575,30 @@ namespace Backend_API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.Asset", b =>
+                {
+                    b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.Customer", b =>
+                {
+                    b.Navigation("Addresses");
+
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.CustomerAssets", b =>
+                {
+                    b.Navigation("CustomerAssetOptions");
+
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Model.Option", b =>
+                {
+                    b.Navigation("CustomerAssetOptions");
                 });
 #pragma warning restore 612, 618
         }

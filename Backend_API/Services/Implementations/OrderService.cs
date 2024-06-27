@@ -86,8 +86,7 @@ namespace Backend_API.Services
             var orderDTO = new OrderDTO
             {
                 OrderID = order.OrderID,
-                CustomerDTO = new CustomerDTO(),
-                AssetDTO = new AssetDTO()
+                AssetDTO = _mapper.Map<AssetDTO>(customerAssets.Asset)
             };
 
             return orderDTO;
@@ -148,7 +147,7 @@ namespace Backend_API.Services
             return customerAssetOptions;
         }
 
-        private CustomerAssets MapToCustomerAssetBasicData(OrderDTO orderDTO) 
+        public CustomerAssets MapToCustomerAssetBasicData(OrderDTO orderDTO) 
         {
             var customerAsset = new CustomerAssets();
 
