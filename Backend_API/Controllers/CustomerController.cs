@@ -1,4 +1,4 @@
-﻿using Backend_API.Data.Model;
+﻿using AutoMapper;
 using Backend_API.Data.Repositories;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,19 +15,23 @@ namespace Backend_API.Controllers
         private readonly IDataValidationService _dataValidationService;
         private readonly IAssetService _assetService;
         private readonly IOrderService _orderService;
+        private readonly IMapper _mapper;
 
         public CustomerController(
             ICrmRepository crmRepository,
             ICustomerService customerService,
             IDataValidationService dataValidationService,
             IAssetService assetService,
-            IOrderService orderService)
+            IOrderService orderService,
+            IMapper mapper)
         {
             _repository = crmRepository;
             _dataValidationService = dataValidationService;
             _customerService = customerService;
             _assetService = assetService;
             _orderService = orderService;
+            _mapper = mapper;
+
         }
 
         [HttpGet]
@@ -214,6 +218,36 @@ namespace Backend_API.Controllers
                 }
 
                 return Ok(orderDTOs);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("/Customers/Interactions/{customerID}")]
+        public async Task<IActionResult> GetCustomerInteractions(long customerID)
+        {
+            var interactionDTOs = new List<InteractionDTO>();
+
+            try
+            {
+                var interactions = _customerService.GetCustomerInteractions(customerID);
+
+                if (interactions.IsNullOrEmpty())
+                {
+                    return Ok(new List<InteractionDTO>());
+                }
+
+                foreach (var interaction in interactions)
+                {
+                    var interactionDTO = _mapper.Map<InteractionDTO>(interaction);
+
+                    interactionDTOs.Add(interactionDTO);
+                }
+
+                return Ok(interactionDTOs);
             }
             catch (Exception ex)
             {

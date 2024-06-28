@@ -31,5 +31,7 @@ namespace Backend_API.Services
         Asset GetCustomerAssetData(long customerAssetsID);
 
         List<Order> GetCustomerOrders(long customerID);
+
+        List<Interaction> GetCustomerInteractions(long customerID);
     }
 }

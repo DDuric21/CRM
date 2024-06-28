@@ -59,6 +59,7 @@ namespace Backend_API.Data.DbContext
             modelBuilder.Entity<Order>()
                 .Property(x => x.CustomerAssetsID)
                 .IsRequired(false);
+            modelBuilder.Entity<Interaction>();
             base.OnModelCreating(modelBuilder);
         }
 
@@ -70,5 +71,6 @@ namespace Backend_API.Data.DbContext
         public DbSet<User> Users { get; set; }
         public DbSet<Option> Options { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Interaction> Interactions { get; set; }
     }
 }

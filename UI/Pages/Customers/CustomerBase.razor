@@ -16,6 +16,9 @@ else
     <CustomerNav DisplayComponent="ShowComponent"></CustomerNav>
     @switch (componentName)
     {
+        case nameof(CustomerInteractions) :
+            <CustomerInteractions></CustomerInteractions>
+            break;
         case nameof(CustomerAssets) :
             <CustomerAssets></CustomerAssets>
             break;
@@ -34,13 +37,15 @@ else
 
     [Parameter]
     public long CustomerId { get; set; }
-    
-    private string componentName = string.Empty;
+
+    private string componentName = nameof(CustomerInteractions);
 
     protected override async Task OnInitializedAsync()
     {
         try
-        {            
+        {
+            customerDTO.Id = CustomerId;
+
             customerDTO = await customerService.GetCustomerDataAsync(CustomerId);
         }
         catch (Exception ex)

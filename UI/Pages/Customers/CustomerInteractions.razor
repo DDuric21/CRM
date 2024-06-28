@@ -1,0 +1,55 @@
+﻿
+
+@inject ICustomerService customerService
+@inject NavigationManager navigationManager
+@inject ICrmModalService modal
+
+<table>
+    <thead>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewInteraction()" >New +</button>
+    </thead>
+    <tbody>
+        @foreach (var interactionDTO in customerInteractions)
+        {
+            <tr>
+                <Interaction InteractionDTO="interactionDTO"></Interaction>
+                <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditInteraction(interactionDTO.Id)" >Edit</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [CascadingParameter]
+    public CustomerDTO CustomerDTO { get; set; }
+
+    private List<InteractionDTO> customerInteractions = new List<InteractionDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {            
+            var customerInteractions = await customerService.GetCustomerInteractionsAsync(CustomerDTO.Id);
+
+            await foreach(var interaction in customerInteractions)
+            {
+                this.customerInteractions.Add(interaction);
+            }
+        }
+        catch (Exception ex)
+        {
+            modal.ShowErrorMessage(ex.Message);
+        }
+    }
+
+    private Task AddNewInteraction()
+    {
+        throw new Exception("Not yet implemented!");
+    }
+
+    private Task EditInteraction(long interactionID)
+    {
+        throw new Exception("Not yet implemented!");        
+    }
+
+}

@@ -19,5 +19,7 @@ namespace UI.Services
         Task<AssetDTO> GetCustomerAssetDataAsync(long customerAssetid);
 
         Task<IAsyncEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID);
+
+        Task<IAsyncEnumerable<InteractionDTO>> GetCustomerInteractionsAsync(long customerID);
     }
 }

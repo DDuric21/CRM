@@ -1,4 +1,6 @@
-﻿namespace Backend_API.Data.Repositories
+﻿using Backend_API.Data.Model;
+
+namespace Backend_API.Data.Repositories
 {
     public interface ICrmRepository
     {
@@ -11,5 +13,6 @@
         IOrderRepository Orders { get; }
         IUserRepository Users { get; }
         IRefreshTokenRepository RefreshTokens { get; }
+        IGenericRepository<Interaction> Interactions { get; }
     }
 }

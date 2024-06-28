@@ -1,4 +1,5 @@
 ﻿using Backend_API.Data.DbContext;
+using Backend_API.Data.Model;
 
 namespace Backend_API.Data.Repositories
 {
@@ -144,5 +145,18 @@ namespace Backend_API.Data.Repositories
             }
         }
 
+        public IGenericRepository<Interaction> _interactions;
+        public IGenericRepository<Interaction> Interactions
+        {
+            get
+            {
+                if (_interactions == null)
+                {
+                    _interactions = new GenericRepository<Interaction>(_context);
+                }
+
+                return _interactions;
+            }
+        }
     }
 }

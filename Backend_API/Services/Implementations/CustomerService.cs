@@ -106,5 +106,14 @@ namespace Backend_API.Services
 
             return retrievedData;
         }
+
+        public List<Interaction> GetCustomerInteractions(long customerID)
+        {
+            var interactions = _repository.Interactions
+                .Where(x => x.CustomerID == customerID)
+                .ToList();
+
+            return interactions;
+        }
     }
 }

@@ -47,6 +47,8 @@ namespace Backend_API.Data.SeedData
             CreateCustomerAssets(context);
 
             CreateCustomerAssetOptions(context);
+
+            CreateCustomerInteractions(context);
         }
 
         private static void CreateCustomers(CrmDbContext context)
@@ -314,6 +316,39 @@ namespace Backend_API.Data.SeedData
                         OptionID = 2,
                     }
                 });
+            }
+        }
+
+        private static void CreateCustomerInteractions(CrmDbContext context)
+        {
+            if (!context.Interactions.Any())
+            {
+                context.Interactions.AddRange(new List<Interaction>
+                {
+                    new Interaction
+                    {
+                        CustomerID = 1,
+                        DateTime = new DateTime(1995,05,16,0,0,0),
+                        TypeID = 3,
+                        Description = "My first Complaint!"
+                    },
+                    new Interaction
+                    {
+                        CustomerID = 2,
+                        DateTime = new DateTime(1994,05,16,0,0,0),
+                        TypeID = 1,
+                        Description = "I have a question?"
+                    },
+                    new Interaction
+                    {
+                        CustomerID = 2,
+                        DateTime = new DateTime(1996,05,16,0,0,0),
+                        TypeID = 2,
+                        Description = "I just bought a boat navigation system!"
+                    }
+                });
+
+                context.SaveChanges();
             }
         }
     }
