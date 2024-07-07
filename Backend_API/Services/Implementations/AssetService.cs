@@ -2,7 +2,7 @@
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
 using Models.DTO;
-using Models.HelperMethods;
+using Models.Helpers;
 
 namespace Backend_API.Services
 {

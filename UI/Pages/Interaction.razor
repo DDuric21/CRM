@@ -1,5 +1,5 @@
 ﻿
-<fieldset diabled="@IsEditable" >
+<fieldset disabled="@(!IsEditable)">
     <table>
         <thead>
             <tr>
@@ -13,7 +13,8 @@
                 <td><input type="date" @bind-value="InteractionDTO.DateTime" /></td>
                 <td>
                     <select class="form-select w-30" @bind="InteractionDTO.Type">
-                        @foreach (var type in Enum.GetValues(typeof(InteractionType))){
+                        @foreach (var type in Enum.GetValues(typeof(InteractionType)))
+                        {
                             <option value="@type">@type</option>
                         }
                     </select> 
@@ -28,6 +29,10 @@
     [Parameter]
     public InteractionDTO InteractionDTO { get; set; }
 
-    private bool IsEditable => InteractionDTO.IsNullOrEmpty();
+    [Parameter]
+    public EventCallback<InteractionDTO> SaveInteraction { get; set; }
+
+    [Parameter]
+    public bool IsEditable { get; set; }
 
 }

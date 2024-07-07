@@ -1,6 +1,6 @@
 ﻿using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using Models.HelperMethods;
+using Models.Helpers;
 using System.Security.Claims;
 
 namespace UI.Authentication

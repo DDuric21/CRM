@@ -1,7 +1,7 @@
 ﻿using Backend_API.Data.DbContext;
 using Backend_API.Data.Model;
 using Microsoft.EntityFrameworkCore;
-using Models.HelperMethods;
+using Models.Helpers;
 
 namespace Backend_API.Data.Repositories
 {

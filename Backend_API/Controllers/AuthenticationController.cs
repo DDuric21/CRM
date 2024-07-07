@@ -1,6 +1,6 @@
 ﻿using Models.Authentication;
 using Models.DTO;
-using Models.HelperMethods;
+using Models.Helpers;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

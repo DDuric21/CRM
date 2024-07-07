@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-namespace Models.HelperMethods
+namespace Models.Helpers
 {
-    public static class Helper
+    public static class HelperMethods
     {
         public static bool IsNullOrEmpty(this object obj)
         {

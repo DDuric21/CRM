@@ -3,7 +3,7 @@ using Backend_API.Data.Repositories;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
-using Models.HelperMethods;
+using Models.Helpers;
 using Models.Responses;
 
 namespace Backend_API.Controllers

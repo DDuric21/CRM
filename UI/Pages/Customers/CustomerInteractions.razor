@@ -1,6 +1,6 @@
 ﻿
-
 @inject ICustomerService customerService
+@inject IInteractionService interactionService
 @inject NavigationManager navigationManager
 @inject ICrmModalService modal
 
@@ -9,11 +9,14 @@
         <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewInteraction()" >New +</button>
     </thead>
     <tbody>
-        @foreach (var interactionDTO in customerInteractions)
+        @foreach (var customerInteraction in customerInteractionss)
         {
             <tr>
-                <Interaction InteractionDTO="interactionDTO"></Interaction>
-                <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditInteraction(interactionDTO.Id)" >Edit</button></td>
+                <Interaction InteractionDTO="customerInteraction.Value" IsEditable="customerInteraction.Key.IsEditable" SaveInteraction="SaveInteraction"></Interaction>
+                <td>
+                    <button hidden="@customerInteraction.Key.IsEditable" type="button" class="btn btn-outline-secondary" @onclick="() => EditInteraction(customerInteraction.Key.Id)" >Edit</button>
+                    <button hidden="@(!customerInteraction.Key.IsEditable)" type="button" class="btn btn-outline-primary" @onclick="() => SaveInteraction(customerInteraction.Value)" >Save</button>
+                </td>
             </tr>
         }
     </tbody>
@@ -23,7 +26,7 @@
     [CascadingParameter]
     public CustomerDTO CustomerDTO { get; set; }
 
-    private List<InteractionDTO> customerInteractions = new List<InteractionDTO>();
+    private SortedDictionary<EditableID, InteractionDTO> customerInteractionss = new SortedDictionary<EditableID, InteractionDTO>(new InteractionKeySorter());
 
     protected override async Task OnInitializedAsync()
     {
@@ -33,7 +36,12 @@
 
             await foreach(var interaction in customerInteractions)
             {
-                this.customerInteractions.Add(interaction);
+                var editableID = new EditableID
+                {
+                    Id = interaction.Id,
+                    DateCreated = interaction.DateTime
+                };
+                customerInteractionss.Add(editableID, interaction);
             }
         }
         catch (Exception ex)
@@ -42,14 +50,58 @@
         }
     }
 
-    private Task AddNewInteraction()
+    private void AddNewInteraction()
     {
-        throw new Exception("Not yet implemented!");
+        if (customerInteractionss.Values.All(x => x.Id > 0))
+        {
+            var editableID = new EditableID
+            {
+                DateCreated = DateTime.Now,
+                IsEditable = true
+            };
+            customerInteractionss.Add(editableID, new InteractionDTO { CustomerID = CustomerDTO.Id, DateTime = DateTime.Now });          
+        }
     }
 
-    private Task EditInteraction(long interactionID)
+    private async Task SaveInteraction(InteractionDTO interactionDTO)
     {
-        throw new Exception("Not yet implemented!");        
+        if (interactionDTO.Type == 0
+            || interactionDTO.DateTime == DateTime.MinValue)
+        {
+            modal.ShowErrorMessage("Not all mandatory fields populated!");
+
+            return;
+        }
+
+        if (interactionDTO.Id == 0
+            && interactionDTO.Type != 0)
+        {
+            interactionDTO.Id = await interactionService.SaveNewInteractionAsync(interactionDTO);
+
+            var savedInteractionKey = customerInteractionss.Keys.First(x => x.Id == 0);
+            customerInteractionss[savedInteractionKey] = interactionDTO;
+            savedInteractionKey.IsEditable = false;
+            savedInteractionKey.DateCreated = interactionDTO.DateTime;
+            savedInteractionKey.Id = interactionDTO.Id;
+
+            return;
+        }
+
+        var editedInteraction = customerInteractionss.First(x => x.Key.Id == interactionDTO.Id).Value;
+
+        if (!interactionDTO.Equals(editedInteraction))
+        {
+            await interactionService.UpdateInteractionAsync(interactionDTO);
+        }
+
+        customerInteractionss.Keys.First(x => x.Id == interactionDTO.Id).IsEditable = false;
     }
 
+    private void EditInteraction(long interactionID)
+    {
+        var interactionForEdit = customerInteractionss.Keys.First(x => x.Id == interactionID);
+        interactionForEdit.IsEditable = true;
+
+        StateHasChanged();
+    }
 }

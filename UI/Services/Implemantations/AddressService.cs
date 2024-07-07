@@ -1,5 +1,5 @@
 ﻿using Models.DTO;
-using Models.HelperMethods;
+using Models.Helpers;
 using Models.Responses;
 
 namespace UI.Services

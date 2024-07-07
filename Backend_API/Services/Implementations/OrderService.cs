@@ -2,7 +2,7 @@
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
 using Models.DTO;
-using Models.HelperMethods;
+using Models.Helpers;
 using Newtonsoft.Json;
 
 namespace Backend_API.Services
@@ -19,7 +19,6 @@ namespace Backend_API.Services
             _repository = repository;
             _mapper = mapper;
         }
-
 
         public async Task SubmitOrderAsync(Order order)
         {

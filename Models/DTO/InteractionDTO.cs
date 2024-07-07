@@ -6,6 +6,8 @@ namespace Models.DTO
     {
         public long Id { get; set; }
 
+        public long CustomerID { get; set; }
+
         public DateTime DateTime { get; set; }
 
         public InteractionType Type { get; set; }

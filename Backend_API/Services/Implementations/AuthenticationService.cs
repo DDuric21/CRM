@@ -2,7 +2,7 @@
 using Models.DTO;
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
-using Models.HelperMethods;
+using Models.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -172,7 +172,7 @@ namespace Backend_API.Services
                 .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp)
                 .Value;
 
-            var utcExpiryDate = Helper.ParseClaimExpiryToDatetime(claimExpiry);
+            var utcExpiryDate = HelperMethods.ParseClaimExpiryToDatetime(claimExpiry);
 
             if (utcExpiryDate < DateTime.UtcNow)
             {

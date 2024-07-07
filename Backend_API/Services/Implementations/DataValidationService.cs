@@ -1,5 +1,5 @@
 ﻿using Models.DTO;
-using Models.HelperMethods;
+using Models.Helpers;
 
 namespace Backend_API.Services
 {
@@ -12,8 +12,8 @@ namespace Backend_API.Services
                 return false;
             }
 
-            if (customerDTO.Birthday.IsNullOrEmpty()
-                || customerDTO.Birthday == DateTime.MinValue)
+            if (customerDTO.Birthday == null
+                || customerDTO.Birthday <= DateTime.MinValue)
             {
                 return false;
             }
