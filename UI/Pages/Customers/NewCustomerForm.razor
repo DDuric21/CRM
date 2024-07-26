@@ -14,9 +14,9 @@
 <div class="top-container">
     <div class="top-left-container">
         <EditForm class="newCustomer-form" Model="@customerDTO" OnSubmit="@CreateNewCustomer">
-            <InputText placeholder="Firstname" @bind-Value="customerDTO.Name" /><br>
+            <InputText placeholder="Name" @bind-Value="customerDTO.Name" /><br>
 			<InputDate placeholder="2018-07-22" @bind-Value="customerDTO.Birthday" /><br>
-            <InputText placeholder="Full address" @bind-Value="customerDTO.Addresses.First().FullAddress" /><br>
+            <InputText placeholder="Full address" @bind-Value="addressDTO.FullAddress" /><br>
             <button type="submit" name="submit" class="button">Create</button>
         </EditForm>
     </div>
@@ -25,8 +25,11 @@
 @code {
     private CustomerDTO customerDTO = new CustomerDTO();
 
+    private AddressDTO addressDTO = new AddressDTO();
+
     private async Task CreateNewCustomer()
     {
+        customerDTO.Addresses.Add(addressDTO);
         var result = await _customerService.CreateNewCustomerAsync(customerDTO);
 
         if (result == 0)
