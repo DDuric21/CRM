@@ -5,7 +5,6 @@
 @inject IOrderService orderService
 @inject ICustomerService customerService
 @inject ICrmModalService modalService
-@implements IDisposable;
 
 @if (customerDTO == null)
 {
@@ -13,18 +12,20 @@
 }
 else
 {
-    <h1>@customerDTO.Name</h1>
-    <br />
+    <fieldset disabled="@IsDisabled()">
+        <h1>@customerDTO.Name</h1>
+        <br />
 
-    <div class="align-items-stretch">
+        <div class="align-items-stretch">
             <input type="text" @bind-value="customerDTO.Name" />
             <input type="text" @bind-value="customerDTO.Birthday" />
-            <button type="submit" name="submit" class="btn btn-primary" @onclick="SaveChanges" >Save Changes</button>
-    </div>
+            <button type="submit" name="submit" class="btn btn-primary" @onclick="SubmitOrder" >SubmitOrder</button>
+        </div>
 
-    <CascadingValue Value="@orderDTO">
-        <Asset AssetDTO="orderDTO.AssetDTO" ActionID="actionID" @ref="orderAsset"></Asset>
-    </CascadingValue>
+        <CascadingValue Value="@orderDTO">
+            <Asset AssetDTO="orderDTO.AssetDTO" ActionID="actionID" @ref="orderAsset"></Asset>
+        </CascadingValue>
+    </fieldset>
 }
 
 @code {
@@ -42,53 +43,75 @@ else
     [SupplyParameterFromQuery(Name = "action")]
     public string Action { get; set; } = string.Empty;
 
-    private int actionID => ParseActionParameter().Item1;
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "readOrder")]
+    public bool ReadOrder { get; set; }
+
+    private int actionID => DetermineAction(); 
 
     private CustomerDTO customerDTO;
 
     protected override async Task OnInitializedAsync()
     {
-        customerDTO = await localStorageService.GetItemAsync<CustomerDTO>(OrderID.ToString());
+        if (ReadOrder)
+        {
+            orderDTO = await orderService.GetOrderDataAsync(OrderID);
+            customerDTO = orderDTO.CustomerDTO;
+        }
+        else
+        {
+            customerDTO = await localStorageService.GetItemAsync<CustomerDTO>(OrderID.ToString());            
+        }
 
-        if (customerDTO.IsNullOrEmpty())
+        if (customerDTO.IsNullOrEmpty()
+            && orderDTO.CustomerDTO.IsNullOrEmpty())
         {
             navigationManager.NavigateTo($"/Customers/{CustomerID}");
         }
 
-        orderDTO.OrderID = this.OrderID;
-        orderDTO.CustomerDTO = this.customerDTO;
+        if (orderDTO.OrderID == Guid.Empty)
+        {
+            orderDTO.OrderID = this.OrderID;            
+        }
+
+        if (orderDTO.CustomerDTO.IsNullOrEmpty())
+        {
+            orderDTO.CustomerDTO = this.customerDTO;            
+        }
 
         if (!string.IsNullOrWhiteSpace(Action))
         {
             (var actionID , var customerAssetID) = ParseActionParameter();
             orderDTO.AssetDTO = await customerService.GetCustomerAssetDataAsync(customerAssetID);
         }
+
+        SetOrderAction();
     }
 
-    public void Dispose()
+    private async Task SubmitOrder()
     {
-        // bad solution, this need fixing
-        localStorageService.RemoveItemAsync(OrderID.ToString());
-    }
+        orderDTO.AssetDTO = orderAsset.AssetDTO;
 
-    private async Task SaveChanges()
-    {
-        switch (actionID)
+        var response = await orderService.SubmitOrderAsync(orderDTO);
+
+        if (response <= 0)
         {
-            case (int)CrudAction.Update:
-                await orderService.UpdateAsset(orderDTO);
-                break;
-            case (int)CrudAction.Delete:
-                var result = await orderService.DeleteAsset(orderDTO.AssetDTO.CustomerAssetID);
-                if (result <= 0)
-                {
-                    modalService.ShowErrorMessage("Asset not deleted!");
-                }
-                break;
-            default :
-                orderDTO.AssetDTO = orderAsset.AssetDTO;
-                await orderService.AddAsset(orderDTO);
-                break;
+            modalService.ShowErrorMessage("Order not submitted successfully");
+        }
+        else
+        {
+            await modalService.ShowDialog("Order successfully submitted", ModalDialogType.OK);
+            navigationManager.NavigateTo($"/Customers/{customerDTO.Id}");
+        }
+    }
+
+    private void SetOrderAction()
+    {
+        if ((int)orderDTO.Action <= 0)
+        {
+            orderDTO.Action = actionID > 0
+            ? (CrudAction)actionID
+            : CrudAction.Create;
         }
     }
 
@@ -106,5 +129,23 @@ else
         long.TryParse(ids[1], out customerAssetID);
 
         return (actionID, customerAssetID);
+    }
+
+    private int DetermineAction()
+    {
+        if (ReadOrder)
+        {
+            return (int)orderDTO.Action;
+        }
+
+        return ParseActionParameter().Item1;
+    }
+
+    private bool IsDisabled()
+    {
+        var openOrderStatuses = new List<int> { 0, (int)OrderStatus.Open };
+        var isDisabled = !openOrderStatuses.Contains((int)orderDTO.OrderStatus);
+
+        return isDisabled;
     }
 }

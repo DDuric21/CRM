@@ -2,6 +2,7 @@
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
 using Models.DTO;
+using Models.Enums;
 using Models.Helpers;
 using Newtonsoft.Json;
 
@@ -11,18 +12,58 @@ namespace Backend_API.Services
     {
         private readonly ICrmRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IAssetService _assetService;
 
         public OrderService(
             ICrmRepository repository,
-            IMapper mapper)
+            IMapper mapper,
+            IAssetService assetService)
         {
             _repository = repository;
             _mapper = mapper;
+            _assetService = assetService;
         }
 
-        public async Task SubmitOrderAsync(Order order)
+        public async Task<int> SubmitOrderAsync(Order order)
         {
-            await _repository.Orders.UpdateAsync(order);
+            if (order.DateSubmited == DateTime.MinValue)
+            {
+                order.DateSubmited = DateTime.UtcNow;
+            }
+
+            int result = 0;
+            switch ((CrudAction)order.ActionID)
+            {
+                case CrudAction.Create:
+                    result = await InsertNewCustomerAssetAsync(order);
+                    break;
+                case CrudAction.Delete:
+                    result = await DeactivateCustomerAssetAsync(order);
+                    break;
+                case CrudAction.Update:
+                    result = await UpdateCustomerAssetAsync(order.CustomerAssets, order.OrderID);
+                    break;
+                default:
+                    //logging
+                    break;
+            }
+
+            await _repository.Orders.PartialUpdateAsync(order, x => x.DateSubmited);
+
+            if (result > 0)
+            {
+                try
+                { 
+                    //iz nekog razloga ako se ovo ne await-a onda ne radi
+                    await UpdateOrderStatusAsync(order, (int)OrderStatus.Finished);
+                }
+                catch (Exception ex)
+                {
+                    // add logging no need to allert the agent
+                }
+            }
+
+            return result;
         }
 
         public async Task CreateOrderAssetOptionsAsync(List<CustomerAssetOptions> customerAssetOptions)
@@ -30,20 +71,61 @@ namespace Backend_API.Services
             await _repository.CustomerAssetOptions.InsertRangeAsync(customerAssetOptions);
         }
 
-        public async Task<int> DeleteCustomerAssetAsync(long customerAssetsID)
+        public async Task<int> DeactivateCustomerAssetAsync(Order order)
         {
-            return await _repository.CustomerAssets.DeleteByIdAsync(customerAssetsID);
+            if (!order.CustomerAssetsID.HasValue)
+            {
+                //add logging
+                return 0;
+            }
+
+            var result = await UpdateCustomerAssetStatusAsync(order.CustomerAssetsID.Value, (int)AssetStatus.Inactive);
+
+            return result;
         }
 
-        public async Task<int> UpdateCustomerAssetAsync(CustomerAssets customerAssets)
+        // ne radi ne koristiti vidjeti kako ovo rješiti jer rješenje je elegantno
+        public async Task<int> UpdateOrderStatusAsync(Guid orderID, int orderStatusID)
         {
-            return await _repository.CustomerAssets.UpdateCustomerAssetDataAsync(customerAssets);
+            var order = new Order
+            {
+                OrderID = orderID,
+                OrderStatusID = orderStatusID
+            };
+
+            return await _repository.Orders.PartialUpdateAsync(order, x => x.OrderStatusID);
+        }
+
+        public async Task<int> UpdateCustomerAssetAsync(CustomerAssets customerAssets, Guid orderID)
+        {
+            var result = await _repository.CustomerAssets.UpdateCustomerAssetDataAsync(customerAssets);
+
+            return result;
         }
 
         public async Task CreateOrderAsync(Order order)
         {
             order.CustomerAssets = null;
             await _repository.Orders.InsertAsync(order);
+        }
+
+        public Order GetOrderData(Guid id)
+        {
+            var order = _repository.Orders
+                .Where(x => x.OrderID == id)
+                .FirstOrDefault();
+
+            if (order is null)
+            {
+                return new Order();
+            }
+
+            var customerAssetsData = JsonConvert.DeserializeObject<CustomerAssets>(order.Parameters);
+
+            order.CustomerAssets = customerAssetsData;
+            order.Customer = customerAssetsData.Customer;
+
+            return order;
         }
 
         public CustomerAssets MapToCustomerAsset(OrderDTO orderDTO)
@@ -56,8 +138,28 @@ namespace Backend_API.Services
             return customerAsset;
         }
 
-        public Order MapDtoToOrder(OrderDTO orderDTO)
+        public void MapOptionsToOrderAsset(OrderDTO orderDTO)
         {
+            if (orderDTO?.AssetDTO?.CustomerAssetID <= 0)
+            {
+                // add logging
+                throw new Exception("Incorrect CustomerAssetID provided");
+            }
+
+            var assetOptions = _assetService.GetAssetOptions(orderDTO.AssetDTO.CustomerAssetID);
+
+            orderDTO.AssetDTO.Options = assetOptions
+                .Select(x => _mapper.Map<OptionDTO>(x))
+                .ToList();
+        }
+
+        public Order MapDtoToOrder(OrderDTO orderDTO, bool withOptions = false)
+        {
+            if (withOptions)
+            {
+                MapOptionsToOrderAsset(orderDTO);
+            }
+
             var customerAssetData = MapToCustomerAssetData(orderDTO);
             // neede so EF wont start creating child object in DB
             var customerAssetBasicData = MapToCustomerAssetBasicData(orderDTO);
@@ -72,6 +174,8 @@ namespace Backend_API.Services
                     ? null
                     : customerAssetData.Id,
                 CustomerAssets = customerAssetBasicData,
+                ActionID = (int)orderDTO.Action,
+                OrderStatusID = (int)orderDTO.OrderStatus,
                 Parameters = orderParameters
             };
 
@@ -85,8 +189,30 @@ namespace Backend_API.Services
             var orderDTO = new OrderDTO
             {
                 OrderID = order.OrderID,
-                AssetDTO = _mapper.Map<AssetDTO>(customerAssets.Asset)
+                OrderStatus = (OrderStatus)order.OrderStatusID,
+                Action = (CrudAction)order.ActionID,
+                AssetDTO = _mapper.Map<AssetDTO>(customerAssets.Asset),
+                DateSubmited = order.DateSubmited,
+                DateCreated = order.DateCreated
             };
+
+            if (order.CustomerAssetsID.HasValue)
+            {
+                orderDTO.AssetDTO.CustomerAssetID = order.CustomerAssetsID.Value;
+            }
+
+            if (!order.Customer.IsNullOrEmpty())
+            {
+                orderDTO.CustomerDTO = _mapper.Map<CustomerDTO>(order.Customer);
+            }
+
+            if (!order.CustomerAssets.IsNullOrEmpty()
+                && !order.CustomerAssets.CustomerAssetOptions.IsNullOrEmpty())
+            {
+                orderDTO.AssetDTO.Options = order.CustomerAssets.CustomerAssetOptions
+                    .Select(x => _mapper.Map<OptionDTO>(x.Option))
+                    .ToList();
+            }
 
             return orderDTO;
         }
@@ -94,6 +220,7 @@ namespace Backend_API.Services
         public CustomerAssets MapToCustomerAssetData(OrderDTO orderDTO)
         {
             var customerAsset = new CustomerAssets();
+            customerAsset.AssetStatusID = DefineAssetStatus(orderDTO.Action, orderDTO.AssetDTO.AssetStatus);
 
             customerAsset.AssetID = orderDTO.AssetDTO.Id;
             if (!orderDTO.AssetDTO.IsNullOrEmpty())
@@ -129,6 +256,35 @@ namespace Backend_API.Services
             return customerAsset;
         }
 
+        private int DefineAssetStatus(CrudAction orderAction, AssetStatus? assetStatus = null)
+        {
+            if (assetStatus != null
+                && (int)assetStatus > 0)
+            {
+                return (int)assetStatus;
+            }
+
+            var status = 0;
+            switch (orderAction)
+            {
+                case CrudAction.Create:
+                    status = (int)AssetStatus.Active;
+                    break;
+                case CrudAction.Update:
+                    status = (int)AssetStatus.Active;
+                    break;
+                case CrudAction.Delete:
+                    status = (int)AssetStatus.Inactive;
+                    break;
+                // maybe not the best idea
+                default:
+                    status = (int)AssetStatus.Active;
+                    break;
+            }
+
+            return status;
+        }
+
         public List<CustomerAssetOptions> MapToCustomerAssetOptions(OrderDTO orderDTO, CustomerAssets customerAsset)
         {
             var customerAssetOptions = new List<CustomerAssetOptions>();
@@ -153,6 +309,7 @@ namespace Backend_API.Services
             customerAsset.AssetID = orderDTO.AssetDTO.Id;
             customerAsset.CustomerID = orderDTO.CustomerDTO.Id;
             customerAsset.Id = orderDTO.AssetDTO.CustomerAssetID;
+            customerAsset.AssetStatusID = DefineAssetStatus(orderDTO.Action, orderDTO.AssetDTO.AssetStatus);
 
             if (!orderDTO.AssetDTO.Options.IsNullOrEmpty())
             {
@@ -171,6 +328,39 @@ namespace Backend_API.Services
             }
 
             return customerAsset;
+        }
+
+        private async Task<int> UpdateCustomerAssetStatusAsync(long customerAssetID, int assetStatusID)
+        {
+            var customerAsset = new CustomerAssets
+            {
+                Id = customerAssetID,
+                AssetStatusID = assetStatusID
+            };
+
+            return await _repository.CustomerAssets.PartialUpdateAsync(customerAsset, x => x.AssetStatusID);
+        }
+
+        private async Task<int> InsertNewCustomerAssetAsync(Order order)
+        {
+            return await _repository.Orders.UpdateAsync(order);
+        }
+
+        public CrudAction DefineOrderAction(CrudAction crudAction)
+        {
+            var action = CrudAction.Create;
+            if ((int)crudAction > 0)
+            {
+                action = crudAction;
+            }
+
+            return action;
+        }
+
+        public async Task<int> UpdateOrderStatusAsync(Order order, int orderStatusID)
+        {
+            order.OrderStatusID = orderStatusID;
+            return await _repository.Orders.PartialUpdateAsync(order, x => x.OrderStatusID);
         }
     }
 }

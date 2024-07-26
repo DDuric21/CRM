@@ -19,8 +19,12 @@
             <tr>
                 <td><label id="@assetDTO.Id" >@assetDTO.Name</label></td>
                 <td><label id="@assetDTO.Id" >@assetDTO.Price</label></td>
-                <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)" >Edit</button></td>
-                <td><button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)" >Delete</button></td>
+                <td><label id="@assetDTO.Id" >@assetDTO.AssetStatus.ToString()</label></td>
+                @if (assetDTO.AssetStatus != AssetStatus.Inactive)
+                {
+                    <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)" >Edit</button></td>
+                    <td><button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)" >Deactivate</button></td>                    
+                }
             </tr>
         }
     </tbody>
@@ -30,7 +34,7 @@
     [CascadingParameter]
     public CustomerDTO CustomerDTO { get; set; }
 
-    private List<AssetDTO> assets { get; set; } = new List<AssetDTO>();
+    private SortedSet<AssetDTO> assets { get; set; } = new SortedSet<AssetDTO>(new CustomerAssetsSorter());
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,7 +47,7 @@
                 assets.Add(asset);
             }
 
-            CustomerDTO.Assets = assets;
+            CustomerDTO.Assets = assets.ToList();
         }
         catch (Exception ex)
         {
@@ -54,7 +58,12 @@
     private async void AddNewAsset()
     {
         var orderID = Guid.NewGuid();
-        orderService.CreateOrderAsync(orderID, CustomerDTO.Id);
+        var order = new OrderDTO
+        {
+            OrderID = orderID,
+            CustomerDTO = this.CustomerDTO
+        };
+        orderService.CreateOrderAsync(order);
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
         navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}");
     }
@@ -62,11 +71,23 @@
     private async void EditAsset(bool isDelete, long customerAssetID)
     {
         var orderID = Guid.NewGuid();
-        orderService.CreateOrderAsync(orderID, CustomerDTO.Id, customerAssetID);
         var action = isDelete
-            ? $"{(int)CrudAction.Delete}:{customerAssetID}"
-            : $"{(int)CrudAction.Update}:{customerAssetID}";
+            ? CrudAction.Delete
+            : CrudAction.Update;
+
+        var asset = assets.First(x => x.CustomerAssetID == customerAssetID);
+        var order = new OrderDTO
+        {
+            OrderID = orderID,
+            CustomerDTO = this.CustomerDTO,
+            Action = action,
+            AssetDTO = asset
+        };
+        var loadAssetOptions = true;
+        orderService.CreateOrderAsync(order, loadAssetOptions);
+
+        var actionIndicator = $"{(int)action}:{customerAssetID}";
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
-        navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={action}");        
+        navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={actionIndicator}");        
     }
 }

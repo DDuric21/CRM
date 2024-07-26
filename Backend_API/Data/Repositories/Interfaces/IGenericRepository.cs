@@ -68,5 +68,7 @@ namespace Backend_API.Data.Repositories
         IQueryable<T> Filter(Expression<Func<T, bool>> filter, Expression<Func<T, object>> include);
 
         IQueryable<T> With(Expression<Func<T, object>> include);
+
+        Task<int> PartialUpdateAsync(T item, params Expression<Func<T, object>>[] propertyExpressions);
     }
 }

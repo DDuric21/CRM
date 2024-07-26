@@ -13,6 +13,7 @@ namespace Backend_API.Data.Model
         public virtual ICollection<Address> Addresses { get; set; }
 
         public DateTime Birthday { get; set; }
+
         [NotMapped]
         public virtual ICollection<Asset> Assets { get; set; }
 

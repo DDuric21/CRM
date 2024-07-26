@@ -99,6 +99,18 @@ namespace Backend_API.Data.Repositories
             return await _context.SaveChangesAsync();
         }
 
+        public async Task<int> PartialUpdateAsync(T item, params Expression<Func<T, object>>[] propertyExpressions)
+        {
+            var entry = _context.Entry(item);
+
+            foreach (var propertyExpression in propertyExpressions)
+            {
+                entry.Property(propertyExpression).IsModified = true;
+            }
+
+            return await _context.SaveChangesAsync();
+        }
+
         public void Insert(T entity)
         {
             _context.Set<T>().Add(entity);

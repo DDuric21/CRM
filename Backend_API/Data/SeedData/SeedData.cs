@@ -198,31 +198,43 @@ namespace Backend_API.Data.SeedData
                     {
                         CustomerID = 1,
                         AssetID = 1,
-                        AssetAddressID = 1
+                        AssetAddressID = 1,
+                        AssetStatusID = 1,
+                    },
+                    new CustomerAssets
+                    {
+                        CustomerID = 1,
+                        AssetID = 1,
+                        AssetAddressID = 1,
+                        AssetStatusID = 2,
                     },
                     new CustomerAssets
                     {
                         CustomerID = 1,
                         AssetID = 2,
-                        AssetAddressID = 1
+                        AssetAddressID = 1,
+                        AssetStatusID = 1,
                     },
                     new CustomerAssets
                     {
                         CustomerID = 2,
                         AssetID = 2,
-                        AssetAddressID = 2
+                        AssetAddressID = 2,
+                        AssetStatusID = 1,
                     },
                     new CustomerAssets
                     {
                         CustomerID = 3,
                         AssetID = 1,
-                        AssetAddressID = 4
+                        AssetAddressID = 4,
+                        AssetStatusID = 1,
                     },
                     new CustomerAssets
                     {
                         CustomerID = 3,
                         AssetID = 3,
-                        AssetAddressID = 5
+                        AssetAddressID = 5,
+                        AssetStatusID = 1,
                     }
                 });
 
@@ -313,7 +325,7 @@ namespace Backend_API.Data.SeedData
                     new CustomerAssetOptions
                     {
                         CustomerAssetsID = 4,
-                        OptionID = 2,
+                        OptionID = 3,
                     }
                 });
             }

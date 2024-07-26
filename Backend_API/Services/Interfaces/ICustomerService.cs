@@ -1,5 +1,6 @@
 ﻿using Backend_API.Data.Model;
 using Models.DTO;
+using System.Collections.Generic;
 
 namespace Backend_API.Services
 {
@@ -26,7 +27,7 @@ namespace Backend_API.Services
         /// <returns>Customer object</returns>
         Customer GetCustomerData(long id);
 
-        Dictionary<long, Asset> GetCustomerAssets(long id);
+        IEnumerable<CustomerAssets> GetCustomerAssets(long id);
 
         Asset GetCustomerAssetData(long customerAssetsID);
 

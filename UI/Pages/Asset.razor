@@ -46,50 +46,31 @@
     </div>
 }
 
-@if (ActionID == (int)CrudAction.Update)
+@if (ActionID > 0)
 {
     <div class="align-items-stretch">
-        <fieldset disabled="@true">
-            <input type="text" @bind-value="AssetDTO.Name" /><br>
-        </fieldset>
-    </div>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>        
-            <button type="submit" name="submit" class="btn btn-primary" @onclick="AddOption">Add +</button>
-            @foreach (var optionDTO in AssetDTO.Options)
-            {
-                <tr>
-                    <td><label id="asset" >@optionDTO.Name</label></td>
-                    <td><label id="asset" >@optionDTO.Price</label></td>
-                    <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">Delete</button></td>
-                </tr>
-            }
-            @foreach (var assetOption in selectedOptions)
-            {
-                <select class="form-select" id="selectedOption" @onchange="OptionSelected" >
-                    @foreach (var option in selectableOptions)
-                    {            
-                        <option value="@option.Id">@option.Name</option>
+        @if (ActionID == (int)CrudAction.Create)
+        {
+            <select id="selectedAsset" class="form-select" @onchange="AssetSelected">
+                @foreach (var asset in selectableAssets)
+                {
+                    @if (asset.Id == AssetDTO.Id)
+                    {
+                        <option selected value="@asset.Id">@asset.Name</option>                        
                     }
-                </select>    
-                <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))" >Delete</button>
-            }
-        </tbody>
-    </table> 
-}
-
-@if (ActionID == (int)CrudAction.Delete)
-{
-    <div class="align-items-stretch">
-        <fieldset disabled="@true">
-            <input type="text" @bind-value="AssetDTO.Name" /><br>
-        </fieldset>
+                    else
+                    {
+                        <option value="@asset.Id">@asset.Name</option>                        
+                    }
+                }
+            </select> 
+        }
+        else
+        {
+            <fieldset disabled="@true">
+                <input type="text" @bind-value="AssetDTO.Name" /><br>
+            </fieldset>
+        }
     </div>
     <table>
         <thead>
@@ -99,12 +80,37 @@
             </tr>
         </thead>
         <tbody>        
-            @foreach (var optionDTO in AssetDTO.Options)
+            @if (ActionID == (int)CrudAction.Delete)
             {
-                <tr>
-                    <td><label id="asset" >@optionDTO.Name</label></td>
-                    <td><label id="asset" >@optionDTO.Price</label></td>
-                </tr>
+                @foreach (var optionDTO in AssetDTO.Options)
+                {
+                    <tr>
+                        <td><label id="asset" >@optionDTO.Name</label></td>
+                        <td><label id="asset" >@optionDTO.Price</label></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <button type="submit" name="submit" class="btn btn-primary" @onclick="AddOption">Add +</button>
+                @foreach (var optionDTO in AssetDTO.Options)
+                {
+                    <tr>
+                        <td><label id="asset" >@optionDTO.Name</label></td>
+                        <td><label id="asset" >@optionDTO.Price</label></td>
+                        <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">Delete</button></td>
+                    </tr>
+                }
+                @foreach (var assetOption in selectedOptions)
+                {
+                    <select class="form-select" id="selectedOption" @onchange="OptionSelected" >
+                        @foreach (var option in selectableOptions)
+                        {            
+                            <option value="@option.Id">@option.Name</option>
+                        }
+                    </select>    
+                    <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))" >Delete</button>
+                }
             }
         </tbody>
     </table> 

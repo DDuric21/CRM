@@ -66,12 +66,12 @@ namespace Backend_API.Services
             return customer;
         }
 
-        public Dictionary<long, Asset> GetCustomerAssets(long id)
+        public IEnumerable<CustomerAssets> GetCustomerAssets(long id)
         {
             var assets = _repository.CustomerAssets
                 .With(x => x.Asset)
                 .Where(x => x.CustomerID == id)
-                .ToDictionary(x => x.Id, x => x.Asset);
+                .ToList();
 
             return assets;
         }

@@ -18,6 +18,14 @@ namespace Backend_API.Data.Model
         [NotMapped]
         public virtual CustomerAssets CustomerAssets { get; set; }
 
+        public int OrderStatusID { get; set; }
+
+        public int ActionID { get; set; }
+
+        public DateTime DateCreated { get; set; }
+
+        public DateTime DateSubmited { get; set; }
+
         public string? Parameters { get; set; }
     }
 }

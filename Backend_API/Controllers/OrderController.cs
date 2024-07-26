@@ -1,7 +1,9 @@
 ﻿using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
+using Models.Enums;
 using Models.Helpers;
+using Models.Requests;
 using Models.Responses;
 
 namespace Backend_API.Controllers
@@ -16,18 +18,51 @@ namespace Backend_API.Controllers
             _orderService = orderService;
         }
 
-        [HttpPost]
-        [Route("/Order")]
-        public async Task<IActionResult> CreateOrder([FromBody] OrderDTO orderDTO)
+
+        [HttpGet]
+        [Route("/Order/{orderID:Guid}")]
+        public async Task<IActionResult> GetOrderData(Guid orderID)
         {
-            if (orderDTO.IsNullOrEmpty())
+            if (orderID == Guid.Empty)
             {
                 return BadRequest();
             }
 
             try
             {
-                var order = _orderService.MapDtoToOrder(orderDTO);
+                var order = _orderService.GetOrderData(orderID);
+                var orderDTO = _orderService.MapToDTO(order);
+
+                if (order.IsNullOrEmpty())
+                {
+                    return Problem("No order data found!");
+                }
+
+                return Ok(orderDTO);
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("/Order")]
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRQ request)
+        {
+            if (request.IsNullOrEmpty()
+                && request.OrderDTO.IsNullOrEmpty())
+            {
+                return BadRequest();
+            }
+
+            var orderDTO = request.OrderDTO;
+
+            try
+            {
+                orderDTO.OrderStatus = OrderStatus.Open;
+                var order = _orderService.MapDtoToOrder(orderDTO, request.WithOptions);
                 await _orderService.CreateOrderAsync(order);
 
                 return Ok(new ResponseBase());
@@ -50,12 +85,13 @@ namespace Backend_API.Controllers
 
             try
             {
+                orderDTO.Action = _orderService.DefineOrderAction(orderDTO.Action);
                 var order = _orderService.MapDtoToOrder(orderDTO);
-                await _orderService.SubmitOrderAsync(order);
+                var result = await _orderService.SubmitOrderAsync(order);
 
-                if (order.CustomerAssetsID > 0)
+                if (result > 0)
                 {
-                    return Ok(new ResponseBase());
+                    return Ok(result);
                 }
 
                 return Problem("No order created!");
@@ -69,16 +105,17 @@ namespace Backend_API.Controllers
 
         [HttpDelete]
         [Route("/Order")]
-        public async Task<IActionResult> DeleteCustomerAsset([FromBody] long customerAssetID)
+        public async Task<IActionResult> DeactivateCustomerAsset([FromBody] OrderDTO orderDTO)
         {
-            if (customerAssetID <= 0)
+            if (orderDTO.IsNullOrEmpty())
             {
                 return BadRequest();
             }
 
             try
             {
-                var result = await _orderService.DeleteCustomerAssetAsync(customerAssetID);
+                var order = _orderService.MapDtoToOrder(orderDTO);
+                var result = await _orderService.DeactivateCustomerAssetAsync(order);
 
                 return Ok(result);
             }
@@ -104,7 +141,7 @@ namespace Backend_API.Controllers
 
             try
             {
-                var result = await _orderService.UpdateCustomerAssetAsync(customerAsset);
+                var result = await _orderService.UpdateCustomerAssetAsync(customerAsset, orderDTO.OrderID);
 
                 return Ok(result);
             }

@@ -59,8 +59,36 @@ namespace Backend_API.Data.DbContext
             modelBuilder.Entity<Order>()
                 .Property(x => x.CustomerAssetsID)
                 .IsRequired(false);
+            modelBuilder.Entity<Order>()
+                .Property(b => b.DateCreated)
+                .HasDefaultValueSql("GETDATE()")
+                .ValueGeneratedOnAdd();
             modelBuilder.Entity<Interaction>();
             base.OnModelCreating(modelBuilder);
+        }
+
+        public override int SaveChanges()
+        {
+            foreach (var entry in ChangeTracker.Entries<Order>())
+            {
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Property(e => e.DateCreated).IsModified = false;
+                }
+            }
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries<Order>())
+            {
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Property(e => e.DateCreated).IsModified = false;
+                }
+            }
+            return base.SaveChangesAsync(cancellationToken);
         }
 
         public DbSet<Customer> Customers { get; set; }

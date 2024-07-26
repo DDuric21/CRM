@@ -88,14 +88,14 @@ namespace Backend_API.Controllers
         [Route("/Customers/Assets")]
         public async Task<IActionResult> GetCustomerAssets([FromBody] long id)
         {
-            var assets = _customerService.GetCustomerAssets(id);
+            var customerAssets = _customerService.GetCustomerAssets(id);
 
-            if (assets.IsNullOrEmpty())
+            if (customerAssets.IsNullOrEmpty())
             {
                 return Ok(new List<AssetDTO>());
             }
 
-            var assetDTOs = _assetService.MapAssetsToDTOs(assets);
+            var assetDTOs = _assetService.MapCustomerAssetsToAssetDTOs(customerAssets);
 
             return Ok(assetDTOs);
         }

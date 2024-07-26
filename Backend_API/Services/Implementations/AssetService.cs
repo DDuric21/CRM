@@ -2,6 +2,7 @@
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
 using Models.DTO;
+using Models.Enums;
 using Models.Helpers;
 
 namespace Backend_API.Services
@@ -28,22 +29,32 @@ namespace Backend_API.Services
             return assets;
         }
 
-        public IEnumerable<AssetDTO> MapAssetsToDTOs(IDictionary<long, Asset> assets)
+        public IEnumerable<Option> GetAssetOptions(long customerAssetID)
+        {
+            var options = _repository.CustomerAssetOptions
+                .Where(x => x.CustomerAssetsID == customerAssetID)
+                .Select(x => x.Option);
+
+            return options;
+        }
+
+        public IEnumerable<AssetDTO> MapCustomerAssetsToAssetDTOs(IEnumerable<CustomerAssets> customerAssets)
         {
             var assetDTOs = new List<AssetDTO>();
 
-            if (assets.IsNullOrEmpty())
+            if (customerAssets.IsNullOrEmpty())
             {
                 return assetDTOs;
             }
 
             try
             {
-                foreach (var asset in assets)
+                foreach (var customerAsset in customerAssets)
                 {
-                    var dto = _mapper.Map<AssetDTO>(asset.Value);
-                    dto.CustomerAssetID = asset.Key;
-                    assetDTOs.Add(dto);
+                    var assetDTO = _mapper.Map<AssetDTO>(customerAsset.Asset);
+                    assetDTO.CustomerAssetID = customerAsset.Id;
+                    assetDTO.AssetStatus = (AssetStatus)customerAsset.AssetStatusID;
+                    assetDTOs.Add(assetDTO);
                 }
 
                 return assetDTOs;

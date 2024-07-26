@@ -1,4 +1,6 @@
-﻿namespace Models.DTO
+﻿using Models.Enums;
+
+namespace Models.DTO
 {
     public class AssetDTO
     {
@@ -11,6 +13,8 @@
         public decimal Price { get; set; }
 
         public long CurrencyID { get; set; }
+
+        public AssetStatus AssetStatus { get; set; }
 
         public List<OptionDTO> Options { get; set; }
 

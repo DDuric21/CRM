@@ -1,5 +1,6 @@
 ﻿
 @inject ICustomerService customerService
+@inject NavigationManager navigationManager
 
 <table>
     <thead>
@@ -7,14 +8,17 @@
             <th>Order ID</th>
             <th>Asset Name</th>
             <th>Created</th>
+            <th>Submited</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var orderDTO in orders)
         {
-            <tr>
+            <tr @ondblclick="() => RedirectToOrder(orderDTO.OrderID)">
                 <td><label id="@orderDTO.OrderID" >@orderDTO.OrderID</label></td>
                 <td><label id="@orderDTO.OrderID" >@orderDTO.AssetDTO.Name</label></td>
+                <td><label id="@orderDTO.OrderID" >@orderDTO.DateCreated</label></td>
+                <td><label id="@orderDTO.OrderID" >@orderDTO.DateSubmited</label></td>                    
             </tr>
         }
     </tbody>
@@ -27,7 +31,7 @@
     [CascadingParameter]
     public CustomerDTO CustomerDTO { get; set; }
 
-    private List<OrderDTO> orders = new List<OrderDTO>();
+    private SortedSet<OrderDTO> orders = new SortedSet<OrderDTO>(new OrdersSorter());
 
     protected override async Task OnInitializedAsync()
     {        
@@ -37,6 +41,11 @@
         {
             orders.Add(order);
         }
+    }
+
+    private void RedirectToOrder(Guid id)
+    {
+        navigationManager.NavigateTo($"/Order?orderID={id}&readOrder={true}");
     }
 
 }
