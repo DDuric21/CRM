@@ -9,21 +9,21 @@
     <thead>
         <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewAsset()" >New +</button>
         <tr>
-            <th>Name</th>
-            <th>Price</th>
+            <th style="padding-right: 15px">Name</th>
+            <th style="padding-right: 15px">Price</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var assetDTO in assets)
         {
             <tr>
-                <td><label id="@assetDTO.Id" >@assetDTO.Name</label></td>
-                <td><label id="@assetDTO.Id" >@assetDTO.Price</label></td>
-                <td><label id="@assetDTO.Id" >@assetDTO.AssetStatus.ToString()</label></td>
+                <td style="padding-right: 15px"><label id="@assetDTO.Id" >@assetDTO.Name</label></td>
+                <td style="padding-right: 15px"><label id="@assetDTO.Id" >@assetDTO.Price</label></td>
+                <td style="padding-right: 15px"><label id="@assetDTO.Id" >@assetDTO.AssetStatus.ToString()</label></td>
                 @if (assetDTO.AssetStatus != AssetStatus.Inactive)
                 {
-                    <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)" >Edit</button></td>
-                    <td><button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)" >Deactivate</button></td>                    
+                    <td style="padding-right: 15px"><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)" >Edit</button></td>
+                    <td style="padding-right: 15px"><button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)" >Deactivate</button></td>                    
                 }
             </tr>
         }

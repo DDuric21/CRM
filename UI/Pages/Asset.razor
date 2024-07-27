@@ -14,17 +14,17 @@
         <table>
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Price</th>
+                    <th style="padding-right: 15px">Name</th>
+                    <th style="padding-right: 15px">Price</th>
                 </tr>
             </thead>
             <tbody>        
                 @foreach (var optionDTO in AssetDTO.Options)
                 {
                     <tr>
-                        <td><label id="asset" >@optionDTO.Name</label></td>
-                        <td><label id="asset" >@optionDTO.Price</label></td>
-                        <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">Delete</button></td>
+                        <td style="padding-right: 15px"><label id="asset" >@optionDTO.Name</label></td>
+                        <td style="padding-right: 15px"><label id="asset" >@optionDTO.Price</label></td>
+                        <td style="padding-right: 15px"><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">Delete</button></td>
                     </tr>
                 }
             </tbody>
@@ -75,8 +75,8 @@
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Price</th>
+                <th style="padding-right: 15px">Name</th>
+                <th style="padding-right: 15px">Price</th>
             </tr>
         </thead>
         <tbody>        
@@ -85,8 +85,8 @@
                 @foreach (var optionDTO in AssetDTO.Options)
                 {
                     <tr>
-                        <td><label id="asset" >@optionDTO.Name</label></td>
-                        <td><label id="asset" >@optionDTO.Price</label></td>
+                        <td style="padding-right: 15px"><label id="asset" >@optionDTO.Name</label></td>
+                        <td style="padding-right: 15px"><label id="asset" >@optionDTO.Price</label></td>
                     </tr>
                 }
             }
@@ -96,9 +96,9 @@
                 @foreach (var optionDTO in AssetDTO.Options)
                 {
                     <tr>
-                        <td><label id="asset" >@optionDTO.Name</label></td>
-                        <td><label id="asset" >@optionDTO.Price</label></td>
-                        <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">Delete</button></td>
+                        <td style="padding-right: 15px"><label id="asset" >@optionDTO.Name</label></td>
+                        <td style="padding-right: 15px"><label id="asset" >@optionDTO.Price</label></td>
+                        <td style="padding-right: 15px"><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">Delete</button></td>
                     </tr>
                 }
                 @foreach (var assetOption in selectedOptions)

@@ -6,17 +6,17 @@
     <thead>
         <button type="submit" name="submit" class="btn btn-primary" @onclick="() => CreateNewAddress()" >New +</button>
         <tr>
-            <th>Primary</th>
-            <th>Address</th>
+            <th style="padding-right: 15px">Primary</th>
+            <th style="padding-right: 15px">Address</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var addressDTO in Addresses)
         {
             <tr>
-                <td><input type="radio" id="legalAddress" checked="@addressDTO.IsLegal" name="legalRadio" @onchange="() => ChangeLegal(addressDTO.Id)"/></td>
-                <td><label id="address" for="legalAddress">@addressDTO.FullAddress</label></td>
-                <td><button class="btn btn-danger" @onclick="() => DeleteAddress(addressDTO.Id)">Delete</button></td>
+                <td style="padding-right: 15px"><input type="radio" id="legalAddress" checked="@addressDTO.IsLegal" name="legalRadio" @onchange="() => ChangeLegal(addressDTO.Id)"/></td>
+                <td style="padding-right: 15px"><label id="address" for="legalAddress">@addressDTO.FullAddress</label></td>
+                <td style="padding-right: 15px"><button class="btn btn-danger" @onclick="() => DeleteAddress(addressDTO.Id)">Delete</button></td>
             </tr>
         }
     </tbody>
@@ -45,7 +45,7 @@
     private async Task CreateNewAddress()
     {
         var parameters = new ModalParameters()
-            .Add("CustomerId", Addresses.First().Id);
+            .Add("CustomerId", Addresses.First().CustomerId);
 
         var result = await modal.Show<NewAddressForm>(parameters);
 

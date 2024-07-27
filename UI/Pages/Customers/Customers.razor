@@ -29,8 +29,8 @@ else
             {
                 <tr @ondblclick="() => RedirectToCustomer(customer.Id)">
                     <td>@customer.Name</td>
-                    <td>@customer.Birthday.ToLocalTime()</td>
-                    <td>@customer.Addresses.FirstOrDefault(x => x.IsLegal == true).FullAddress</td>
+                    <td>@customer.Birthday.ToLocalTime().ToString("dd-MM-yyyy")</td>
+                    <td>@GetLegalAddress(customer.Addresses)</td>
                     <td>
                         <button class="btn btn-danger" @onclick="() => DeleteCustomer(customer.Id)">Delete</button>
                     </td>
@@ -80,5 +80,12 @@ else
     protected void Redirect()
     {
         navigationManager.NavigateTo("/NewCustomerForm");
+    }
+
+    private string GetLegalAddress(IEnumerable<AddressDTO> addresses)
+    {
+        var legalAddress = addresses.FirstOrDefault(x => x.IsLegal == true);
+
+        return legalAddress?.FullAddress ?? string.Empty;
     }
 }
