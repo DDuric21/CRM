@@ -4,6 +4,7 @@ using Backend_API.Data.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend_API.Migrations
 {
     [DbContext(typeof(CrmDbContext))]
-    partial class CrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240727171903_ading traceability to models")]
+    partial class adingtraceabilitytomodels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,14 +90,11 @@ namespace Backend_API.Migrations
 
             modelBuilder.Entity("Backend_API.Data.Model.BillingProfile", b =>
                 {
-                    b.Property<string>("BillingProfileId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<long>("AddressID")
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<long>("CustomerID")
-                        .HasColumnType("bigint");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
@@ -105,15 +104,9 @@ namespace Backend_API.Migrations
                     b.Property<DateTime>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("BillingProfileId");
-
-                    b.HasIndex("AddressID");
-
-                    b.HasIndex("CustomerID");
+                    b.HasKey("Id");
 
                     b.ToTable("BillingProfiles");
-
-                    b.HasCheckConstraint("CK_BillingProfile_Key_Format", "BillingProfileId LIKE '[0-9]-%[0-9]'");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Model.Customer", b =>
@@ -600,25 +593,6 @@ namespace Backend_API.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("Backend_API.Data.Model.BillingProfile", b =>
-                {
-                    b.HasOne("Backend_API.Data.Model.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend_API.Data.Model.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Address");
 
                     b.Navigation("Customer");
                 });

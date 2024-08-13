@@ -1,13 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend_API.Data.Model
 {
-    public class Address
+    public class Address : BaseModel
     {
-        [Key]
-        public long Id { get; set; }
-
         public bool IsLegal { get; set; }
 
         public string? FullAddress { get; set; }
@@ -15,5 +11,7 @@ namespace Backend_API.Data.Model
         [ForeignKey("CustomerId")]
         public long CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
+
+        public virtual BillingProfile BillingProfile { get; set; }
     }
 }

@@ -1,10 +1,9 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend_API.Data.Model
 {
-    public class Order
+    public class Order : ITrackChanges
     {
         [Key]
         public Guid OrderID { get; set; }
@@ -23,6 +22,8 @@ namespace Backend_API.Data.Model
         public int ActionID { get; set; }
 
         public DateTime DateCreated { get; set; }
+
+        public DateTime DateModified { get; set; }
 
         public DateTime DateSubmited { get; set; }
 

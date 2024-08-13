@@ -1,13 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend_API.Data.Model
 {
-    public class Interaction
+    public class Interaction : BaseModel
     {
-        [Key]
-        public long Id { get; set; }
-
         [ForeignKey("CustomerId")]
         public long CustomerID { get; set; }
         public virtual Customer Customer { get; set; }

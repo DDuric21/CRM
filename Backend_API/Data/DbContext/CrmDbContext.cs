@@ -34,14 +34,39 @@ namespace Backend_API.Data.DbContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            DefineCreationDate(modelBuilder);
+
+            DefineModelBuilderEntities(modelBuilder);
+
+            base.OnModelCreating(modelBuilder);
+        }
+
+        private static void DefineCreationDate(ModelBuilder modelBuilder)
+        {
+            var entityTypes = modelBuilder.Model.GetEntityTypes()
+                .Where(e => typeof(ITrackChanges).IsAssignableFrom(e.ClrType));
+
+            foreach (var entityType in entityTypes)
+            {
+                modelBuilder.Entity(entityType.ClrType).Property<DateTime>("DateCreated")
+                    .HasDefaultValueSql("GETUTCDATE()");
+            }
+        }
+
+        private static void DefineModelBuilderEntities(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Address>();
+
             modelBuilder.Entity<Customer>()
                 .HasMany(x => x.Addresses)
                 .WithOne(x => x.Customer);
+
             modelBuilder.Entity<User>();
+
             modelBuilder.Entity<Asset>()
                 .HasMany(x => x.Options)
                 .WithOne(x => x.Asset);
+
             modelBuilder.Entity<CustomerAssetOptions>()
                 .HasKey(x => new { x.CustomerAssetsID, x.OptionID });
             modelBuilder.Entity<CustomerAssetOptions>()
@@ -50,47 +75,55 @@ namespace Backend_API.Data.DbContext
             modelBuilder.Entity<CustomerAssetOptions>()
                 .HasOne(x => x.Option)
                 .WithMany(x => x.CustomerAssetOptions);
+
             modelBuilder.Entity<CustomerAssets>();
+
             modelBuilder.Entity<Option>();
+
             modelBuilder.Entity<RefreshToken>();
+
             modelBuilder.Entity<Order>()
                 .HasOne(x => x.CustomerAssets)
                 .WithMany(x => x.Orders);
             modelBuilder.Entity<Order>()
                 .Property(x => x.CustomerAssetsID)
                 .IsRequired(false);
-            modelBuilder.Entity<Order>()
-                .Property(b => b.DateCreated)
-                .HasDefaultValueSql("GETDATE()")
-                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<Interaction>();
-            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<BillingProfile>()
+                .HasCheckConstraint("CK_BillingProfile_Key_Format", "BillingProfileId LIKE '[0-9]-%[0-9]'");
+            modelBuilder.Entity<BillingProfile>()
+                .HasOne(x => x.Address)
+                .WithOne(x => x.BillingProfile)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         public override int SaveChanges()
         {
-            foreach (var entry in ChangeTracker.Entries<Order>())
-            {
-                if (entry.State == EntityState.Modified)
-                {
-                    entry.Property(e => e.DateCreated).IsModified = false;
-                }
-            }
+            UpdateTimestamps();
             return base.SaveChanges();
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            foreach (var entry in ChangeTracker.Entries<Order>())
-            {
-                if (entry.State == EntityState.Modified)
-                {
-                    entry.Property(e => e.DateCreated).IsModified = false;
-                }
-            }
-            return base.SaveChangesAsync(cancellationToken);
+            UpdateTimestamps();
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
+        private void UpdateTimestamps()
+        {
+            var entries = ChangeTracker.Entries<ITrackChanges>()
+                .Where(x => x.State == EntityState.Modified);
+
+            foreach (var entityEntry in entries)
+            {
+                entityEntry.Entity.DateModified = DateTime.UtcNow;
+                entityEntry.Property(nameof(ITrackChanges.DateCreated)).IsModified = false;
+            }
+        }
+
+        #region DbSets
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Asset> Assets { get; set; }
         public DbSet<CustomerAssets> CustomerAssets { get; set; }
@@ -100,5 +133,7 @@ namespace Backend_API.Data.DbContext
         public DbSet<Option> Options { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Interaction> Interactions { get; set; }
+        public DbSet<BillingProfile> BillingProfiles { get; set; }
+        #endregion
     }
 }

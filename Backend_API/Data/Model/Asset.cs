@@ -1,13 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 
 namespace Backend_API.Data.Model
 {
-    public class Asset
+    public class Asset : BaseModel
     {
-        [Key]
-        public long Id { get; set; }
-
         public string Name { get; set; }
 
         [Precision(18, 2)]

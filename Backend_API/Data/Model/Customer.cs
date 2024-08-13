@@ -1,13 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend_API.Data.Model
 {
-    public class Customer
+    public class Customer : BaseModel
     {
-        [Key]
-        public long Id { get; set; }
-
         public string? Name { get; set; }
 
         public virtual ICollection<Address> Addresses { get; set; }
