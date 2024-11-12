@@ -65,6 +65,7 @@ namespace Backend_API.Startup
             builder.Services.AddScoped<IAssetService, AssetService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IInteractionService, InteractionService>();
+            builder.Services.AddScoped<IBillingProfileService, BillingProfileService>();
             builder.Services.AddSingleton<IDataValidationService, DataValidationService>();
             builder.Services.AddSingleton(tokenValidationParameters);
 

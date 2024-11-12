@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend_API.Migrations
 {
     [DbContext(typeof(CrmDbContext))]
-    [Migration("20240731074204_fixing billing profile")]
-    partial class fixingbillingprofile
+    [Migration("20240823204539_adding customerType to customer model")]
+    partial class addingcustomerTypetocustomermodel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -88,36 +88,6 @@ namespace Backend_API.Migrations
                     b.ToTable("Assets");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.BillingProfile", b =>
-                {
-                    b.Property<string>("BillingProfileId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<long>("AddressID")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("CustomerID")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("DateCreated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime>("DateModified")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BillingProfileId");
-
-                    b.HasIndex("AddressID");
-
-                    b.HasIndex("CustomerID");
-
-                    b.ToTable("BillingProfiles");
-
-                    b.HasCheckConstraint("CK_BillingProfile_Key_Format", "BillingProfileId LIKE '[0-9]-%[0-9]'");
-                });
-
             modelBuilder.Entity("Backend_API.Data.Model.Customer", b =>
                 {
                     b.Property<long>("Id")
@@ -139,6 +109,9 @@ namespace Backend_API.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TypeID")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -602,25 +575,6 @@ namespace Backend_API.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("Backend_API.Data.Model.BillingProfile", b =>
-                {
-                    b.HasOne("Backend_API.Data.Model.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend_API.Data.Model.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Address");
 
                     b.Navigation("Customer");
                 });

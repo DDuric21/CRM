@@ -88,27 +88,6 @@ namespace Backend_API.Migrations
                     b.ToTable("Assets");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.BillingProfile", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("DateCreated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime>("DateModified")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BillingProfiles");
-                });
-
             modelBuilder.Entity("Backend_API.Data.Model.Customer", b =>
                 {
                     b.Property<long>("Id")

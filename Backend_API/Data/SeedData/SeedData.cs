@@ -44,6 +44,8 @@ namespace Backend_API.Data.SeedData
 
             CreateOptions(context);
 
+            CreateBillingProfiles(context);
+
             CreateCustomerAssets(context);
 
             CreateCustomerAssetOptions(context);
@@ -60,17 +62,20 @@ namespace Backend_API.Data.SeedData
                     new Customer
                     {
                         Name = "Test Name1",
-                        Birthday = new DateTime(1995,05,16,0,0,0)
+                        Birthday = new DateTime(1995,05,16,0,0,0),
+                        TypeID = 1
                     },
                     new Customer
                     {
                         Name = "Test Name2",
-                        Birthday = new DateTime(1970,01,01,0,0,0)
+                        Birthday = new DateTime(1970,01,01,0,0,0),
+                        TypeID = 1
                     },
                     new Customer
                     {
                         Name = "Test Name3",
-                        Birthday = new DateTime(2000,03,21,0,0,0)
+                        Birthday = new DateTime(2000,03,21,0,0,0),
+                        TypeID = 1
                     }
                 });
 
@@ -284,6 +289,30 @@ namespace Backend_API.Data.SeedData
                         CurrencyID = 0,
                         AssetID = 2
                     },
+                });
+
+                //needed so that FK constraints dont appear
+                context.SaveChanges();
+            }
+        }
+
+
+        private static void CreateBillingProfiles(CrmDbContext context)
+        {
+            if (!context.BillingProfiles.Any())
+            {
+                var billingProfile1 = new BillingProfile { CustomerID = 1, AddressID = 1 };
+                billingProfile1.GenerateKey(1, 123);
+                var billingProfile2 = new BillingProfile { CustomerID = 2, AddressID = 2 };
+                billingProfile2.GenerateKey(1, 456);
+                var billingProfile3 = new BillingProfile { CustomerID = 2, AddressID = 3 };
+                billingProfile3.GenerateKey(1, 789);
+
+                context.BillingProfiles.AddRange(new List<BillingProfile>
+                {
+                    billingProfile1,
+                    billingProfile2,
+                    billingProfile3
                 });
 
                 //needed so that FK constraints dont appear

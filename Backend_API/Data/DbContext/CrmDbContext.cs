@@ -95,7 +95,9 @@ namespace Backend_API.Data.DbContext
                 .HasCheckConstraint("CK_BillingProfile_Key_Format", "BillingProfileId LIKE '[0-9]-%[0-9]'");
             modelBuilder.Entity<BillingProfile>()
                 .HasOne(x => x.Address)
-                .WithOne(x => x.BillingProfile)
+                .WithMany(x => x.BillingProfiles)
+                .HasForeignKey(x => x.AddressID)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
         }
 

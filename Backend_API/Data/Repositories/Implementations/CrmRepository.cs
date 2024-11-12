@@ -158,5 +158,19 @@ namespace Backend_API.Data.Repositories
                 return _interactions;
             }
         }
+
+        public IBillingProfileRepository _billingProfiles;
+        public IBillingProfileRepository BillingProfiles
+        {
+            get
+            {
+                if (_billingProfiles == null)
+                {
+                    _billingProfiles = new BillingProfileRepository(_context);
+                }
+
+                return _billingProfiles;
+            }
+        }
     }
 }

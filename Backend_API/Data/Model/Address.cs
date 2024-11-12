@@ -12,6 +12,6 @@ namespace Backend_API.Data.Model
         public long CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
 
-        public virtual BillingProfile BillingProfile { get; set; }
+        public virtual ICollection<BillingProfile> BillingProfiles { get; set; }
     }
 }

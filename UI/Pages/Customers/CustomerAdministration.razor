@@ -13,21 +13,21 @@ else
     <CascadingValue Value="@customerDTO">
         <Customer IsAdmin="true"></Customer>        
         <button class="btn btn-primary" @onclick="() => NavigateToCustomerBase()">Return</button>
-    </CascadingValue>
     <br />
     <CustomerAdminNav DisplayComponent="ShowComponent"></CustomerAdminNav>
-    switch (componentName)
+    @switch (@componentName)
     {
         case nameof(CustomerAddresses) :
             <CustomerAddresses Addresses="@customerDTO.Addresses"></CustomerAddresses>
             break;
         case nameof(CustomerProfiles) :
-            <CustomerProfiles></CustomerProfiles>
+            <CustomerProfiles BillingProfiles="@customerDTO.BillingProfiles"></CustomerProfiles>
             break;
         default:
             <h3>No component selected</h3>
             break;
     }
+    </CascadingValue>
 }
 
 @code {

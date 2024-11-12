@@ -21,11 +21,24 @@ namespace Backend_API.Services
 
         public Customer GetCustomerData(long id)
         {
-            var customer = _repository.Customers
+            var customerData = _repository.Customers
                 .Filter(
                     filter: x => x.Id == id, 
                     include: x => x.Addresses)
+                .Select(x => new 
+                {
+                    Customer = x,
+                    BillingProfiles = x.BillingProfiles
+                })
                 .FirstOrDefault();
+
+            if (customerData.IsNullOrEmpty())
+            {
+                return new Customer();
+            }
+
+            var customer = customerData.Customer;
+            customer.BillingProfiles = customerData.BillingProfiles;
 
             return customer;
         }
@@ -43,6 +56,17 @@ namespace Backend_API.Services
             foreach (var address in customer.Addresses ?? Enumerable.Empty<Address>())
             {
                 customerDTO.Addresses.Add(_mapper.Map<AddressDTO>(address));
+            }
+
+            customerDTO.BillingProfiles = new List<BillingProfileDTO>();
+
+            foreach (var billingProfile in customer.BillingProfiles ?? Enumerable.Empty<BillingProfile>())
+            {
+                var billingProfileDTO = _mapper.Map<BillingProfileDTO>(billingProfile);
+                billingProfileDTO.BillingAddress = customerDTO.Addresses
+                    .FirstOrDefault(x => x.Id == billingProfile.AddressID);
+
+                customerDTO.BillingProfiles.Add(billingProfileDTO);
             }
 
             return customerDTO;

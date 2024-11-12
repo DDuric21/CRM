@@ -2,7 +2,9 @@
 {
     public class EditableID
     {
-        public long Id{ get; set; }
+        public long Id { get; set; }
+
+        public string? CustomId { get; set; }
 
         public bool IsEditable { get; set; }
 

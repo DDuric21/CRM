@@ -1,4 +1,6 @@
-﻿namespace Models.DTO
+﻿using Models.Enums;
+
+namespace Models.DTO
 {
     public class CustomerDTO
     {
@@ -11,12 +13,17 @@
 
         public DateTime Birthday { get; set; }
 
+        public CustomerType Type { get; set; }
+
         public List<AssetDTO> Assets { get; set; }
+
+        public List<BillingProfileDTO> BillingProfiles { get; set; }
 
         public CustomerDTO()
         {
             Addresses = new List<AddressDTO>();
             Assets = new List<AssetDTO>();
+            BillingProfiles = new List<BillingProfileDTO>();
         }
     }
 }

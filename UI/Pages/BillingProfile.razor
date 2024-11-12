@@ -1,0 +1,38 @@
+﻿
+<fieldset disabled="@(!IsEditable)">
+    <table>
+        <thead>
+            <tr>
+                <th style="padding-right: 15px">Billing Profile ID</th>
+                <th style="padding-right: 15px">Address</th>
+            </tr>
+        </thead>
+        <tbody> 
+            <tr>
+                <td><input type="text" @bind-value="BillingProfileDTO.BillingProfileId" /></td>
+                <td>
+                    <select class="form-select w-30" @bind="BillingProfileDTO.BillingAddress.Id">
+                        @foreach (var billingAddress in PossibleAddreses)
+                        {
+                            <option value="@billingAddress.Id">@billingAddress.FullAddress</option>
+                        }
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table> 
+</fieldset>
+
+@code {
+    [Parameter]
+    public bool IsEditable { get; set; }
+
+    [Parameter]
+    public List<AddressDTO> PossibleAddreses { get; set; }
+
+    [Parameter]
+    public BillingProfileDTO BillingProfileDTO { get; set; }
+
+    [Parameter]
+    public EventCallback<BillingProfileDTO> SaveBillingProfile { get; set; }
+}
