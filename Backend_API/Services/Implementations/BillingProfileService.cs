@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
+using Models.Enums;
 
 namespace Backend_API.Services
 {
@@ -39,6 +40,16 @@ namespace Backend_API.Services
             RemoveObjectsBeforeUpdate(billingProfile);
 
             return await _repository.BillingProfiles.UpdateBillingProfileAsync(billingProfile);
+        }
+
+        public async Task<int> DeactivateBillingProfileAsync(string billingProfileId)
+        {
+            var billingProfile = new BillingProfile(billingProfileId)
+            {
+                BillingProfileStatusID = (int)ItemState.Inactive
+            };
+
+            return await _repository.BillingProfiles.PartialUpdateAsync(billingProfile, x => x.BillingProfileStatusID);
         }
 
         private void RemoveObjectsBeforeUpdate(BillingProfile billingProfile)

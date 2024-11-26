@@ -14,7 +14,7 @@ namespace Models.DTO
 
         public long CurrencyID { get; set; }
 
-        public AssetStatus AssetStatus { get; set; }
+        public ItemState AssetStatus { get; set; }
 
         public List<OptionDTO> Options { get; set; }
 

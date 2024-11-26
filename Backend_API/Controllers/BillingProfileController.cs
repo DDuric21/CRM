@@ -78,5 +78,31 @@ namespace Backend_API.Controllers
                 return Problem(ex.Message);
             }
         }
+
+        [HttpDelete]
+        [Route("/BillingProfiles/{billingProfileId}")]
+        public async Task<IActionResult> DeactivateBillingProfile(string billingProfileId)
+        {
+            if (string.IsNullOrWhiteSpace(billingProfileId))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var result = await _billingProfileService.DeactivateBillingProfileAsync(billingProfileId);
+
+                if (result <= 0)
+                {
+                    return Problem("Billing profile not deactivated!");
+                }
+
+                return Ok(new ResponseBase());
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
     }
 }

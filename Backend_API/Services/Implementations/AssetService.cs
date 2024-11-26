@@ -53,7 +53,7 @@ namespace Backend_API.Services
                 {
                     var assetDTO = _mapper.Map<AssetDTO>(customerAsset.Asset);
                     assetDTO.CustomerAssetID = customerAsset.Id;
-                    assetDTO.AssetStatus = (AssetStatus)customerAsset.AssetStatusID;
+                    assetDTO.AssetStatus = (ItemState)customerAsset.AssetStatusID;
                     assetDTOs.Add(assetDTO);
                 }
 

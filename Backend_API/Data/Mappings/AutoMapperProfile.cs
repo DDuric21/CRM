@@ -19,16 +19,13 @@ namespace Backend_API.Data.Mappings
             CreateMap<OptionDTO, Option>();
             CreateMap<Order, OrderDTO>();
             CreateMap<OrderDTO, Order>();
-            CreateMap<BillingProfile, BillingProfileDTO>() // treba testirati, nezz da li radi
-                .AfterMap((src, dest, context) => context.Mapper.Map<Address, AddressDTO>(src.Address));
+            CreateMap<BillingProfile, BillingProfileDTO>()
+                .ForPath(dest => dest.BilingProfileStatus, opt => opt.MapFrom(src => (ItemState)src.BillingProfileStatusID))
+                .ForMember(dest => dest.BillingAddress, opt => opt.MapFrom(src => src.Address));
             CreateMap<BillingProfileDTO, BillingProfile>()
+                .ForPath(dest => dest.BillingProfileStatusID, opt => opt.MapFrom(src => (int)src.BilingProfileStatus))
                 .ForMember(x => x.AddressID, y => y.MapFrom(z => z.BillingAddress.Id))
-                .AfterMap((src, dest) =>
-                {
-                    dest.AddressID = src.BillingAddress.Id == 0
-                        ? null
-                        : src.BillingAddress.Id;
-                });
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.BillingAddress));
             CreateMap<Interaction, InteractionDTO>()
                 .ForPath(dest => dest.Type, opt => opt.MapFrom(src => (InteractionType)src.TypeID));
             CreateMap<InteractionDTO, Interaction>()

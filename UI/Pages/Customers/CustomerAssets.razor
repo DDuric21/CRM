@@ -20,7 +20,7 @@
                 <td style="padding-right: 15px"><label id="@assetDTO.Id" >@assetDTO.Name</label></td>
                 <td style="padding-right: 15px"><label id="@assetDTO.Id" >@assetDTO.Price</label></td>
                 <td style="padding-right: 15px"><label id="@assetDTO.Id" >@assetDTO.AssetStatus.ToString()</label></td>
-                @if (assetDTO.AssetStatus != AssetStatus.Inactive)
+                @if (assetDTO.AssetStatus != ItemState.Inactive)
                 {
                     <td style="padding-right: 15px"><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)" >Edit</button></td>
                     <td style="padding-right: 15px"><button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)" >Deactivate</button></td>                    

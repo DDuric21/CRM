@@ -7,5 +7,6 @@ namespace UI.Services
     {
         Task<BillingProfileDTO> CreateNewBillingProfileAsync(long customerID);
         Task UpdateBillingProfileAsync(BillingProfileDTO billingProfileDTO);
+        Task DeactivateBillingProfileAsync(string billingProfileId);
     }
 }

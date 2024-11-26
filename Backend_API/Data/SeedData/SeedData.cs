@@ -296,23 +296,25 @@ namespace Backend_API.Data.SeedData
             }
         }
 
-
         private static void CreateBillingProfiles(CrmDbContext context)
         {
             if (!context.BillingProfiles.Any())
             {
-                var billingProfile1 = new BillingProfile { CustomerID = 1, AddressID = 1 };
+                var billingProfile1 = new BillingProfile { CustomerID = 1, AddressID = 1, BillingProfileStatusID = 1 };
                 billingProfile1.GenerateKey(1, 123);
-                var billingProfile2 = new BillingProfile { CustomerID = 2, AddressID = 2 };
+                var billingProfile2 = new BillingProfile { CustomerID = 2, AddressID = 2, BillingProfileStatusID = 1 };
                 billingProfile2.GenerateKey(1, 456);
-                var billingProfile3 = new BillingProfile { CustomerID = 2, AddressID = 3 };
+                var billingProfile3 = new BillingProfile { CustomerID = 2, AddressID = 3, BillingProfileStatusID = 2 };
                 billingProfile3.GenerateKey(1, 789);
+                var billingProfile4 = new BillingProfile { CustomerID = 2, AddressID = 2, BillingProfileStatusID = 3 };
+                billingProfile4.GenerateKey(1, 987);
 
                 context.BillingProfiles.AddRange(new List<BillingProfile>
                 {
                     billingProfile1,
                     billingProfile2,
-                    billingProfile3
+                    billingProfile3,
+                    billingProfile4
                 });
 
                 //needed so that FK constraints dont appear

@@ -79,7 +79,7 @@ namespace Backend_API.Services
                 return 0;
             }
 
-            var result = await UpdateCustomerAssetStatusAsync(order.CustomerAssetsID.Value, (int)AssetStatus.Inactive);
+            var result = await UpdateCustomerAssetStatusAsync(order.CustomerAssetsID.Value, (int)ItemState.Inactive);
 
             return result;
         }
@@ -256,7 +256,7 @@ namespace Backend_API.Services
             return customerAsset;
         }
 
-        private int DefineAssetStatus(CrudAction orderAction, AssetStatus? assetStatus = null)
+        private int DefineAssetStatus(CrudAction orderAction, ItemState? assetStatus = null)
         {
             if (assetStatus != null
                 && (int)assetStatus > 0)
@@ -268,17 +268,17 @@ namespace Backend_API.Services
             switch (orderAction)
             {
                 case CrudAction.Create:
-                    status = (int)AssetStatus.Active;
+                    status = (int)ItemState.Active;
                     break;
                 case CrudAction.Update:
-                    status = (int)AssetStatus.Active;
+                    status = (int)ItemState.Active;
                     break;
                 case CrudAction.Delete:
-                    status = (int)AssetStatus.Inactive;
+                    status = (int)ItemState.Inactive;
                     break;
                 // maybe not the best idea
                 default:
-                    status = (int)AssetStatus.Active;
+                    status = (int)ItemState.Active;
                     break;
             }
 

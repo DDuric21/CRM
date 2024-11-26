@@ -1,6 +1,6 @@
 ﻿namespace Models.Enums
 {
-    public enum AssetStatus
+    public enum ItemState
     {
         Active = 1,
         Suspended = 2,

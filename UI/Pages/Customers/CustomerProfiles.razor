@@ -15,24 +15,28 @@
                     PossibleAddreses="CustomerDTO.Addresses"
                     IsEditable="customerBillingProfile.Key.IsEditable">
                 </BillingProfile>
-                <td style="padding-left: 10px">
-                    <button 
-                        hidden="@customerBillingProfile.Key.IsEditable" 
-                        class="btn btn-outline-secondary" 
-                        @onclick="() => EditBillingProfile(customerBillingProfile.Key.CustomId)">Edit
-                    </button>
-                    <button 
-                        hidden="@(!customerBillingProfile.Key.IsEditable)"
-                        class="btn btn-primary" 
-                        @onclick="() => SaveBillingProfile(customerBillingProfile.Value)">Save
-                    </button>
-                </td>
-                <td style="padding-left: 10px">
-                    <button 
-                        class="btn btn-danger" 
-                        @onclick="() => DeactivateBillingProfile(customerBillingProfile.Key.CustomId)">Deactivate
-                    </button>
-                </td>
+                @if (customerBillingProfile.Value.BilingProfileStatus != ItemState.Inactive)
+                {
+                    <td style="padding-left: 10px">
+                        <button 
+                            hidden="@customerBillingProfile.Key.IsEditable" 
+                            class="btn btn-outline-secondary" 
+                            @onclick="() => EditBillingProfile(customerBillingProfile.Key.CustomId)">Edit
+                        </button>
+                        <button 
+                            hidden="@(!customerBillingProfile.Key.IsEditable)"
+                            class="btn btn-primary" 
+                            @onclick="() => SaveBillingProfile(customerBillingProfile.Value)">Save
+                        </button>
+                    </td>
+                    <td style="padding-left: 10px">
+                        <button 
+                            hidden="@(customerBillingProfile.Key.IsEditable)"
+                            class="btn btn-danger" 
+                            @onclick="() => DeactivateBillingProfile(customerBillingProfile.Key.CustomId)">Deactivate
+                        </button>
+                    </td>                    
+                }
            </tr>
         }
     </tbody>
@@ -74,20 +78,26 @@
         var newBillingProfile = await billingProfileService.CreateNewBillingProfileAsync(CustomerDTO.Id);
         editableID.CustomId = newBillingProfile.BillingProfileId;
         newBillingProfile.BillingAddress = new AddressDTO();
-        customerBillingProfiles.Add(editableID, newBillingProfile);   
+        customerBillingProfiles.Add(editableID, newBillingProfile);
+        BillingProfiles.Add(newBillingProfile);
 
         StateHasChanged();
     }
 
-    private void DeactivateBillingProfile(string billingProfileId)
+    private async Task DeactivateBillingProfile(string billingProfileId)
     {
-        
+        await billingProfileService.DeactivateBillingProfileAsync(billingProfileId);
+
+        var customerBillingProfile = customerBillingProfiles.First(x => x.Key.CustomId == billingProfileId);
+        customerBillingProfile.Value.BilingProfileStatus = ItemState.Inactive;
+
+        StateHasChanged();
     }
 
     public void EditBillingProfile(string billingProfileId)
     {
-        var interactionForEdit = customerBillingProfiles.Keys.First(x => x.CustomId == billingProfileId);
-        interactionForEdit.IsEditable = true;
+        var billingProfileForEdit = customerBillingProfiles.Keys.First(x => x.CustomId == billingProfileId);
+        billingProfileForEdit.IsEditable = true;
 
         StateHasChanged();
     }

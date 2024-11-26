@@ -51,5 +51,21 @@ namespace UI.Services
                 _modalService.ShowErrorMessage(ex.Message);
             }
         }
+
+        public async Task DeactivateBillingProfileAsync(string billingProfileId)
+        {
+            var url = $"https://localhost:7076/BillingProfiles/{billingProfileId}";
+            var request = _communicationService.CreateRequest(HttpMethod.Delete, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+            }
+            catch (Exception ex)
+            {
+                // loging
+                _modalService.ShowErrorMessage(ex.Message);
+            }
+        }
     }
 }
