@@ -9,7 +9,7 @@
         </thead>
         <tbody> 
             <tr>
-                <td><input type="text" @bind-value="BillingProfileDTO.BillingProfileId" /></td>
+                <td><input type="text" @bind-value="BillingProfileDTO.BillingProfileId" disabled/></td>
                 <td>
                     <select class="form-select w-30" @bind="BillingProfileDTO.BillingAddress.Id">
                         @foreach (var billingAddress in PossibleAddreses)

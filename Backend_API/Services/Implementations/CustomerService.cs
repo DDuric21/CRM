@@ -19,28 +19,16 @@ namespace Backend_API.Services
             _mapper = mapper;
         }
 
-        public Customer GetCustomerData(long id)
+        public async Task<Customer> GetCustomerDataAsync(long customerId)
         {
-            var customerData = _repository.Customers
-                .Filter(
-                    filter: x => x.Id == id, 
-                    include: x => x.Addresses)
-                .Select(x => new 
-                {
-                    Customer = x,
-                    BillingProfiles = x.BillingProfiles
-                })
-                .FirstOrDefault();
+            var customerData = await _repository.Customers.GetAllCustomerRelatedDataAsync(customerId);
 
             if (customerData.IsNullOrEmpty())
             {
                 return new Customer();
             }
 
-            var customer = customerData.Customer;
-            customer.BillingProfiles = customerData.BillingProfiles;
-
-            return customer;
+            return customerData;
         }
 
         public CustomerDTO MapCustomerToDTO(Customer customer)
@@ -63,8 +51,6 @@ namespace Backend_API.Services
             foreach (var billingProfile in customer.BillingProfiles ?? Enumerable.Empty<BillingProfile>())
             {
                 var billingProfileDTO = _mapper.Map<BillingProfileDTO>(billingProfile);
-                billingProfileDTO.BillingAddress = customerDTO.Addresses
-                    .FirstOrDefault(x => x.Id == billingProfile.AddressID);
 
                 customerDTO.BillingProfiles.Add(billingProfileDTO);
             }

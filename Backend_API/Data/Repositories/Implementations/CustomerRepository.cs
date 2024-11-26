@@ -39,5 +39,16 @@ namespace Backend_API.Data.Repositories
 
             return await SaveAsync();
         }
+
+        public async Task<Customer> GetAllCustomerRelatedDataAsync(long customerId)
+        {
+            var customer = await _context.Customers
+                .Include(c => c.Addresses)
+                .Include(c => c.BillingProfiles)
+                    .ThenInclude(bp => bp.Address)
+                .FirstOrDefaultAsync(c => c.Id == customerId);
+
+            return customer;
+        }
     }
 }

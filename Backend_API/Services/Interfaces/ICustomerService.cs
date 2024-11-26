@@ -25,7 +25,7 @@ namespace Backend_API.Services
         /// </summary>
         /// <param name="id">Id of customer</param>
         /// <returns>Customer object</returns>
-        Customer GetCustomerData(long id);
+        Task<Customer> GetCustomerDataAsync(long id);
 
         IEnumerable<CustomerAssets> GetCustomerAssets(long id);
 

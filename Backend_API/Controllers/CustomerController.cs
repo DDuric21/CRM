@@ -58,14 +58,14 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Customers/{id}")]
-        public async Task<IActionResult> GetCustomer(long id)
+        [Route("/Customers/{customerId}")]
+        public async Task<IActionResult> GetCustomer(long customerId)
         {
             var customerDTO = new CustomerDTO();
 
             try
             {
-                var customer = _customerService.GetCustomerData(id);
+                var customer = await _customerService.GetCustomerDataAsync(customerId);
 
                 if (customer.IsNullOrEmpty())
                 {

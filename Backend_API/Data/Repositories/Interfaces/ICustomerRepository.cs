@@ -6,5 +6,6 @@ namespace Backend_API.Data.Repositories
     {
         Task<int> UpdateCustomerAsync(Customer customer);
         Task<List<Customer>> GetAllCustomersAsync();
+        Task<Customer> GetAllCustomerRelatedDataAsync(long customerId);
     }
 }
