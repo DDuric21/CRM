@@ -9,8 +9,10 @@ namespace Backend_API.Data.Mappings
     {
         public AutoMapperProfile()
         {
-            CreateMap<Customer, CustomerDTO>();
-            CreateMap<CustomerDTO, Customer>();
+            CreateMap<Customer, CustomerDTO>()
+                .ForPath(dest => dest.Type, opt => opt.MapFrom(src => (ItemState)src.TypeID));
+            CreateMap<CustomerDTO, Customer>()
+                .ForPath(dest => dest.TypeID, opt => opt.MapFrom(src => (int)src.Type));
             CreateMap<AddressDTO, Address>();
             CreateMap<Address, AddressDTO>();
             CreateMap<Asset, AssetDTO>();
