@@ -24,6 +24,8 @@ namespace Backend_API.Data.Model
 
         public DateTime DateModified { get; set; }
 
+        public virtual ICollection<CustomerAssets> CustomerAssets { get; set; }
+
         public BillingProfile()
         {
 

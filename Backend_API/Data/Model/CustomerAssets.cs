@@ -16,6 +16,9 @@ namespace Backend_API.Data.Model
 
         public int AssetStatusID { get; set; }
 
+        public string BillingProfileId { get; set; }
+        public virtual BillingProfile BillingProfile { get; set; }
+
         public virtual ICollection<CustomerAssetOptions> CustomerAssetOptions { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; }

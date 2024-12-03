@@ -76,8 +76,6 @@ namespace Backend_API.Data.DbContext
                 .HasOne(x => x.Option)
                 .WithMany(x => x.CustomerAssetOptions);
 
-            modelBuilder.Entity<CustomerAssets>();
-
             modelBuilder.Entity<Option>();
 
             modelBuilder.Entity<RefreshToken>();

@@ -11,6 +11,14 @@
                 <option value="@asset.Id">@asset.Name</option>
             }
         </select> 
+        <fieldset disabled="@(AssetDTO.Id <= 0)">
+            <select id="selectedBillingProfile" class="form-select" @onchange="BillingProfileChanged" >
+                @foreach (var profile in selectableBillingProfiles)
+                {
+                    <option value="@profile.BillingProfileId">@profile.BillingProfileId</option>
+                }
+            </select>
+        </fieldset>
         <table>
             <thead>
                 <tr>
@@ -71,6 +79,14 @@
                 <input type="text" @bind-value="AssetDTO.Name" /><br>
             </fieldset>
         }
+        <fieldset disabled="@(ActionID == (int)CrudAction.Delete)">
+            <select id="selectedBillingProfile" class="form-select" @onchange="BillingProfileChanged" >
+                @foreach (var profile in selectableBillingProfiles)
+                {
+                    <option value="@profile.BillingProfileId">@profile.BillingProfileId</option>
+                }
+            </select>
+        </fieldset>
     </div>
     <table>
         <thead>
@@ -117,7 +133,12 @@
 }
 
 
+
+
 @code {
+    [CascadingParameter]
+    public OrderDTO OrderDTO { get; set; }
+
     [Parameter]
     public AssetDTO AssetDTO { get; set; } = new AssetDTO();
 
@@ -131,14 +152,20 @@
         .Options;
     private List<OptionDTO> selectedOptions = new List<OptionDTO>();
 
+    private List<BillingProfileDTO> selectableBillingProfiles = new List<BillingProfileDTO>();
+
     protected override async Task OnInitializedAsync()
     {
         var assets = await assetService.GetAssetsAsync(true);
         this.selectableAssets = await assets.ToListAsync();
+        selectableBillingProfiles = OrderDTO.CustomerDTO.BillingProfiles
+            .Where(x => x.BilingProfileStatus == ItemState.Active)
+            .ToList();
 
         //add empty items for better UX
         this.selectableAssets.ForEach(x => x.Options.Insert(0, new OptionDTO()));        
-        this.selectableAssets.Insert(0, new AssetDTO());
+        this.selectableAssets.Insert(0, new AssetDTO());       
+        this.selectableBillingProfiles.Insert(0, new BillingProfileDTO { BilingProfileStatus = ItemState.Active });
     }
 
     private void AddOption()
@@ -159,7 +186,7 @@
 
     private void OptionSelected(ChangeEventArgs e)
     {
-        if (!ValidateEventArgID(e, out var id))
+        if (!ValidateEventArgID(e, out long id))
         {
             modalService.ShowErrorMessage("Selected option is not valid!");
             return;
@@ -175,7 +202,7 @@
 
     private void AssetSelected(ChangeEventArgs e)
     {
-        if (!ValidateEventArgID(e, out var id))
+        if (!ValidateEventArgID(e, out long id))
         {
             modalService.ShowErrorMessage("Selected asset is not valid!");
             return;
@@ -183,6 +210,20 @@
 
         AssetDTO = selectableAssets.FirstOrDefault(x => x.Id == id).Clone();
         selectedOptions.Clear();
+
+        StateHasChanged();
+    }
+
+    private void BillingProfileChanged(ChangeEventArgs e)
+    {
+        if (!ValidateEventArgID(e, out string id))
+        {
+            modalService.ShowErrorMessage("Selected billing profile is not valid!");
+            return;
+        }
+
+        AssetDTO.BillingProfile = selectableBillingProfiles
+            .FirstOrDefault(x => x.BillingProfileId == id);
 
         StateHasChanged();
     }
@@ -202,6 +243,18 @@
         id = 0;
         var isValid = e != null
             && long.TryParse(e.Value.ToString(), out id);
+
+        return isValid;
+    }
+
+    public static bool ValidateEventArgID(ChangeEventArgs e, out string id)
+    {
+        var isValid = e != null
+            && e.Value != null;
+
+        id = isValid
+            ? e.Value.ToString()
+            : string.Empty;
 
         return isValid;
     }

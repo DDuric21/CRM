@@ -193,61 +193,6 @@ namespace Backend_API.Data.SeedData
             }
         }
 
-        private static void CreateCustomerAssets(CrmDbContext context)
-        {
-            if (!context.CustomerAssets.Any())
-            {
-                context.CustomerAssets.AddRange(new List<CustomerAssets>
-                {
-                    new CustomerAssets
-                    {
-                        CustomerID = 1,
-                        AssetID = 1,
-                        AssetAddressID = 1,
-                        AssetStatusID = 1,
-                    },
-                    new CustomerAssets
-                    {
-                        CustomerID = 1,
-                        AssetID = 1,
-                        AssetAddressID = 1,
-                        AssetStatusID = 2,
-                    },
-                    new CustomerAssets
-                    {
-                        CustomerID = 1,
-                        AssetID = 2,
-                        AssetAddressID = 1,
-                        AssetStatusID = 1,
-                    },
-                    new CustomerAssets
-                    {
-                        CustomerID = 2,
-                        AssetID = 2,
-                        AssetAddressID = 2,
-                        AssetStatusID = 1,
-                    },
-                    new CustomerAssets
-                    {
-                        CustomerID = 3,
-                        AssetID = 1,
-                        AssetAddressID = 4,
-                        AssetStatusID = 1,
-                    },
-                    new CustomerAssets
-                    {
-                        CustomerID = 3,
-                        AssetID = 3,
-                        AssetAddressID = 5,
-                        AssetStatusID = 1,
-                    }
-                });
-
-                //needed so that FK constraints dont appear
-                context.SaveChanges();
-            }
-        }
-
         private static void CreateOptions(CrmDbContext context)
         {
             if (!context.Options.Any())
@@ -308,16 +253,76 @@ namespace Backend_API.Data.SeedData
                 billingProfile3.GenerateKey(1, 789);
                 var billingProfile4 = new BillingProfile { CustomerID = 2, AddressID = 2, BillingProfileStatusID = 3 };
                 billingProfile4.GenerateKey(1, 987);
+                var billingProfile5 = new BillingProfile { CustomerID = 3, AddressID = 5, BillingProfileStatusID = 1 };
+                billingProfile5.GenerateKey(1, 321);
 
                 context.BillingProfiles.AddRange(new List<BillingProfile>
                 {
                     billingProfile1,
                     billingProfile2,
                     billingProfile3,
-                    billingProfile4
+                    billingProfile4,
+                    billingProfile5
+                });
+            }
+        }
+
+        private static void CreateCustomerAssets(CrmDbContext context)
+        {
+            if (!context.CustomerAssets.Any())
+            {
+                context.CustomerAssets.AddRange(new List<CustomerAssets>
+                {
+                    new CustomerAssets
+                    {
+                        CustomerID = 1,
+                        AssetID = 1,
+                        AssetAddressID = 1,
+                        AssetStatusID = 1,
+                        BillingProfileId = "1-123"
+                    },
+                    new CustomerAssets
+                    {
+                        CustomerID = 1,
+                        AssetID = 1,
+                        AssetAddressID = 1,
+                        AssetStatusID = 2,
+                        BillingProfileId = "1-123"
+                    },
+                    new CustomerAssets
+                    {
+                        CustomerID = 1,
+                        AssetID = 2,
+                        AssetAddressID = 1,
+                        AssetStatusID = 1,
+                        BillingProfileId = "1-123"
+                    },
+                    new CustomerAssets
+                    {
+                        CustomerID = 2,
+                        AssetID = 2,
+                        AssetAddressID = 2,
+                        AssetStatusID = 1,
+                        BillingProfileId = "1-456"
+                    },
+                    new CustomerAssets
+                    {
+                        CustomerID = 3,
+                        AssetID = 1,
+                        AssetAddressID = 4,
+                        AssetStatusID = 1,
+                        BillingProfileId = "1-321"
+                    },
+                    new CustomerAssets
+                    {
+                        CustomerID = 3,
+                        AssetID = 3,
+                        AssetAddressID = 5,
+                        AssetStatusID = 1,
+                        BillingProfileId = "1-321"
+                    }
                 });
 
-                //needed so that FK constraints dont appear
                 context.SaveChanges();
             }
         }
