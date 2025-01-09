@@ -10,24 +10,51 @@
 <PageTitle>New Customer Form</PageTitle>
 
 <h2>Create New Customer</h2>
+<select class="form-select" @bind="customerDTO.Type">
+    @foreach (var customerType in Enum.GetValues(typeof(CustomerType)))
+    {
+        <option value="@customerType">@customerType</option>                  
+    }
+</select> 
 
-<div class="top-container">
-    <div class="top-left-container">
-        <EditForm class="newCustomer-form" Model="@customerDTO" OnSubmit="@CreateNewCustomer">
-            <InputText placeholder="Name" @bind-Value="customerDTO.Name" /><br>
-			<InputDate placeholder="2018-07-22" @bind-Value="customerDTO.Birthday" /><br>
-            <InputText placeholder="Full address" @bind-Value="addressDTO.FullAddress" /><br>
-            <button type="submit" name="submit" class="button">Create</button>
-        </EditForm>
-    </div>
-</div>
+@switch (customerDTO.Type)
+{
+    case (CustomerType.Residential):        
+        <div class="top-container">
+            <div class="top-left-container">
+                <EditForm class="newCustomer-form" Model="@customerDTO" OnSubmit="@CreateNewResidentialCustomer">
+                    <InputText placeholder="Name" @bind-Value="customerDTO.Name" /><br>
+			        <InputDate @bind-Value="customerDTO.Birthday" /><br>
+                    <InputText placeholder="Full address" @bind-Value="addressDTO.FullAddress" /><br>
+                    <button type="submit" name="submit" class="button">Create</button>
+                </EditForm>
+            </div>
+        </div>
+        break;
+    case (CustomerType.Business):
+    case (CustomerType.Enterprise):
+        <div class="container d-flex align-items-center justify-content-center">
+            <span class="text-danger">Business types currently not supported</span>
+        </div>
+        break;
+    default:    
+        <div class="container d-flex align-items-center justify-content-center">
+            <span class="text-danger">Please choose the customer type</span>
+        </div>
+        break;
+}
 
 @code {
     private CustomerDTO customerDTO = new CustomerDTO();
 
     private AddressDTO addressDTO = new AddressDTO();
 
-    private async Task CreateNewCustomer()
+    protected override void OnInitialized()
+    {
+        customerDTO.Birthday = DateTime.Now;
+    }
+
+    private async Task CreateNewResidentialCustomer()
     {
         customerDTO.Addresses.Add(addressDTO);
         var result = await _customerService.CreateNewCustomerAsync(customerDTO);
