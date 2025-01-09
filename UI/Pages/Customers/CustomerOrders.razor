@@ -14,7 +14,7 @@
     <tbody>
         @foreach (var orderDTO in orders)
         {
-            <tr class="pointer" @ondblclick="() => RedirectToOrder(orderDTO.OrderID)">
+            <tr role="button" @ondblclick="() => RedirectToOrder(orderDTO.OrderID)">
                 <td><label id="@orderDTO.OrderID" >@orderDTO.OrderID</label></td>
                 <td><label id="@orderDTO.OrderID" >@orderDTO.AssetDTO.Name</label></td>
                 <td><label id="@orderDTO.OrderID" >@orderDTO.DateCreated.ToLocalTime().ToString("dd-MM-yyyy HH:mm:ss")</label></td>
