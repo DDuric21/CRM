@@ -2,23 +2,23 @@
 @inject ICustomerService customerService
 @inject NavigationManager navigationManager
 
-<table>
+<table class="table table-hover">
     <thead>
         <tr>
-            <th style="padding-right: 15px">Order ID</th>
-            <th style="padding-right: 15px">Asset Name</th>
-            <th style="padding-right: 15px">Created</th>
-            <th style="padding-right: 15px">Submited</th>
+            <th>Order ID</th>
+            <th>Asset Name</th>
+            <th>Created</th>
+            <th>Submited</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var orderDTO in orders)
         {
-            <tr @ondblclick="() => RedirectToOrder(orderDTO.OrderID)">
-                <td style="padding-right: 15px"><label id="@orderDTO.OrderID" >@orderDTO.OrderID</label></td>
-                <td style="padding-right: 15px"><label id="@orderDTO.OrderID" >@orderDTO.AssetDTO.Name</label></td>
-                <td style="padding-right: 15px"><label id="@orderDTO.OrderID" >@orderDTO.DateCreated.ToLocalTime().ToString("dd-MM-yyyy HH:mm:ss")</label></td>
-                <td style="padding-right: 15px"><label id="@orderDTO.OrderID" >@orderDTO.DateSubmited.ToLocalTime().ToString("dd-MM-yyyy HH:mm:ss")</label></td>                    
+            <tr class="pointer" @ondblclick="() => RedirectToOrder(orderDTO.OrderID)">
+                <td><label id="@orderDTO.OrderID" >@orderDTO.OrderID</label></td>
+                <td><label id="@orderDTO.OrderID" >@orderDTO.AssetDTO.Name</label></td>
+                <td><label id="@orderDTO.OrderID" >@orderDTO.DateCreated.ToLocalTime().ToString("dd-MM-yyyy HH:mm:ss")</label></td>
+                <td><label id="@orderDTO.OrderID" >@orderDTO.DateSubmited.ToLocalTime().ToString("dd-MM-yyyy HH:mm:ss")</label></td>                    
             </tr>
         }
     </tbody>

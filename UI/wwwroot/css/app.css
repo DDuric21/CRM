@@ -12,6 +12,14 @@ a, .btn-link {
     color: #0071c1;
 }
 
+.pointer, .pointer * {
+    cursor: pointer;
+}
+
+th, td {
+    padding-right: 15px;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;

@@ -6,17 +6,17 @@
     <thead>
         <button type="submit" name="submit" class="btn btn-primary" @onclick="() => CreateNewAddress()" >New +</button>
         <tr>
-            <th style="padding-right: 15px">Primary</th>
-            <th style="padding-right: 15px">Address</th>
+            <th>Primary</th>
+            <th>Address</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var addressDTO in Addresses)
         {
             <tr>
-                <td style="padding-right: 15px"><input type="radio" id="legalAddress" checked="@addressDTO.IsLegal" name="legalRadio" @onchange="() => ChangeLegal(addressDTO.Id)"/></td>
-                <td style="padding-right: 15px"><label id="address" for="legalAddress">@addressDTO.FullAddress</label></td>
-                <td style="padding-right: 15px"><button class="btn btn-danger" @onclick="() => DeleteAddress(addressDTO.Id)">Delete</button></td>
+                <td><input type="radio" id="legalAddress" checked="@addressDTO.IsLegal" name="legalRadio" @onchange="() => ChangeLegal(addressDTO.Id)"/></td>
+                <td><label id="address" for="legalAddress">@addressDTO.FullAddress</label></td>
+                <td><button class="btn btn-danger" @onclick="() => DeleteAddress(addressDTO.Id)">Delete</button></td>
             </tr>
         }
     </tbody>
