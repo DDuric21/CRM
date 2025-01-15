@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend_API.Data.DbContext
 {
-    public class CrmDbContext : IdentityDbContext
+    public class CrmDbContext : IdentityDbContext<User>
     {
         public static CrmDbContext _context;
 
@@ -34,11 +34,11 @@ namespace Backend_API.Data.DbContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            DefineCreationDate(modelBuilder);
+            base.OnModelCreating(modelBuilder);
 
             DefineModelBuilderEntities(modelBuilder);
 
-            base.OnModelCreating(modelBuilder);
+            DefineCreationDate(modelBuilder);
         }
 
         private static void DefineCreationDate(ModelBuilder modelBuilder)

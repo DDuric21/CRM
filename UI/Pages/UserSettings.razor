@@ -1,0 +1,69 @@
+﻿@page "/UserSettings"
+@using System.Security.Claims
+
+@inject IUserService userService
+
+<PageTitle>User Settings</PageTitle>
+
+@if (UserDTO.IsNullOrEmpty())
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h3>User Settings</h3>
+    <div>
+        <input value="@UserDTO.FirstName">
+        <input value="@UserDTO.LastName">
+        <input value="@UserDTO.UserName">
+    </div>
+
+    <div>
+        <span>Language</span>
+        <select>
+            @foreach(var language in supportedLanguages)
+            {
+                <option value="@language">@language</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <span>Time zone</span>
+    </div>
+
+    <div>
+        <span>Roles</span>
+        @foreach(var role in UserDTO.UserRoles)
+        {
+            <input value="@role">
+        }
+    </div>
+}
+
+@code {
+    [CascadingParameter] 
+    protected Task<AuthenticationState> authenticationState { get; set; }
+
+    [Parameter]
+    public UserDTO UserDTO { get; set; }
+
+    private HashSet<string> supportedLanguages;
+
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        var user = (await authenticationState).User;
+
+        UserDTO = await userService.GetUserDataAsync(user.Identity.Name);
+
+        supportedLanguages = new HashSet<string>
+        {
+            "english",
+            "german",
+            "croatian"
+        };
+    }
+
+}

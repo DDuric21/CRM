@@ -116,21 +116,6 @@ namespace Backend_API.Data.Repositories
             }
         }
 
-        private IUserRepository _users;
-
-        public IUserRepository Users
-        {
-            get
-            {
-                if (_users == null)
-                {
-                    _users = new UserRepository(_context);
-                }
-
-                return _users;
-            }
-        }
-
         public IRefreshTokenRepository _refreshTokens;
         public IRefreshTokenRepository RefreshTokens
         {

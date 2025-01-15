@@ -14,6 +14,12 @@ namespace Backend_API.Migrations
                 table: "RefreshTokens",
                 newName: "DateCreated");
 
+            //Manually added as EF didn't recognise this change
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "DateCreated",
+                table: "RefreshTokens",
+                defaultValueSql: "GETUTCDATE()");
+
             migrationBuilder.AddColumn<DateTime>(
                 name: "DateCreated",
                 table: "Users",

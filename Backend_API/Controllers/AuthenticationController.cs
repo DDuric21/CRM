@@ -4,17 +4,18 @@ using Models.Helpers;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Backend_API.Data.Model;
 
 namespace Backend_API.Controllers
 {
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
         public AuthenticationController(
             IAuthenticationService authenticationService,
-            UserManager<IdentityUser> userManager)
+            UserManager<User> userManager)
         {
             _authenticationService = authenticationService;
             _userManager = userManager;
@@ -70,7 +71,7 @@ namespace Backend_API.Controllers
                 return BadRequest(result);
             }
 
-            var newUser = new IdentityUser 
+            var newUser = new User 
             {
                 Email = userDTO.UserEmail,
                 UserName = userDTO.UserName

@@ -10,5 +10,7 @@ ApplicationConfigurationSetup.ExecuteMigrations(app);
 ApplicationConfigurationSetup.InitialzeConfiguration(app);
 
 app.UseCors("LocalPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();

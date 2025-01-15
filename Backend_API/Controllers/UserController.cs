@@ -1,91 +1,54 @@
 ﻿using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
+using Backend_API.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Models.DTO;
 
 namespace Backend_API.Controllers
 {
     public class UserController : Controller
     {
         private readonly ICrmRepository _repository;
+        private readonly IUserService _userService;
 
-        public UserController(ICrmRepository crmRepository)
+        public UserController(
+            ICrmRepository crmRepository, 
+            UserManager<User> userManager,
+            IUserService userService)
         {
             _repository = crmRepository;
+            _userService = userService;
         }
 
         [HttpGet]
-        [Route("/Users")]
-        public IEnumerable<User> GetAll()
+        [Route("/Users/{username}")]
+        public async Task<IActionResult> GetUserData(string username)
         {
-            var users = _repository.Users.GetAllAsync();
-
-            return users.Result;
-        }
-
-        [HttpGet]
-        [Route("/Users/{id}")]
-        public User GetById(long id)
-        {
-            var user = _repository.Users.GetByIdAsync(id);
-
-            if (user == null)
+            if (string.IsNullOrWhiteSpace(username))
             {
-                return new User();
+                return BadRequest();
             }
 
-            return user.Result;
-        }
-
-        [HttpPost]
-        [Route("/Users")]
-        public int InsertUser(User user)
-        {
+            var userDTO = new UserDTO();
             try
             {
-                _repository.Users.InsertAsync(user);
+                var userData = await _userService.GetUserDataAsync(username);
 
-                return _repository.Users.SaveAsync().Result;
+                if (userData == null)
+                {
+                    return Problem("No uzser found!");
+                }
+
+                userDTO = _userService.MapUserDataToDTO(userData);
             }
             catch (Exception ex)
             {
                 //add loging
+                return StatusCode(500, ex.Message);
             }
 
-            return 0;
-        }
-
-        [HttpDelete]
-        [Route("/Users/{id}")]
-        public string DeleteUser(long id)
-        {
-            var isDeleted = string.Empty;
-
-            try
-            {
-                //isDeleted = _repository.Users.DeleteByIdAsync(id).Result;
-            }
-            catch (Exception ex)
-            {
-                //add loging
-            }
-
-            return isDeleted;
-        }
-
-        [HttpPut]
-        [Route("/Users")]
-        public int UpdateUser(User user)
-        {
-            try
-            {
-                return _repository.Users.UpdateAsync(user).Result;
-            }
-            catch (Exception ex)
-            {
-                //add loging
-            }
-
-            return 0;
+            return Ok(userDTO);
         }
     }
 }

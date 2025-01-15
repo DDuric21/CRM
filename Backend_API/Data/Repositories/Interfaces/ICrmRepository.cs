@@ -11,7 +11,6 @@ namespace Backend_API.Data.Repositories
         ICustomerAssetOptionsRepository CustomerAssetOptions { get; }
         IOptionRepository Options { get; }
         IOrderRepository Orders { get; }
-        IUserRepository Users { get; }
         IRefreshTokenRepository RefreshTokens { get; }
         IGenericRepository<Interaction> Interactions { get; }
         IBillingProfileRepository BillingProfiles { get; }

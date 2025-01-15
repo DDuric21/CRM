@@ -1,0 +1,15 @@
+﻿using Backend_API.Data.DataClasses;
+using Backend_API.Data.Model;
+using Models.DTO;
+
+namespace Backend_API.Services
+{
+    public interface IUserService
+    {
+        UserDTO MapUserToDTO(User user);
+
+        UserDTO MapUserDataToDTO(UserData userData);
+
+        Task<UserData> GetUserDataAsync(string username);
+    }
+}

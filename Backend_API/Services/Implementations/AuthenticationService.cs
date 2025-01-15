@@ -13,7 +13,7 @@ namespace Backend_API.Services
 {
     public sealed class AuthenticationService : IAuthenticationService
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly ICrmRepository _repository;
         private readonly IConfiguration _configuration;
@@ -24,7 +24,7 @@ namespace Backend_API.Services
             IConfiguration configuration,
             ICrmRepository repository,
             TokenValidationParameters tokenValidationParameters,
-            UserManager<IdentityUser> userManager)
+            UserManager<User> userManager)
         {
             _tokenValidationParameters = tokenValidationParameters;
             _userManager = userManager;

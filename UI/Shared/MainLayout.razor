@@ -1,5 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
+@inject NavigationManager NavigationManager
+@inject IConfiguration configuration
+
 <PageTitle>CRM_UI</PageTitle>
 <AuthorizeView>
     <div class="page">
@@ -8,8 +11,8 @@
         </div>
 
         <main>
-            <div class="top-row px-4">
-                <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <div class="top-row px-4">                    
+                <a class="btn btn-outline-secondary" href="/UserSettings">Settings</a>
             </div>
 
             <article class="content px-4">
@@ -19,21 +22,18 @@
     </div>
 </AuthorizeView>
 
-@inject NavigationManager NavigationManager
-@inject IConfiguration configuration
-
 @code {
     [CascadingParameter] 
     protected Task<AuthenticationState> authenticationState { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
+        base.OnInitialized();
+
         var user = (await authenticationState).User;
         if(!user.Identity.IsAuthenticated)
         {
             NavigationManager.NavigateTo("/Login");
         }
-
-        base.OnInitialized();
     }
 }

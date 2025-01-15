@@ -1,17 +1,31 @@
 ﻿using Backend_API.Data.DbContext;
 using Backend_API.Data.Model;
-using Ng.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace Backend_API.Data.SeedData
 {
     public class SeedData
     {
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private const string _adminRole = "admin";
+        private const string _userRole = "user";
+        private const string _testRole = "test";
+
+        public SeedData(
+            UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager)
+        {
+            _roleManager = roleManager;
+            _userManager = userManager;
+        }
+
         /// <summary>
         /// Inserts SeedData into database
         /// </summary>
         /// <param name="applicationBuilder"></param>
         /// <exception cref="Exception"></exception>
-        public static void InsertSeedData(IApplicationBuilder applicationBuilder)
+        public async static void InsertSeedData(IApplicationBuilder applicationBuilder)
         {
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
@@ -27,6 +41,8 @@ namespace Backend_API.Data.SeedData
                 }
 
                 CreateSeedData(context);
+                await CreateRolesAsync(serviceScope);
+                await CreateUsersAsync(serviceScope);
 
                 context.SaveChanges();
             }
@@ -39,8 +55,6 @@ namespace Backend_API.Data.SeedData
             CreateAddresses(context);
 
             CreateAssets(context);
-
-            CreateUsers(context);
 
             CreateOptions(context);
 
@@ -161,35 +175,69 @@ namespace Backend_API.Data.SeedData
             }
         }
 
-        private static void CreateUsers(CrmDbContext context)
+        private async static Task CreateRolesAsync(IServiceScope scope)
         {
-            if (!context.Users.Any())
+            var services = scope.ServiceProvider;
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+            if (!roleManager.Roles.Any())
             {
-                var passwordHashingService = new PasswordHashingService();
-                context.Users.AddRange(new List<User>
-                {
-                    new User
-                    {
-                        UserName = "Pero Perić",
-                        UserEmail = "pero.peric@nepostoji.rh",
-                        Password = passwordHashingService.HashPassword("readOnly"),
-                        UserRoleId = 2
-                    },
-                    new User
-                    {
-                        UserName = "Ivo Ivić",
-                        UserEmail = "ivo.ivic@nepostoji.rh",
-                        Password = passwordHashingService.HashPassword("edit"),
-                        UserRoleId = 1
-                    },
-                    new User
-                    {
-                        UserName = "Admin Adminić",
-                        UserEmail = "admin.adminic@nepostoji.rh",
-                        Password = passwordHashingService.HashPassword("admin"),
-                        UserRoleId = 0
-                    }
-                });
+                await roleManager.CreateAsync(new IdentityRole(_adminRole));
+                await roleManager.CreateAsync(new IdentityRole(_userRole));
+                await roleManager.CreateAsync(new IdentityRole(_testRole));
+            }
+        }
+
+        private async static Task CreateUsersAsync(IServiceScope scope)
+        {
+            var services = scope.ServiceProvider;
+            var userManager = services.GetRequiredService<UserManager<User>>();
+
+            if (userManager.Users.Any())
+            {
+                return;
+            }
+
+            var testUser = new User
+            {
+                FristName = "Pero",
+                LastName = "Perić",
+                UserName = "pero.peric",
+                Email = "pero.peric@test.com"
+            };
+            testUser.PasswordHash = userManager.PasswordHasher.HashPassword(testUser, "test");
+            var testUserResult = await userManager.CreateAsync(testUser);
+            if (testUserResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(testUser, _testRole);
+            }
+
+            var userUser = new User
+            {
+                FristName = "Ivo",
+                LastName = "Ivic",
+                UserName = "ivo.ivic",
+                Email = "ivo.ivic@user.com"
+            };
+            userUser.PasswordHash = userManager.PasswordHasher.HashPassword(userUser, "user");
+            var userResult = await userManager.CreateAsync(userUser);
+            if (userResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(userUser, _userRole);
+            }
+
+            var adminUser = new User
+            {
+                FristName = "Admin",
+                LastName = "Adminić",
+                UserName = "admin.adminic",
+                Email = "admin.adminic@admin.com"
+            };
+            adminUser.PasswordHash = userManager.PasswordHasher.HashPassword(adminUser, "admin");
+            var admiResult = await userManager.CreateAsync(adminUser);
+            if (admiResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, _adminRole);
             }
         }
 
