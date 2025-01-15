@@ -62,7 +62,7 @@ namespace Backend_API.Services
             return authenticationResult;
         }
 
-        public AuthenticationResult GenerateJwtToken(IdentityUser user)
+        public AuthenticationResult GenerateJwtToken(User user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
@@ -126,7 +126,7 @@ namespace Backend_API.Services
             };
         }
 
-        public async Task<IdentityUser> GetRefreshTokenUser(string refreshToken)
+        public async Task<User> GetRefreshTokenUser(string refreshToken)
         {
             var userId = _repository.RefreshTokens
                 .Where(x => x.Token == refreshToken)
@@ -135,7 +135,7 @@ namespace Backend_API.Services
 
             if (userId == null)
             {
-                return new IdentityUser();
+                return new User();
             }
 
             var user = await _userManager.FindByIdAsync(userId);

@@ -1,6 +1,6 @@
-﻿using Models.Authentication;
+﻿using Backend_API.Data.Model;
+using Models.Authentication;
 using Models.DTO;
-using Microsoft.AspNetCore.Identity;
 
 namespace Backend_API.Services
 {
@@ -25,13 +25,13 @@ namespace Backend_API.Services
         /// </summary>
         /// <param name="user">User requesting login</param>
         /// <returns>Returns result of generating token</returns>
-        AuthenticationResult GenerateJwtToken(IdentityUser user);
+        AuthenticationResult GenerateJwtToken(User user);
 
         /// <summary>
         /// Finds user registrated for given refresh token
         /// </summary>
         /// <param name="refreshToken">Refresh token</param>
         /// <returns>Returns user assosiated with given refresh token</returns>
-        Task<IdentityUser> GetRefreshTokenUser(string refreshToken);
+        Task<User> GetRefreshTokenUser(string refreshToken);
     }
 }

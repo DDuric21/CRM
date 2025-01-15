@@ -35,7 +35,7 @@ namespace Backend_API.Controllers
                 return Forbid();
             }
 
-            var identityUser = new IdentityUser
+            var identityUser = new User
             {
                 UserName = userDTO.UserName,
                 Email = userDTO.UserEmail
