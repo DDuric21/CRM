@@ -27,24 +27,44 @@
             </div>
         </div>
         <EditForm class="login-form" Model="@userDTO" OnSubmit="@SubmitLogin">
-            <input placeholder="username" name="username" @bind-value="userDTO.UserEmail" />
-            <input type="password" placeholder="password" name="password" @bind-value="userDTO.Password" />
-            <button type="submit" name="submit" class="button">LOGIN</button>
+            <input placeholder="username" name="username" @bind-value="userDTO.UserEmail" oninput="@RemoveWarningText" />
+            <input type="password" placeholder="password" name="password" @bind-value="userDTO.Password" oninput="@RemoveWarningText" />
+            <button type="submit" name="submit" class="submitButton">LOGIN</button>
         </EditForm>
+        <p class="warning-text" hidden="@(!showCredentialsWarning)">Please enter correct credentials!</p>
+        <div class="loader" hidden="@(!showLoading)"></div>
     </div>
 </div>
 
 @code {
     private UserDTO userDTO = new UserDTO();
 
+    private bool showLoading = false;
+    private bool showCredentialsWarning = false;
+
     private async Task SubmitLogin()
     {
+        RemoveWarningText();
+        showLoading = true;
+
         var loginResult = await authenticationService.Login(userDTO.UserEmail, userDTO.Password);
-        if (!loginResult.IsNullOrEmpty())
+
+        if (loginResult.IsAuthenticated)
         {
             var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)authenticationStateProvider;
             await crmAuthenticationStateProvider.UpdateAuthenticationState(new UserSession { UserName = userDTO.UserEmail});
             navigationManager.NavigateTo("/index");
         }
+        else 
+        {
+            showCredentialsWarning = true;
+        }
+
+        showLoading = false;
+    }
+
+    private void RemoveWarningText()
+    {
+        showCredentialsWarning = false;
     }
 }

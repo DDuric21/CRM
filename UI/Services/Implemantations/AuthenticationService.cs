@@ -1,12 +1,18 @@
 ﻿using Models.Authentication;
 using Models.DTO;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace UI.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
+        private readonly ICrmModalService _modalService;
+
+        public AuthenticationService(ICrmModalService modalService)
+        {
+            _modalService = modalService;
+        }
+
         public async Task<AuthenticationResult> Login(string username, string password)
         {
             var httpClient = new HttpClient();
@@ -32,8 +38,8 @@ namespace UI.Services
                 return deserializedResponse;
             }
             catch (Exception ex)
-            { 
-                // do something
+            {
+                _modalService.ShowErrorMessage(ex.Message);
             }
 
             return new AuthenticationResult();

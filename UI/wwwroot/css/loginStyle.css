@@ -40,6 +40,9 @@
 .form {
     width: 60%;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     z-index: 1;
     background: #FFFFFF;
     max-width: 360px;
@@ -61,18 +64,63 @@
     font-size: 14px;
 }
 
-.form .button {
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background-color: #279EFF;
-    width: 100%;
-    border: 0;
-    padding: 15px;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
+    .form input:active, input:focus {
+        border: solid 1px black;
+        border-radius: 10px;
+    }
+
+    .form .submitButton {
+        font-family: "Roboto", sans-serif;
+        text-transform: uppercase;
+        outline: 0;
+        background-color: #279EFF;
+        width: 100%;
+        border: 0;
+        padding: 15px;
+        color: #FFFFFF;
+        font-size: 14px;
+        -webkit-transition: all 0.3 ease;
+        transition: all 0.3 ease;
+    }
+
+        .form .submitButton:hover {
+            cursor: pointer;
+            background-color: #33D6E6;
+            color: black;
+        }
+
+.loader {
+    border: 8px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 8px solid #3498db;
+    width: 60px;
+    height: 60px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+    margin-top: 3%;
 }
 
+/* Safari */
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.warning-text{
+    color: red;
+}
