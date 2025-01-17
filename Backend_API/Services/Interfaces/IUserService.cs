@@ -11,5 +11,7 @@ namespace Backend_API.Services
         UserDTO MapUserDataToDTO(UserData userData);
 
         Task<UserData> GetUserDataAsync(string username);
+
+        Task<User> CreateNewUserAsync(UserDTO userDTO);
     }
 }

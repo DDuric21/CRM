@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend_API.Data.Model
 {
     public class User : IdentityUser, ITrackChanges
     {
-        public string FristName { get; set; }
+        public string FirstName { get; set; }
 
         public string LastName { get; set; }
 

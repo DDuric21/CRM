@@ -7,10 +7,14 @@ namespace UI.Services
     public class AuthenticationService : IAuthenticationService
     {
         private readonly ICrmModalService _modalService;
+        private readonly ICommunicationService _communicationService;
 
-        public AuthenticationService(ICrmModalService modalService)
+        public AuthenticationService(
+            ICrmModalService modalService,
+            ICommunicationService communicationService)
         {
             _modalService = modalService;
+            _communicationService = communicationService;
         }
 
         public async Task<AuthenticationResult> Login(string username, string password)
@@ -43,6 +47,25 @@ namespace UI.Services
             }
 
             return new AuthenticationResult();
+        }
+
+        public async Task<UserDTO> RegisterNewUserAsync(UserDTO userDTO)
+        {
+            var url = string.Format("https://localhost:7076/Register");
+            var request = _communicationService.CreateRequest(HttpMethod.Post, url, userDTO);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<UserDTO>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                // loging
+                _modalService.ShowErrorMessage(ex.Message);
+                return null;
+            }
         }
     }
 }

@@ -62,7 +62,9 @@ namespace Backend_API.Startup
                     options.User.AllowedUserNameCharacters = null;
                     options.SignIn.RequireConfirmedEmail = false;
                 })
+                .AddUserManager<CrmUserManager>()
                 .AddEntityFrameworkStores<CrmDbContext>();
+
             var secret = builder.Configuration.GetSection("JwtConfiguration:Secret").Value;
             var key = Encoding.ASCII.GetBytes(secret);
             var tokenValidationParameters = new TokenValidationParameters

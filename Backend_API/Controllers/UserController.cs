@@ -1,23 +1,14 @@
-﻿using Backend_API.Data.Model;
-using Backend_API.Data.Repositories;
-using Backend_API.Services;
-using Microsoft.AspNetCore.Identity;
+﻿using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Models.DTO;
 
 namespace Backend_API.Controllers
 {
     public class UserController : Controller
     {
-        private readonly ICrmRepository _repository;
         private readonly IUserService _userService;
 
-        public UserController(
-            ICrmRepository crmRepository, 
-            UserManager<User> userManager,
-            IUserService userService)
+        public UserController(IUserService userService)
         {
-            _repository = crmRepository;
             _userService = userService;
         }
 
@@ -30,25 +21,24 @@ namespace Backend_API.Controllers
                 return BadRequest();
             }
 
-            var userDTO = new UserDTO();
             try
             {
                 var userData = await _userService.GetUserDataAsync(username);
 
                 if (userData == null)
                 {
-                    return Problem("No uzser found!");
+                    return Problem("No user found!");
                 }
 
-                userDTO = _userService.MapUserDataToDTO(userData);
+                var userDTO = _userService.MapUserDataToDTO(userData);
+
+                return Ok(userDTO);
             }
             catch (Exception ex)
             {
                 //add loging
                 return StatusCode(500, ex.Message);
             }
-
-            return Ok(userDTO);
         }
     }
 }

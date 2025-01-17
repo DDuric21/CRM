@@ -1,24 +1,23 @@
-﻿using Models.Authentication;
+﻿using Backend_API.Data.Model;
+using Backend_API.Services;
+using Microsoft.AspNetCore.Mvc;
+using Models.Authentication;
 using Models.DTO;
 using Models.Helpers;
-using Backend_API.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Backend_API.Data.Model;
 
 namespace Backend_API.Controllers
 {
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
 
         public AuthenticationController(
             IAuthenticationService authenticationService,
-            UserManager<User> userManager)
+            IUserService userService)
         {
             _authenticationService = authenticationService;
-            _userManager = userManager;
+            _userService = userService;
         }
 
         [HttpPost]
@@ -55,41 +54,32 @@ namespace Backend_API.Controllers
         [Route("/Register")]
         public async Task<IActionResult> RegisterUser(UserDTO userDTO)
         {
-            if (userDTO.IsNullOrEmpty())
+            if (userDTO is null
+                || string.IsNullOrWhiteSpace(userDTO.FirstName)
+                || string.IsNullOrWhiteSpace(userDTO.LastName)
+                || string.IsNullOrWhiteSpace(userDTO.Password))
             {
                 return BadRequest();
             }
 
-            var user = await _userManager.FindByEmailAsync(userDTO.UserEmail);
-            var result = new AuthenticationResult();
-
-            if (user != null)
+            try
             {
-                result.IsAuthenticated = false;
-                result.ErrorMessages.Add("User email already exists");
+                var newUser = await _userService.CreateNewUserAsync(userDTO);
 
-                return BadRequest(result);
+                if (newUser == null)
+                {
+                    return Problem("No user created!");
+                }
+
+                var newUserDTO = _userService.MapUserToDTO(newUser);
+
+                return Ok(newUserDTO);
             }
-
-            var newUser = new User 
+            catch (Exception ex)
             {
-                Email = userDTO.UserEmail,
-                UserName = userDTO.UserName
-            };
-
-            var isCreated = await _userManager.CreateAsync(newUser, userDTO.Password);
-
-            if (!isCreated.Succeeded)
-            {
-                result.IsAuthenticated = false;
-                result.ErrorMessages.Add("Server error");
-
-                return BadRequest(result);
+                //add loging
+                return StatusCode(500, ex.Message);
             }
-
-            result = _authenticationService.GenerateJwtToken(newUser);
-
-            return Ok(result);
         }
 
         [HttpPost]

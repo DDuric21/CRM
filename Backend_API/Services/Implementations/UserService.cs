@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Backend_API.Data.DataClasses;
 using Backend_API.Data.Model;
-using Microsoft.AspNetCore.Identity;
 using Models.DTO;
 
 namespace Backend_API.Services
@@ -9,11 +8,11 @@ namespace Backend_API.Services
     public class UserService : IUserService
     {
         private readonly IMapper _mapper;
-        private readonly UserManager<User> _userManager;
+        private readonly CrmUserManager _userManager;
 
         public UserService(
             IMapper mapper,
-            UserManager<User> userManager)
+            CrmUserManager userManager)
         {
             _mapper = mapper;
             _userManager = userManager;
@@ -47,6 +46,25 @@ namespace Backend_API.Services
         public UserDTO MapUserDataToDTO(UserData userData)
         {
             return _mapper.Map<UserDTO>(userData);
+        }
+
+        public async Task<User> CreateNewUserAsync(UserDTO userDTO)
+        {
+            var user = new User
+            {
+                FirstName = userDTO.FirstName,
+                LastName = userDTO.LastName,
+                Email = userDTO.UserEmail,                
+            };
+
+            var result = await _userManager.CreateAsync(user, userDTO.Password);
+
+            if (!result.Succeeded)
+            {
+                return null;
+            }
+
+            return user;
         }
     }
 }

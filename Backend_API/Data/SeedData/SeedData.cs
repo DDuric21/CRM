@@ -200,7 +200,7 @@ namespace Backend_API.Data.SeedData
 
             var testUser = new User
             {
-                FristName = "Pero",
+                FirstName = "Pero",
                 LastName = "Perić",
                 UserName = "pero.peric",
                 Email = "pero.peric@test.com"
@@ -214,7 +214,7 @@ namespace Backend_API.Data.SeedData
 
             var userUser = new User
             {
-                FristName = "Ivo",
+                FirstName = "Ivo",
                 LastName = "Ivic",
                 UserName = "ivo.ivic",
                 Email = "ivo.ivic@user.com"
@@ -228,7 +228,7 @@ namespace Backend_API.Data.SeedData
 
             var adminUser = new User
             {
-                FristName = "Admin",
+                FirstName = "Admin",
                 LastName = "Adminić",
                 UserName = "admin.adminic",
                 Email = "admin.adminic@admin.com"
