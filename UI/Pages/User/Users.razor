@@ -1,0 +1,86 @@
+﻿@page "/User/Users"
+
+
+@inject NavigationManager navigationManager
+@inject IUserService userService
+@inject ICrmModalService modal
+
+<h3>Users</h3>
+<button id="btnAddUser" class="btn btn-primary" @onclick="Redirect">Add</button>
+
+@if (users == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr role="button" @ondblclick="() => RedirectToUser(user.UserName)">
+                    <td>@($"{user.FirstName} {user.LastName}")</td>
+                    <td>@user.UserName</td>
+                    <td>@user.UserEmail</td>
+                    <td><!--@user.UserRoles.FirstOrDefault()--></td>
+                    <td>
+                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToUser(user.UserName)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeactivateUser(user.UserName)">Deactivate</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<UserDTO> users = new List<UserDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {            
+            var asyncUsers = await userService.GetUsersAsync();
+
+            await foreach(var user in asyncUsers)
+            {
+                users.Add(user);
+            }
+        }
+        catch (Exception ex)
+        {
+            modal.ShowErrorMessage(ex.Message);
+        }
+    }
+    
+    protected async void DeactivateUser(string username)
+    {
+        var result = await modal.ShowDialog($"This will deactivate user {username}, do you want to proceed?", ModalDialogType.Delete);
+
+        if (result.Cancelled)
+        {
+            return;
+        }
+
+        await userService.DeactivateUser(username);
+    }
+    
+    protected void RedirectToUser(string username)
+    {
+        navigationManager.NavigateTo($"/User/UserSettings?username={username}");
+    }
+
+    protected void Redirect()
+    {
+        navigationManager.NavigateTo("/User/NewUserForm");
+    }
+
+}

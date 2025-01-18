@@ -1,5 +1,6 @@
 ﻿using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Models.Helpers;
 
 namespace Backend_API.Controllers
 {
@@ -31,6 +32,30 @@ namespace Backend_API.Controllers
                 }
 
                 var userDTO = _userService.MapUserDataToDTO(userData);
+
+                return Ok(userDTO);
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("/Users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                var users = await _userService.GetAllUsersAsync();
+
+                if (users.IsNullOrEmpty())
+                {
+                    return Problem("No users found!");
+                }
+
+                var userDTO = _userService.MapUsersToDTOs(users);
 
                 return Ok(userDTO);
             }

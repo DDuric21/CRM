@@ -36,8 +36,7 @@ namespace Backend_API.Controllers
 
             var identityUser = new User
             {
-                UserName = userDTO.UserName,
-                Email = userDTO.UserEmail
+                UserName = userDTO.UserName
             };
 
             var jwtToken = _authenticationService.GenerateJwtToken(identityUser);

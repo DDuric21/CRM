@@ -22,7 +22,7 @@ namespace UI.Services
             var httpClient = new HttpClient();
             var userDto = new UserDTO
             {
-                UserEmail = username,
+                UserName = username,
                 Password = password
             };
 

@@ -27,7 +27,7 @@
             </div>
         </div>
         <EditForm class="login-form" Model="@userDTO" OnSubmit="@SubmitLogin">
-            <input placeholder="username" name="username" @bind-value="userDTO.UserEmail" oninput="@RemoveWarningText" />
+            <input placeholder="username" name="username" @bind-value="userDTO.UserName" oninput="@RemoveWarningText" />
             <input type="password" placeholder="password" name="password" @bind-value="userDTO.Password" oninput="@RemoveWarningText" />
             <button type="submit" name="submit" class="submitButton">LOGIN</button>
         </EditForm>
@@ -47,12 +47,12 @@
         RemoveWarningText();
         showLoading = true;
 
-        var loginResult = await authenticationService.Login(userDTO.UserEmail, userDTO.Password);
+        var loginResult = await authenticationService.Login(userDTO.UserName, userDTO.Password);
 
         if (loginResult.IsAuthenticated)
         {
             var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)authenticationStateProvider;
-            await crmAuthenticationStateProvider.UpdateAuthenticationState(new UserSession { UserName = userDTO.UserEmail});
+            await crmAuthenticationStateProvider.UpdateAuthenticationState(new UserSession { UserName = userDTO.UserName});
             navigationManager.NavigateTo("/index");
         }
         else 

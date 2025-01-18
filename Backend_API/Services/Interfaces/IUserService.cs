@@ -13,5 +13,9 @@ namespace Backend_API.Services
         Task<UserData> GetUserDataAsync(string username);
 
         Task<User> CreateNewUserAsync(UserDTO userDTO);
+
+        Task<List<User>> GetAllUsersAsync();
+
+        List<UserDTO> MapUsersToDTOs(IEnumerable<User> users);
     }
 }

@@ -13,7 +13,7 @@ namespace Backend_API.Services
 {
     public sealed class AuthenticationService : IAuthenticationService
     {
-        private readonly UserManager<User> _userManager;
+        private readonly CrmUserManager _userManager;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly ICrmRepository _repository;
         private readonly IConfiguration _configuration;
@@ -24,7 +24,7 @@ namespace Backend_API.Services
             IConfiguration configuration,
             ICrmRepository repository,
             TokenValidationParameters tokenValidationParameters,
-            UserManager<User> userManager)
+            CrmUserManager userManager)
         {
             _tokenValidationParameters = tokenValidationParameters;
             _userManager = userManager;
@@ -34,7 +34,7 @@ namespace Backend_API.Services
 
         public bool ValidateLogin(UserDTO userDTO)
         {
-            var user = _userManager.FindByEmailAsync(userDTO.UserEmail).Result;
+            var user = _userManager.FindByNameAsync(userDTO.UserName).Result;
 
             if (user.IsNullOrEmpty())
             {
@@ -69,13 +69,12 @@ namespace Backend_API.Services
             var secret = _configuration.GetSection("JwtConfiguration:Secret").Value;
             var key = Encoding.UTF8.GetBytes(secret);
 
-            user = _userManager.FindByEmailAsync(user.Email).Result;
+            user = _userManager.FindByNameAsync(user.UserName).Result;
 
             var claims = new[]
             {
                 new Claim("Id", user.Id),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString())
             };

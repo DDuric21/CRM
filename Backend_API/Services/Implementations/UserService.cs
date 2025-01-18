@@ -18,14 +18,9 @@ namespace Backend_API.Services
             _userManager = userManager;
         }
 
-        public UserDTO MapUserToDTO(User user)
-        {
-            return _mapper.Map<UserDTO>(user);
-        }
-
         public async Task<UserData> GetUserDataAsync(string username)
         {
-            var user = await _userManager.FindByEmailAsync(username);
+            var user = await _userManager.FindByNameAsync(username);
 
             if (user is null)
             {
@@ -41,11 +36,6 @@ namespace Backend_API.Services
             };
 
             return userData;
-        }
-
-        public UserDTO MapUserDataToDTO(UserData userData)
-        {
-            return _mapper.Map<UserDTO>(userData);
         }
 
         public async Task<User> CreateNewUserAsync(UserDTO userDTO)
@@ -66,5 +56,35 @@ namespace Backend_API.Services
 
             return user;
         }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            var users = _userManager.Users.ToList();
+
+            return users;
+        }
+
+        #region mapings
+        public UserDTO MapUserToDTO(User user)
+        {
+            return _mapper.Map<UserDTO>(user);
+        }
+
+        public UserDTO MapUserDataToDTO(UserData userData)
+        {
+            return _mapper.Map<UserDTO>(userData);
+        }
+
+        public List<UserDTO> MapUsersToDTOs(IEnumerable<User> users)
+        {
+            var mapedUsers = new List<UserDTO>();
+            foreach (var user in users)
+            {
+                mapedUsers.Add(MapUserToDTO(user));
+            }
+
+            return mapedUsers;
+        }
+        #endregion
     }
 }

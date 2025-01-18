@@ -1,4 +1,4 @@
-﻿@page "/UserSettings"
+﻿@page "/User/UserSettings"
 @using System.Security.Claims
 
 @inject IUserService userService
@@ -45,8 +45,11 @@ else
     [CascadingParameter] 
     protected Task<AuthenticationState> authenticationState { get; set; }
 
-    [Parameter]
     public UserDTO UserDTO { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "username")]
+    public string Username { get; set; }
 
     private HashSet<string> supportedLanguages;
 
@@ -54,9 +57,13 @@ else
     {
         base.OnInitialized();
 
-        var user = (await authenticationState).User;
+        if (string.IsNullOrWhiteSpace(Username))
+        {            
+            var user = (await authenticationState).User;
+            Username = user.Identity.Name;
+        }
 
-        UserDTO = await userService.GetUserDataAsync(user.Identity.Name);
+        UserDTO = await userService.GetUserDataAsync(Username);
 
         supportedLanguages = new HashSet<string>
         {

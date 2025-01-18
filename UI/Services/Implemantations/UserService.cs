@@ -34,5 +34,31 @@ namespace UI.Services
                 return null;
             }
         }
+
+        public async Task<int> DeactivateUser(string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IAsyncEnumerable<UserDTO>> GetUsersAsync()
+        {
+            var url = string.Format("https://localhost:7076/Users");
+            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<IAsyncEnumerable<UserDTO>>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                // loging
+                _modalService.ShowErrorMessage(ex.Message);
+
+                return null;
+            }
+        }
+        
     }
 }
