@@ -1,5 +1,4 @@
 ﻿using Backend_API.Data.Model;
-using Microsoft.AspNetCore.Identity;
 
 namespace Backend_API.Data.DataClasses
 {
@@ -7,6 +6,6 @@ namespace Backend_API.Data.DataClasses
     {
         public User User { get; set; }
 
-        public HashSet<string> UserRoles { get; set; }
+        public string UserRole { get; set; }
     }
 }

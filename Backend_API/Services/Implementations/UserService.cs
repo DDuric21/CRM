@@ -32,7 +32,7 @@ namespace Backend_API.Services
             var userData =  new UserData
             {
                 User = user,
-                UserRoles = roles.ToHashSet()
+                UserRole = roles.FirstOrDefault()
             };
 
             return userData;

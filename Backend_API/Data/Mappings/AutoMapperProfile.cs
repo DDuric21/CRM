@@ -38,7 +38,7 @@ namespace Backend_API.Data.Mappings
             CreateMap<UserDTO, User>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.UserEmail));
             CreateMap<UserData, UserDTO>()
-                .ForPath(dest => dest.UserRoles, opt => opt.MapFrom(src => src.UserRoles))
+                .ForPath(dest => dest.UserRole, opt => opt.MapFrom(src => src.UserRole))
                 .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User.Email))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))

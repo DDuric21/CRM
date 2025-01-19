@@ -15,6 +15,6 @@ namespace Models.DTO
 
         public string? Password { get; set; }
 
-        public HashSet<string> UserRoles { get; set; }
+        public string UserRole { get; set; }
     }
 }

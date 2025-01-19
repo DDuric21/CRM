@@ -15,7 +15,8 @@ else
     <div>
         <input value="@UserDTO.FirstName">
         <input value="@UserDTO.LastName">
-        <input value="@UserDTO.UserName">
+        <input value="@UserDTO.LastName">
+        <input value="@UserDTO.UserRole">
     </div>
 
     <div>
@@ -30,14 +31,6 @@ else
 
     <div>
         <span>Time zone</span>
-    </div>
-
-    <div>
-        <span>Roles</span>
-        @foreach(var role in UserDTO.UserRoles)
-        {
-            <input value="@role">
-        }
     </div>
 }
 
