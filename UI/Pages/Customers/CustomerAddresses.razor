@@ -16,7 +16,7 @@
             <tr>
                 <td><input type="radio" id="legalAddress" checked="@addressDTO.IsLegal" name="legalRadio" @onchange="() => ChangeLegal(addressDTO.Id)"/></td>
                 <td><label id="address" for="legalAddress">@addressDTO.FullAddress</label></td>
-                <td><button class="btn btn-danger" @onclick="() => DeleteAddress(addressDTO.Id)">Delete</button></td>
+                <td><button class="btn btn-danger" @onclick="() => DeleteAddress(addressDTO.Id)"><em class="oi oi-trash"></em> Delete</button></td>
             </tr>
         }
     </tbody>

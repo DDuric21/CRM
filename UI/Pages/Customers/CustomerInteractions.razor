@@ -14,7 +14,7 @@
             <tr>
                 <Interaction InteractionDTO="customerInteraction.Value" IsEditable="customerInteraction.Key.IsEditable" SaveInteraction="SaveInteraction"></Interaction>
                 <td>
-                    <button hidden="@customerInteraction.Key.IsEditable" type="button" class="btn btn-outline-secondary" @onclick="() => EditInteraction(customerInteraction.Key.Id)" >Edit</button>
+                    <button hidden="@customerInteraction.Key.IsEditable" type="button" class="btn btn-outline-secondary" @onclick="() => EditInteraction(customerInteraction.Key.Id)" ><em class="oi oi-pencil"></em> Edit</button>
                     <button hidden="@(!customerInteraction.Key.IsEditable)" type="button" class="btn btn-outline-primary" @onclick="() => SaveInteraction(customerInteraction.Value)" >Save</button>
                 </td>
             </tr>

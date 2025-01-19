@@ -32,7 +32,7 @@
                     <tr>
                         <td><label id="asset" >@optionDTO.Name</label></td>
                         <td><label id="asset" >@optionDTO.Price</label></td>
-                        <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">Delete</button></td>
+                        <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))"><em class="oi oi-trash"></em> Delete</button></td>
                     </tr>
                 }
             </tbody>
@@ -48,7 +48,7 @@
                         <option value="@option.Id">@option.Name</option>
                     }
                 </select>
-                <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))" >Delete</button>
+                <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))" ><em class="oi oi-trash"></em> Delete</button>
             }        
         }
     </div>
@@ -114,7 +114,7 @@
                     <tr>
                         <td><label id="asset" >@optionDTO.Name</label></td>
                         <td><label id="asset" >@optionDTO.Price</label></td>
-                        <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">Delete</button></td>
+                        <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))"><em class="oi oi-trash"></em>Delete</button></td>
                     </tr>
                 }
                 @foreach (var assetOption in selectedOptions)
@@ -125,7 +125,7 @@
                             <option value="@option.Id">@option.Name</option>
                         }
                     </select>    
-                    <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))" >Delete</button>
+                    <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))" ><em class="oi oi-trash"></em> Delete</button>
                 }
             }
         </tbody>

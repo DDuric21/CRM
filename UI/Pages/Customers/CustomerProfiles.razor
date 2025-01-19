@@ -21,7 +21,7 @@
                         <button 
                             hidden="@customerBillingProfile.Key.IsEditable" 
                             class="btn btn-outline-secondary" 
-                            @onclick="() => EditBillingProfile(customerBillingProfile.Key.CustomId)">Edit
+                            @onclick="() => EditBillingProfile(customerBillingProfile.Key.CustomId)"><em class="oi oi-pencil"></em> Edit
                         </button>
                         <button 
                             hidden="@(!customerBillingProfile.Key.IsEditable)"

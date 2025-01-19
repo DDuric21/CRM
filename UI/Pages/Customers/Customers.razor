@@ -31,7 +31,7 @@ else
                     <td>@customer.Birthday.ToLocalTime().ToString("dd-MM-yyyy")</td>
                     <td>@GetLegalAddress(customer.Addresses)</td>
                     <td>
-                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToCustomer(customer.Id)">Edit</button>
+                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToCustomer(customer.Id)"><em class="oi oi-pencil"></em> Edit</button>
                         <button class="btn btn-danger" @onclick="() => DeleteCustomer(customer.Id)">Mask</button>
                     </td>
                 </tr>

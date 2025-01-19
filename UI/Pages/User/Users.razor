@@ -32,7 +32,7 @@ else
                     <td>@user.UserEmail</td>
                     <td><!--@user.UserRoles.FirstOrDefault()--></td>
                     <td>
-                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToUser(user.UserName)">Edit</button>
+                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToUser(user.UserName)"><em class="oi oi-pencil"></em> Edit</button>
                         <button class="btn btn-danger" @onclick="() => DeactivateUser(user.UserName)">Deactivate</button>
                     </td>
                 </tr>
