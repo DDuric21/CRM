@@ -8,9 +8,9 @@
 <h3>Users</h3>
 <button id="btnAddUser" class="btn btn-primary" @onclick="Redirect">Add</button>
 
-@if (users == null)
+@if (users.IsNullOrEmpty())
 {
-    <p><em>Loading...</em></p>
+    <Loader/>
 }
 else
 {

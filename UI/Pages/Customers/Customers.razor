@@ -9,9 +9,9 @@
 
 <button id="btnAddCustomer" class="btn btn-primary" @onclick="Redirect">Add</button>
 
-@if (customers == null)
+@if (customers.IsNullOrEmpty())
 {
-    <p><em>Loading...</em></p>
+    <Loader />
 }
 else
 {
