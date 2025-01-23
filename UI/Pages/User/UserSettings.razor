@@ -50,14 +50,6 @@ else
     {
         base.OnInitialized();
 
-        if (string.IsNullOrWhiteSpace(Username))
-        {            
-            var user = (await authenticationState).User;
-            Username = user.Identity.Name;
-        }
-
-        UserDTO = await userService.GetUserDataAsync(Username);
-
         supportedLanguages = new HashSet<string>
         {
             "english",
@@ -66,4 +58,16 @@ else
         };
     }
 
+    protected override async Task OnParametersSetAsync()
+    {        
+        if (string.IsNullOrWhiteSpace(Username))
+        {            
+            var user = (await authenticationState).User;
+            Username = user.Identity.Name;
+        }
+
+        UserDTO = await userService.GetUserDataAsync(Username);
+
+        StateHasChanged();
+    }
 }

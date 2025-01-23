@@ -12,7 +12,7 @@
 
         <main>
             <div class="top-row px-4">    
-                <a class="btn btn-outline-secondary" href="/User/UserSettings"><span class="oi oi-cog"></span> Settings</a>
+                <a class="btn btn-outline-secondary" href="/User/UserSettings?username=@username"><span class="oi oi-cog"></span> Settings</a>
             </div>
 
             <article class="content px-4">
@@ -26,11 +26,14 @@
     [CascadingParameter] 
     protected Task<AuthenticationState> authenticationState { get; set; }
 
+    private string username;
+
     protected async override Task OnInitializedAsync()
     {
         base.OnInitialized();
 
         var user = (await authenticationState).User;
+        username = user.Identity.Name;
         if(!user.Identity.IsAuthenticated)
         {
             NavigationManager.NavigateTo("/Login");
