@@ -2,7 +2,7 @@
 
 namespace UI.Data
 {
-    public class SelectedUserRoles
+    public class SelectedUserRole
     {
         public bool IsSelected { get; set; }
 

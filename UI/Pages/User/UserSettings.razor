@@ -57,7 +57,7 @@ else
 
     public UserDTO UserDTO { get; set; }
 
-    private IEnumerable<SelectedUserRoles> selectedUserRoles { get; set; }
+    private IEnumerable<SelectedUserRole> selectedUserRoles { get; set; }
     private IEnumerable<UserRoleDTO> possibleUserRoles { get; set; }
 
     [Parameter]
@@ -91,7 +91,7 @@ else
         UserDTO = await userService.GetUserDataAsync(Username);
 
         selectedUserRoles = possibleUserRoles
-            .Select(x => new SelectedUserRoles
+            .Select(x => new SelectedUserRole
                 {
                     IsSelected = UserDTO.UserRoles.Any(y => y.RoleName.ToLower() == x.RoleName),
                     UserRole = x

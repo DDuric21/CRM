@@ -51,7 +51,7 @@ namespace Backend_API.Controllers
 
         [HttpPost]
         [Route("/Register")]
-        public async Task<IActionResult> RegisterUser(UserDTO userDTO)
+        public async Task<IActionResult> RegisterUser([FromBody] UserDTO userDTO)
         {
             if (userDTO is null
                 || string.IsNullOrWhiteSpace(userDTO.FirstName)

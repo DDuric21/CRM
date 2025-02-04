@@ -49,11 +49,22 @@ namespace Backend_API.Services
                 Email = userDTO.UserEmail,                
             };
 
-            var result = await _userManager.CreateAsync(user, userDTO.Password);
+            var userResult = await _userManager.CreateAsync(user, userDTO.Password);
 
-            if (!result.Succeeded)
+            if (!userResult.Succeeded)
             {
                 return null;
+            }
+
+            if (!userDTO.UserRoles.IsNullOrEmpty())
+            {
+                var userRoles = userDTO.UserRoles.Select(x => x.RoleName);
+                var rolesResult = await _userManager.AddToRolesAsync(user, userRoles);
+
+                if (!rolesResult.Succeeded)
+                {
+                    return null;
+                }
             }
 
             return user;

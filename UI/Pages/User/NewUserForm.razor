@@ -1,6 +1,7 @@
 ﻿@page "/User/NewUserForm"
 
 @inject IAuthenticationService authenticationService
+@inject IRoleService roleService
 @inject NavigationManager navigationManager
 
 <h3>Register new user</h3>
@@ -16,20 +17,33 @@
       <input class="form-control" id="inputLastName" placeholder="Last Name" @bind-value="userDTO.LastName">
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group col-md-6">
     <label for="inputEmail">Email</label>
     <input type="email" class="form-control" id="inputEmail" placeholder="user@email.com" @bind-value="userDTO.UserEmail">
   </div>
-  <div class="form-group">
+  <div class="form-group col-md-6">
     <label for="inputPassword">Password</label>
     <input type="password" class="form-control" id="inputPassword" placeholder="Password" @bind-value="userDTO.Password">
   </div>
   <!-- This serves for roles -->
   <div class="form-group">
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="gridCheck">
-      <label class="form-check-label" for="gridCheck"> Check me out </label>
-    </div>
+    User Roles:
+    @if (selectedUserRoles.IsNullOrEmpty())
+    {
+        <Loader></Loader>
+    }
+    else
+    {
+        <br>
+        @foreach (var role in selectedUserRoles)
+        {
+            <div class="form-check form-switch ms-3">
+                <InputCheckbox class="form-check-input" @bind-Value="role.IsSelected" />
+                <label class="form-check-label">@role.UserRole.RoleName</label>               
+            </div>
+        }
+        <br>
+    }
   </div>
   <button type="submit" class="btn btn-primary">Register</button>
 </EditForm>
@@ -38,13 +52,37 @@
 @code {
     private UserDTO userDTO = new UserDTO();
 
+    private IEnumerable<SelectedUserRole> selectedUserRoles { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var possibleUserRoles = await roleService.GetApplicableRolesAsync();
+        selectedUserRoles = possibleUserRoles.Select(x => new SelectedUserRole { UserRole = x })
+            .ToHashSet();
+    }
+
     private async Task CreateNewUserAsync()
     {
+        MapRolesToUserDTO();
         var user = await authenticationService.RegisterNewUserAsync(userDTO);
 
         if (user != null)
         {
-            navigationManager.NavigateTo("/User/UserSettings");
+            navigationManager.NavigateTo($"/User/UserSettings?username={user.UserName}");
         }
+    }
+
+    private void MapRolesToUserDTO()
+    {
+        userDTO.UserRoles = selectedUserRoles
+            .Where(x => x.IsSelected)
+            .Select(x => 
+                new UserRoleDTO
+                {
+                    RoleName = x.UserRole.RoleName
+                })
+            .ToList();
     }
 }
