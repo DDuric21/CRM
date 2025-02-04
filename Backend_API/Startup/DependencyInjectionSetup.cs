@@ -36,6 +36,7 @@ namespace Backend_API.Startup
             builder.Services.AddScoped<IAssetService, AssetService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<IInteractionService, InteractionService>();
             builder.Services.AddScoped<IBillingProfileService, BillingProfileService>();
             builder.Services.AddSingleton<IDataValidationService, DataValidationService>();
@@ -63,6 +64,7 @@ namespace Backend_API.Startup
                     options.SignIn.RequireConfirmedEmail = false;
                 })
                 .AddUserManager<CrmUserManager>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<CrmDbContext>();
 
             var secret = builder.Configuration.GetSection("JwtConfiguration:Secret").Value;

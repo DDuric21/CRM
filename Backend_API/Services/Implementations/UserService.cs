@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Backend_API.Data.DataClasses;
 using Backend_API.Data.Model;
+using Microsoft.AspNetCore.Identity;
 using Models.DTO;
+using Models.Helpers;
 
 namespace Backend_API.Services
 {
@@ -32,7 +34,7 @@ namespace Backend_API.Services
             var userData =  new UserData
             {
                 User = user,
-                UserRole = roles.FirstOrDefault()
+                UserRoles = roles
             };
 
             return userData;
@@ -64,6 +66,56 @@ namespace Backend_API.Services
             return users;
         }
 
+        public async Task<bool> UpdateUserDataAsync(UserData userData)
+        {
+            var user = await _userManager.FindByNameAsync(userData.User.UserName);
+            if (user is null)
+            {
+                return false;
+            }
+
+            var oldRoles = await _userManager.GetRolesAsync(user);
+            var rolesToAdd = userData.UserRoles
+                .Where(x => !oldRoles.Contains(x));
+            var rolesToRemove = oldRoles
+                .Where(x => !userData.UserRoles.Contains(x));
+
+            MapUserDataForUpdate(userData.User, user);
+
+            // this need to be done in a transaction
+            try
+            {
+                var updateResult = await _userManager.UpdateAsync(user);
+
+                var removingResult = rolesToRemove.IsNullOrEmpty()
+                    ? IdentityResult.Success
+                    : await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+
+                var addingResult = rolesToAdd.IsNullOrEmpty()
+                    ? IdentityResult.Success
+                    : await _userManager.AddToRolesAsync(user, rolesToAdd);
+
+                var isSuccessful = updateResult.Succeeded 
+                    && removingResult.Succeeded 
+                    && addingResult.Succeeded;
+
+                return isSuccessful;
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                throw;
+            }
+        }
+
+        private void MapUserDataForUpdate(User newUserData, User existingUserData)
+        {
+            existingUserData.FirstName = newUserData.FirstName;
+            existingUserData.LastName = newUserData.LastName;
+            existingUserData.Email = newUserData.Email;
+            existingUserData.UserName = newUserData.UserName;
+        }
+
         #region mapings
         public UserDTO MapUserToDTO(User user)
         {
@@ -84,6 +136,18 @@ namespace Backend_API.Services
             }
 
             return mapedUsers;
+        }
+
+        public UserData MapDtoToUserData(UserDTO userDTO)
+        {
+            if (userDTO.IsNullOrEmpty())
+            {
+                return new UserData();
+            }
+
+            var userData = _mapper.Map<UserData>(userDTO);
+
+            return userData;
         }
         #endregion
     }

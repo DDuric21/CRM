@@ -9,5 +9,7 @@ namespace UI.Services
         Task<int> DeactivateUser(string username);
 
         Task<IAsyncEnumerable<UserDTO>> GetUsersAsync();
+
+        Task<bool> UpdateUserDataAsync(UserDTO userDTO);
     }
 }

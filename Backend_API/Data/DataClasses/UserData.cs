@@ -6,6 +6,6 @@ namespace Backend_API.Data.DataClasses
     {
         public User User { get; set; }
 
-        public string UserRole { get; set; }
+        public IEnumerable<string> UserRoles { get; set; }
     }
 }

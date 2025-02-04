@@ -1,5 +1,6 @@
 ﻿using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Models.DTO;
 using Models.Helpers;
 
 namespace Backend_API.Controllers
@@ -58,6 +59,30 @@ namespace Backend_API.Controllers
                 var userDTO = _userService.MapUsersToDTOs(users);
 
                 return Ok(userDTO);
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("/Users/Update")]
+        public async Task<IActionResult> UpdateUserData([FromBody] UserDTO userDTO)
+        {
+            if (userDTO.IsNullOrEmpty())
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var userData = _userService.MapDtoToUserData(userDTO);
+
+                var result = await _userService.UpdateUserDataAsync(userData);
+
+                return Ok(result);
             }
             catch (Exception ex)
             {

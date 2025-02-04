@@ -59,6 +59,25 @@ namespace UI.Services
                 return null;
             }
         }
-        
+
+        public async Task<bool> UpdateUserDataAsync(UserDTO userDTO)
+        {
+            var url = string.Format("https://localhost:7076/Users/Update");
+            var request = _communicationService.CreateRequest(HttpMethod.Put, url, userDTO);
+
+            var isSuccessful = false;
+
+            try
+            {
+                isSuccessful = await _communicationService.SendRequestAsync<bool>(request);
+            }
+            catch (Exception ex)
+            {
+                // loging
+                _modalService.ShowErrorMessage(ex.Message);
+            }
+
+            return isSuccessful;
+        }
     }
 }

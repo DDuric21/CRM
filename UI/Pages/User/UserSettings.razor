@@ -2,6 +2,7 @@
 @using System.Security.Claims
 
 @inject IUserService userService
+@inject IRoleService roleService
 
 <PageTitle>User Settings</PageTitle>
 
@@ -12,13 +13,29 @@
 else
 {
     <h3>User Settings</h3>
-    <div>
-        <input value="@UserDTO.FirstName">
-        <input value="@UserDTO.LastName">
-        <input value="@UserDTO.LastName">
-        <input value="@UserDTO.UserRole">
-    </div>
-
+    <EditForm Model="@UserDTO" OnSubmit="@SubmitUserSettings">
+        <div>
+            <InputText @bind-Value="@UserDTO.FirstName" />
+            <InputText @bind-Value="@UserDTO.LastName" />
+            <br>
+            <InputText @bind-Value="@UserDTO.UserEmail" />
+        </div>
+        <div>
+            User Roles:
+            <br>
+            @foreach (var role in selectedUserRoles)
+            {
+                <div class="form-check form-switch ms-3">
+                    <InputCheckbox class="form-check-input"  @bind-Value="role.IsSelected"  />
+                    <label class="form-check-label">@role.UserRole.RoleName</label>               
+                </div>
+            }
+        </div> 
+        <br>
+        <button type="submit" name="submitUserSettings" class="btn btn-primary">Save</button>
+    </EditForm>
+    
+    <br>
     <div>
         <span>Language</span>
         <select>
@@ -40,6 +57,9 @@ else
 
     public UserDTO UserDTO { get; set; }
 
+    private IEnumerable<SelectedUserRoles> selectedUserRoles { get; set; }
+    private IEnumerable<UserRoleDTO> possibleUserRoles { get; set; }
+
     [Parameter]
     [SupplyParameterFromQuery(Name = "username")]
     public string Username { get; set; }
@@ -49,6 +69,8 @@ else
     protected async override Task OnInitializedAsync()
     {
         base.OnInitialized();
+
+        possibleUserRoles = await roleService.GetApplicableRolesAsync();
 
         supportedLanguages = new HashSet<string>
         {
@@ -68,6 +90,28 @@ else
 
         UserDTO = await userService.GetUserDataAsync(Username);
 
+        selectedUserRoles = possibleUserRoles
+            .Select(x => new SelectedUserRoles
+                {
+                    IsSelected = UserDTO.UserRoles.Any(y => y.RoleName.ToLower() == x.RoleName),
+                    UserRole = x
+                })
+            .ToHashSet();
+
         StateHasChanged();
+    }
+
+    private async Task SubmitUserSettings()
+    {
+        UserDTO.UserRoles = selectedUserRoles
+            .Where(x => x.IsSelected)
+            .Select(x => 
+                new UserRoleDTO
+                {
+                    RoleName = x.UserRole.RoleName
+                })
+            .ToList();
+
+        var result = await userService.UpdateUserDataAsync(UserDTO);
     }
 }
