@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Helpers;
+using Models.Responses;
 
 namespace Backend_API.Controllers
 {
@@ -83,6 +84,60 @@ namespace Backend_API.Controllers
                 var result = await _userService.UpdateUserDataAsync(userData);
 
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("/Users/Deactivate/{username}")]
+        public async Task<IActionResult> DeactivateUser(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var result = await _userService.DeactivateUserAsync(username);
+
+                if (!result.Succeeded)
+                {
+                    return Problem("No user deactivated!");
+                }
+
+                return Ok(new ResponseBase());
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("/Users/Activate/{username}")]
+        public async Task<IActionResult> ActivateUser(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var result = await _userService.ActivateUserAsync(username);
+
+                if (!result.Succeeded)
+                {
+                    return Problem("No user activated!");
+                }
+
+                return Ok(new ResponseBase());
             }
             catch (Exception ex)
             {

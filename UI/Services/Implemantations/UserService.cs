@@ -1,4 +1,7 @@
 ﻿using Models.DTO;
+using Models.Enums;
+using Models.Requests;
+using Models.Responses;
 
 namespace UI.Services
 {
@@ -35,9 +38,39 @@ namespace UI.Services
             }
         }
 
-        public async Task<int> DeactivateUser(string username)
+        public async Task ChangeUserStatus(ChangeUserStatusRQ changeStatusRequest)
         {
-            throw new NotImplementedException();
+            var url = DefineChangeStatusURL(changeStatusRequest);
+            var request = _communicationService.CreateRequest(HttpMethod.Put, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+            }
+            catch (Exception ex)
+            {
+                // loging
+                _modalService.ShowErrorMessage(ex.Message);
+            }
+        }
+
+        private string DefineChangeStatusURL(ChangeUserStatusRQ request)
+        {
+            string url = string.Empty;
+
+            switch (request.NewUserStatus)
+            {
+                case ItemState.Active:
+                    url = string.Format("https://localhost:7076/Users/Activate/{0}", request.UserName);
+                    break;
+                case ItemState.Inactive:
+                    url = string.Format("https://localhost:7076/Users/Deactivate/{0}", request.UserName);
+                    break;
+                default:
+                    throw new Exception($"New User status not supported: {request.NewUserStatus}");
+            }
+
+            return url;
         }
 
         public async Task<IAsyncEnumerable<UserDTO>> GetUsersAsync()

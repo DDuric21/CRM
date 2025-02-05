@@ -58,7 +58,7 @@ namespace Backend_API.Migrations
                 oldDefaultValueSql: "GETUTCDATE()");
 
             migrationBuilder.AddColumn<string>(
-                name: "FirstName",
+                name: "FristName",
                 table: "AspNetUsers",
                 type: "nvarchar(max)",
                 nullable: false,
@@ -86,7 +86,7 @@ namespace Backend_API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "FirstName",
+                name: "FristName",
                 table: "AspNetUsers");
 
             migrationBuilder.RenameColumn(

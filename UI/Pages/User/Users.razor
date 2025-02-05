@@ -33,7 +33,8 @@ else
                     <td><!--@user.UserRoles.FirstOrDefault()--></td>
                     <td>
                         <button class="btn btn-outline-secondary" @onclick="() => RedirectToUser(user.UserName)"><em class="oi oi-pencil"></em> Edit</button>
-                        <button class="btn btn-danger" @onclick="() => DeactivateUser(user.UserName)">Deactivate</button>
+                        <button class="btn btn-primary" hidden="@(user.UserStatus == ItemState.Active)" @onclick="() => ActivateUser(user.UserName)">Activate</button>
+                        <button class="btn btn-danger" hidden="@(user.UserStatus == ItemState.Inactive)" @onclick="() => DeactivateUser(user.UserName)">Deactivate</button>
                     </td>
                 </tr>
             }
@@ -60,7 +61,7 @@ else
             modal.ShowErrorMessage(ex.Message);
         }
     }
-    
+
     protected async void DeactivateUser(string username)
     {
         var result = await modal.ShowDialog($"This will deactivate user {username}, do you want to proceed?", ModalDialogType.Delete);
@@ -70,9 +71,43 @@ else
             return;
         }
 
-        await userService.DeactivateUser(username);
+        var request = new ChangeUserStatusRQ
+            {
+                UserName = username,
+                NewUserStatus = ItemState.Inactive
+            };
+
+        await userService.ChangeUserStatus(request);
+
+        var deactivatedUser = users.First(x => x.UserName == username);
+        deactivatedUser.UserStatus = ItemState.Inactive;
+
+        StateHasChanged();
+    }  
+
+    protected async void ActivateUser(string username)
+    {
+        var result = await modal.ShowDialog($"This will activate user {username}, do you want to proceed?", ModalDialogType.OK);
+
+        if (result.Cancelled)
+        {
+            return;
+        }
+
+        var request = new ChangeUserStatusRQ
+            {
+                UserName = username,
+                NewUserStatus = ItemState.Active
+            };
+
+        await userService.ChangeUserStatus(request);
+
+        var activatedUser = users.First(x => x.UserName == username);
+        activatedUser.UserStatus = ItemState.Active;
+
+        StateHasChanged();
     }
-    
+
     protected void RedirectToUser(string username)
     {
         navigationManager.NavigateTo($"/User/UserSettings?username={username}");

@@ -1,4 +1,5 @@
 ﻿using Models.DTO;
+using Models.Requests;
 
 namespace UI.Services
 {
@@ -6,7 +7,7 @@ namespace UI.Services
     {
         Task<UserDTO> GetUserDataAsync(string username);
 
-        Task<int> DeactivateUser(string username);
+        Task ChangeUserStatus(ChangeUserStatusRQ request);
 
         Task<IAsyncEnumerable<UserDTO>> GetUsersAsync();
 

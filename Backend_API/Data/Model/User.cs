@@ -11,5 +11,7 @@ namespace Backend_API.Data.Model
         public DateTime DateCreated { get; set; }
 
         public DateTime DateModified { get; set; }
+
+        public int UserStatusID { get; set; }
     }
 }

@@ -203,7 +203,8 @@ namespace Backend_API.Data.SeedData
                 FirstName = "Pero",
                 LastName = "Perić",
                 UserName = "pero.peric",
-                Email = "pero.peric@test.com"
+                Email = "pero.peric@test.com",
+                UserStatusID = 2
             };
             testUser.PasswordHash = userManager.PasswordHasher.HashPassword(testUser, "test");
             var testUserResult = await userManager.CreateAsync(testUser);
@@ -217,7 +218,8 @@ namespace Backend_API.Data.SeedData
                 FirstName = "Ivo",
                 LastName = "Ivic",
                 UserName = "ivo.ivic",
-                Email = "ivo.ivic@user.com"
+                Email = "ivo.ivic@user.com",
+                UserStatusID = 1
             };
             userUser.PasswordHash = userManager.PasswordHasher.HashPassword(userUser, "user");
             var userResult = await userManager.CreateAsync(userUser);
@@ -231,7 +233,8 @@ namespace Backend_API.Data.SeedData
                 FirstName = "Admin",
                 LastName = "Adminić",
                 UserName = "admin.adminic",
-                Email = "admin.adminic@admin.com"
+                Email = "admin.adminic@admin.com",
+                UserStatusID = 1
             };
             adminUser.PasswordHash = userManager.PasswordHasher.HashPassword(adminUser, "admin");
             var admiResult = await userManager.CreateAsync(adminUser);

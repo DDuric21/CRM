@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models.DTO
 {
@@ -14,6 +15,8 @@ namespace Models.DTO
         public string UserEmail { get; set; }
 
         public string? Password { get; set; }
+
+        public ItemState UserStatus { get; set; }
 
         public List<UserRoleDTO> UserRoles { get; set; }
     }

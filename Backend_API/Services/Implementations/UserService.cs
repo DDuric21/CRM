@@ -3,6 +3,7 @@ using Backend_API.Data.DataClasses;
 using Backend_API.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Models.DTO;
+using Models.Enums;
 using Models.Helpers;
 
 namespace Backend_API.Services
@@ -119,12 +120,37 @@ namespace Backend_API.Services
             }
         }
 
-        private void MapUserDataForUpdate(User newUserData, User existingUserData)
+        public async Task<IdentityResult> DeactivateUserAsync(string username)
         {
-            existingUserData.FirstName = newUserData.FirstName;
-            existingUserData.LastName = newUserData.LastName;
-            existingUserData.Email = newUserData.Email;
-            existingUserData.UserName = newUserData.UserName;
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user is null || user.UserStatusID == (int)ItemState.Inactive)
+            {
+                //add logging
+                return new IdentityResult();
+            }
+
+            user.UserStatusID = (int)ItemState.Inactive;
+            var deactivationResult = await _userManager.UpdateAsync(user);
+
+            return deactivationResult;
+        }
+
+        public async Task<IdentityResult> ActivateUserAsync(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user is null || user.UserStatusID == (int)ItemState.Active)
+            {
+                //add logging
+                return new IdentityResult();
+            }
+
+            user.UserStatusID = (int)ItemState.Active;
+
+            var deactivationResult = await _userManager.UpdateAsync(user);
+
+            return deactivationResult;
         }
 
         #region mapings
@@ -159,6 +185,14 @@ namespace Backend_API.Services
             var userData = _mapper.Map<UserData>(userDTO);
 
             return userData;
+        }
+
+        private void MapUserDataForUpdate(User newUserData, User existingUserData)
+        {
+            existingUserData.FirstName = newUserData.FirstName;
+            existingUserData.LastName = newUserData.LastName;
+            existingUserData.Email = newUserData.Email;
+            existingUserData.UserName = newUserData.UserName;
         }
         #endregion
     }

@@ -1,5 +1,6 @@
 ﻿using Backend_API.Data.DataClasses;
 using Backend_API.Data.Model;
+using Microsoft.AspNetCore.Identity;
 using Models.DTO;
 
 namespace Backend_API.Services
@@ -21,5 +22,9 @@ namespace Backend_API.Services
         UserData MapDtoToUserData(UserDTO user);
 
         Task<bool> UpdateUserDataAsync(UserData userData);
+
+        Task<IdentityResult> DeactivateUserAsync(string username);
+
+        Task<IdentityResult> ActivateUserAsync(string username);
     }
 }
