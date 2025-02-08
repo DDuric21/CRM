@@ -71,11 +71,20 @@ namespace Backend_API.Services
             return user;
         }
 
-        public async Task<List<User>> GetAllUsersAsync()
+        public async Task<List<UserData>> GetAllUsersAsync()
         {
             var users = _userManager.Users.ToList();
 
-            return users;
+            var usersData = new List<UserData>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+
+                usersData.Add(new UserData { User = user, UserRoles = roles });
+            }
+
+            return usersData;
         }
 
         public async Task<bool> UpdateUserDataAsync(UserData userData)
@@ -164,12 +173,12 @@ namespace Backend_API.Services
             return _mapper.Map<UserDTO>(userData);
         }
 
-        public List<UserDTO> MapUsersToDTOs(IEnumerable<User> users)
+        public List<UserDTO> MapUsersDataToDTOs(IEnumerable<UserData> users)
         {
             var mapedUsers = new List<UserDTO>();
             foreach (var user in users)
             {
-                mapedUsers.Add(MapUserToDTO(user));
+                mapedUsers.Add(MapUserDataToDTO(user));
             }
 
             return mapedUsers;

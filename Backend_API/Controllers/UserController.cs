@@ -57,7 +57,7 @@ namespace Backend_API.Controllers
                     return Problem("No users found!");
                 }
 
-                var userDTO = _userService.MapUsersToDTOs(users);
+                var userDTO = _userService.MapUsersDataToDTOs(users);
 
                 return Ok(userDTO);
             }

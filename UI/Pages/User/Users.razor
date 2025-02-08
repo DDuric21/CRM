@@ -30,7 +30,7 @@ else
                     <td>@($"{user.FirstName} {user.LastName}")</td>
                     <td>@user.UserName</td>
                     <td>@user.UserEmail</td>
-                    <td><!--@user.UserRoles.FirstOrDefault()--></td>
+                    <td>@string.Join(" / ", user.UserRoles.Select(x => x.RoleName))</td>
                     <td>
                         <button class="btn btn-outline-secondary" @onclick="() => RedirectToUser(user.UserName)"><em class="oi oi-pencil"></em> Edit</button>
                         <button class="btn btn-primary" hidden="@(user.UserStatus == ItemState.Active)" @onclick="() => ActivateUser(user.UserName)">Activate</button>
