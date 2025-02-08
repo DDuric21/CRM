@@ -28,7 +28,7 @@
             <input type="password" placeholder="password" name="password" @bind-value="userDTO.Password" oninput="@RemoveWarningText" />
             <button type="submit" name="submit" class="submitButton">LOGIN</button>
         </EditForm>
-        <p class="warning-text" hidden="@(!showCredentialsWarning)">Please enter correct credentials!</p>
+        <p class="warning-text" hidden="@(!showCredentialsWarning)">@warningText</p>
         <Loader Hide="@(!showLoading)"></Loader>
     </div>
 </div>
@@ -38,23 +38,31 @@
 
     private bool showLoading = false;
     private bool showCredentialsWarning = false;
+    private string warningText = string.Empty;
 
     private async Task SubmitLogin()
     {
         RemoveWarningText();
         showLoading = true;
 
-        var loginResult = await authenticationService.Login(userDTO.UserName, userDTO.Password);
+        try
+        {
+            var loginResult = await authenticationService.Login(userDTO.UserName, userDTO.Password);
 
-        if (loginResult.IsAuthenticated)
-        {
-            var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)authenticationStateProvider;
-            await crmAuthenticationStateProvider.UpdateAuthenticationState(new UserSession { UserName = userDTO.UserName});
-            navigationManager.NavigateTo("/index");
+            if (loginResult.IsAuthenticated)
+            {
+                var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)authenticationStateProvider;
+                await crmAuthenticationStateProvider.UpdateAuthenticationState(new UserSession { UserName = userDTO.UserName });
+                navigationManager.NavigateTo("/index");
+            }
+            else
+            {
+                ShowWarningText("Please enter correct credentials!");
+            }
         }
-        else 
+        catch
         {
-            showCredentialsWarning = true;
+            ShowWarningText("Something went wrong. Please try again!");
         }
 
         showLoading = false;
@@ -63,5 +71,11 @@
     private void RemoveWarningText()
     {
         showCredentialsWarning = false;
+    }
+
+    private void ShowWarningText(string text)
+    {
+        showCredentialsWarning = true;
+        warningText = text;
     }
 }
