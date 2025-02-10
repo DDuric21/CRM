@@ -1,5 +1,6 @@
 ﻿using Models.DTO;
 using Models.Requests;
+using Models.Responses;
 
 namespace UI.Services
 {
@@ -9,8 +10,10 @@ namespace UI.Services
 
         Task ChangeUserStatus(ChangeUserStatusRQ request);
 
-        Task<IAsyncEnumerable<UserDTO>> GetUsersAsync();
+        Task<IAsyncEnumerable<UserDTO>> GetUsersAsync(UserFilterRQ userFilter);
 
         Task<bool> UpdateUserDataAsync(UserDTO userDTO);
+
+        Task<UserGridFilterDataRS> GetUserFilterBaseValues();
     }
 }

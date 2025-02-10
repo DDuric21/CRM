@@ -1,14 +1,14 @@
 ﻿@page "/User/Users"
 
-
 @inject NavigationManager navigationManager
 @inject IUserService userService
 @inject ICrmModalService modal
 
+<UserGridFilter OnFilterExecute="GetUsersAsync"/>
+<br />
 <h3>Users</h3>
 <button id="btnAddUser" class="btn btn-primary" @onclick="Redirect">Add</button>
-
-@if (users.IsNullOrEmpty())
+@if (users is null)
 {
     <Loader/>
 }
@@ -45,12 +45,14 @@ else
 @code {
     private List<UserDTO> users = new List<UserDTO>();
 
-    protected override async Task OnInitializedAsync()
+    private async Task GetUsersAsync(UserFilterRQ userFilter)
     {
+        users = null;
         try
         {            
-            var asyncUsers = await userService.GetUsersAsync();
+            var asyncUsers = await userService.GetUsersAsync(userFilter);
 
+            users = new List<UserDTO>();
             await foreach(var user in asyncUsers)
             {
                 users.Add(user);
@@ -58,7 +60,16 @@ else
         }
         catch (Exception ex)
         {
+            users = new List<UserDTO>();
             modal.ShowErrorMessage(ex.Message);
+        }
+    }
+
+    private void HandleUserFilter(Dictionary<string, object> filters)
+    {
+        foreach (var filter in filters)
+        {
+            Console.WriteLine($"{filter.Key}: {filter.Value}");
         }
     }
 

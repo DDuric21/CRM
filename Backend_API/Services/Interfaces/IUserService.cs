@@ -2,6 +2,8 @@
 using Backend_API.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Models.DTO;
+using Models.Requests;
+using Models.Responses;
 
 namespace Backend_API.Services
 {
@@ -15,7 +17,7 @@ namespace Backend_API.Services
 
         Task<User> CreateNewUserAsync(UserDTO userDTO);
 
-        Task<List<UserData>> GetAllUsersAsync();
+        Task<List<UserData>> GetUsersAsync(UserFilterRQ userFilter);
 
         List<UserDTO> MapUsersDataToDTOs(IEnumerable<UserData> users);
 
@@ -26,5 +28,7 @@ namespace Backend_API.Services
         Task<IdentityResult> DeactivateUserAsync(string username);
 
         Task<IdentityResult> ActivateUserAsync(string username);
+
+        Task<UserGridFilterDataRS> GetUserFilterBaseValuesAsync();
     }
 }

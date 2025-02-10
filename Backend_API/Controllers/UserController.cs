@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Helpers;
+using Models.Requests;
 using Models.Responses;
 
 namespace Backend_API.Controllers
@@ -44,13 +45,13 @@ namespace Backend_API.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("/Users")]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetUsers([FromBody] UserFilterRQ userFilter)
         {
             try
             {
-                var users = await _userService.GetAllUsersAsync();
+                var users = await _userService.GetUsersAsync(userFilter);
 
                 if (users.IsNullOrEmpty())
                 {
@@ -138,6 +139,28 @@ namespace Backend_API.Controllers
                 }
 
                 return Ok(new ResponseBase());
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("/Users/GridFilterData")]
+        public async Task<IActionResult> GetUserFilterBaseValues()
+        {
+            try
+            {
+                var result = await _userService.GetUserFilterBaseValuesAsync();
+
+                if (result is null)
+                {
+                    return Problem("No data fetched!");
+                }
+
+                return Ok(result);
             }
             catch (Exception ex)
             {

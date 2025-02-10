@@ -2,9 +2,12 @@
 using Backend_API.Data.DataClasses;
 using Backend_API.Data.Model;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Models.DTO;
 using Models.Enums;
 using Models.Helpers;
+using Models.Requests;
+using Models.Responses;
 
 namespace Backend_API.Services
 {
@@ -12,13 +15,16 @@ namespace Backend_API.Services
     {
         private readonly IMapper _mapper;
         private readonly CrmUserManager _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public UserService(
             IMapper mapper,
-            CrmUserManager userManager)
+            CrmUserManager userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             _mapper = mapper;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public async Task<UserData> GetUserDataAsync(string username)
@@ -71,20 +77,55 @@ namespace Backend_API.Services
             return user;
         }
 
-        public async Task<List<UserData>> GetAllUsersAsync()
+        public async Task<List<UserData>> GetUsersAsync(UserFilterRQ userFilter)
         {
-            var users = _userManager.Users.ToList();
+            var users = _userManager.Users;
+
+            var filteredUsers = FilterUsers(users, userFilter);
 
             var usersData = new List<UserData>();
 
-            foreach (var user in users)
+            foreach (var user in filteredUsers)
             {
                 var roles = await _userManager.GetRolesAsync(user);
 
-                usersData.Add(new UserData { User = user, UserRoles = roles });
+                if (userFilter.UserRoles.IsNullOrEmpty() || userFilter.UserRoles.Intersect(roles).Any())
+                {
+                    usersData.Add(new UserData { User = user, UserRoles = roles });
+                }
             }
 
             return usersData;
+        }
+
+        private IEnumerable<User> FilterUsers(IQueryable<User> users, UserFilterRQ userFilter)
+        {
+            if (!userFilter.UserStatuses.IsNullOrEmpty())
+            {
+                users = users.Where(x => userFilter.UserStatuses.Contains((ItemState)x.UserStatusID));
+            }
+
+            if (userFilter.FirstName != null)
+            {
+                users = users.Where(x => x.FirstName.StartsWith(userFilter.FirstName));
+            }
+
+            if (userFilter.LastName != null)
+            {
+                users = users.Where(x => x.LastName.StartsWith(userFilter.LastName));
+            }
+
+            if (userFilter.CreatedDateStart != null)
+            {
+                users = users.Where(x => x.DateCreated >= userFilter.CreatedDateStart.Value);
+            }
+
+            if (userFilter.CreatedDateEnd != null)
+            {
+                users = users.Where(x => x.DateCreated <= userFilter.CreatedDateEnd.Value);
+            }
+
+            return users.ToList();
         }
 
         public async Task<bool> UpdateUserDataAsync(UserData userData)
@@ -160,6 +201,23 @@ namespace Backend_API.Services
             var deactivationResult = await _userManager.UpdateAsync(user);
 
             return deactivationResult;
+        }
+
+        public async Task<UserGridFilterDataRS> GetUserFilterBaseValuesAsync()
+        {
+            var roles = await _roleManager.Roles
+                .Select(x => x.Name)
+                .ToListAsync();
+
+            var userStatuses = Enum.GetValues(typeof(ItemState)).Cast<ItemState>().ToList();
+
+            var userFilterBaseValues = new UserGridFilterDataRS
+            {
+                UserRoles = roles,
+                UserStatuses = userStatuses
+            };
+
+            return userFilterBaseValues;
         }
 
         #region mapings

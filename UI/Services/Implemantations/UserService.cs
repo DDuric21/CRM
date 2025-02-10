@@ -73,10 +73,10 @@ namespace UI.Services
             return url;
         }
 
-        public async Task<IAsyncEnumerable<UserDTO>> GetUsersAsync()
+        public async Task<IAsyncEnumerable<UserDTO>> GetUsersAsync(UserFilterRQ userFilter)
         {
             var url = string.Format("https://localhost:7076/Users");
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var request = _communicationService.CreateRequest(HttpMethod.Post, url, userFilter);
 
             try
             {
@@ -111,6 +111,26 @@ namespace UI.Services
             }
 
             return isSuccessful;
+        }
+
+        public async Task<UserGridFilterDataRS> GetUserFilterBaseValues()
+        {
+            var url = string.Format("https://localhost:7076/Users/GridFilterData");
+            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<UserGridFilterDataRS>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                // loging
+                _modalService.ShowErrorMessage(ex.Message);
+
+                return null;
+            }
         }
     }
 }
