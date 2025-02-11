@@ -19,6 +19,8 @@ namespace Models.DTO
 
         public CustomerType Type { get; set; }
 
+        public ItemState CustomerStatus { get; set; }
+
         public List<AssetDTO> Assets { get; set; }
 
         public List<BillingProfileDTO> BillingProfiles { get; set; }

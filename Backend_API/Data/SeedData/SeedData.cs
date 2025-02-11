@@ -79,7 +79,8 @@ namespace Backend_API.Data.SeedData
                         LastName =  "Name1",
                         PersonalID =  "04766934440",
                         Birthday = new DateTime(1995,05,16,0,0,0),
-                        TypeID = 1
+                        TypeID = 1,
+                        CustomerStatusID = 1,
                     },
                     new Customer
                     {
@@ -87,7 +88,8 @@ namespace Backend_API.Data.SeedData
                         LastName =  "Name2",
                         PersonalID =  "54745617737",
                         Birthday = new DateTime(1970,01,01,0,0,0),
-                        TypeID = 1
+                        TypeID = 1,
+                        CustomerStatusID = 1,
                     },
                     new Customer
                     {
@@ -95,7 +97,8 @@ namespace Backend_API.Data.SeedData
                         LastName =  "Name3",
                         PersonalID =  "37046495774",
                         Birthday = new DateTime(2000,03,21,0,0,0),
-                        TypeID = 1
+                        TypeID = 1,
+                        CustomerStatusID = 2,
                     }
                 });
 
