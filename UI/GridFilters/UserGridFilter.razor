@@ -102,7 +102,6 @@ else
         ? string.Join(", ", selectedUserStatuses.Where(x => x.IsSelected).Select(x => x.Status)) 
         : "Select Status";
 
-    // create call back
     private async Task ExecuteFilter()
     {
         userFilter.UserRoles = selectedUserRoles
