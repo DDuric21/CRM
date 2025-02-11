@@ -65,14 +65,6 @@ else
         }
     }
 
-    private void HandleUserFilter(Dictionary<string, object> filters)
-    {
-        foreach (var filter in filters)
-        {
-            Console.WriteLine($"{filter.Key}: {filter.Value}");
-        }
-    }
-
     protected async void DeactivateUser(string username)
     {
         var result = await modal.ShowDialog($"This will deactivate user {username}, do you want to proceed?", ModalDialogType.Delete);
