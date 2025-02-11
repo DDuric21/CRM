@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Models.DTO;
+using Models.Enums;
 using Models.Helpers;
+using Models.Requests;
+using Models.Responses;
 
 namespace Backend_API.Services
 {
@@ -124,6 +128,78 @@ namespace Backend_API.Services
                 .ToList();
 
             return interactions;
+        }
+
+        public CustomerGridFilterDataRS GetUserFilterBaseValues()
+        {
+            var customerTypes = Enum.GetValues(typeof(CustomerType))
+                .Cast<CustomerType>()
+                .Where(x => x == CustomerType.Residential)
+                .ToList();
+
+            var customerStatuses = Enum.GetValues(typeof(ItemState))
+                .Cast<ItemState>()
+                .ToList();
+
+            var customerFilterBaseValues = new CustomerGridFilterDataRS
+            {
+                CustomerTypes = customerTypes,
+                CustomerStatuses = customerStatuses
+            };
+
+            return customerFilterBaseValues;
+        }
+
+        public async Task<List<Customer>> GetCustomersAsync(CustomerFilterRQ customerFilter)
+        {
+            var customers = _repository.Customers
+                .With(x => x.Addresses);
+
+            customers = ApplyCustomerFilters(customers, customerFilter);
+
+            var filteredCustomers = await customers.ToListAsync();
+
+            return filteredCustomers;
+        }
+
+        private IQueryable<Customer> ApplyCustomerFilters(IQueryable<Customer> customers, CustomerFilterRQ customerFilter)
+        {
+            if (!customerFilter.CustomerTypes.IsNullOrEmpty())
+            {
+                customers = customers.Where(x => customerFilter.CustomerTypes.Contains((CustomerType)x.TypeID));
+            }
+
+            if (!customerFilter.CustomerStatuses.IsNullOrEmpty())
+            {
+                customers = customers.Where(x => customerFilter.CustomerStatuses.Contains((ItemState)x.CustomerStatusID));
+            }
+
+            if (customerFilter.PersonalID != null)
+            {
+                customers = customers.Where(x => x.PersonalID == customerFilter.PersonalID);
+            }
+
+            if (customerFilter.FirstName != null)
+            {
+                customers = customers.Where(x => x.FirstName.StartsWith(customerFilter.FirstName));
+            }
+
+            if (customerFilter.LastName != null)
+            {
+                customers = customers.Where(x => x.LastName.StartsWith(customerFilter.LastName));
+            }
+
+            if (customerFilter.BirthdayDateStart.HasValue)
+            {
+                customers = customers.Where(x => x.Birthday >= customerFilter.BirthdayDateStart.Value);
+            }
+
+            if (customerFilter.BirthdayDateEnd.HasValue)
+            {
+                customers = customers.Where(x => x.Birthday <= customerFilter.BirthdayDateEnd.Value);
+            }
+
+            return customers;
         }
     }
 }

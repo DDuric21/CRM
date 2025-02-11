@@ -1,10 +1,12 @@
 ﻿using Models.DTO;
+using Models.Requests;
+using Models.Responses;
 
 namespace UI.Services
 {
     public interface ICustomerService
     {
-        Task<IAsyncEnumerable<CustomerDTO>> GetCustomersAsync();
+        Task<IAsyncEnumerable<CustomerDTO>> GetCustomersAsync(CustomerFilterRQ customerFilter);
 
         Task<long> CreateNewCustomerAsync(CustomerDTO customerDTO);
 
@@ -21,5 +23,7 @@ namespace UI.Services
         Task<IAsyncEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID);
 
         Task<IAsyncEnumerable<InteractionDTO>> GetCustomerInteractionsAsync(long customerID);
+
+        Task<CustomerGridFilterDataRS> GetCustomerFilterBaseValues();
     }
 }

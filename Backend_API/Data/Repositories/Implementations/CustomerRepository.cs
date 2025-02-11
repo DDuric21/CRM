@@ -10,15 +10,6 @@ namespace Backend_API.Data.Repositories
         {
         }
 
-        public async Task<List<Customer>> GetAllCustomersAsync()
-        {
-            var customer = await _context.Customers
-                .Include(x => x.Addresses)
-                .ToListAsync();
-
-            return customer;
-        }
-
         public async Task<int> UpdateCustomerAsync(Customer customer)
         {
             var existingCustomer = _context.Customers

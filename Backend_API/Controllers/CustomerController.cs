@@ -4,6 +4,7 @@ using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Helpers;
+using Models.Requests;
 using Models.Responses;
 
 namespace Backend_API.Controllers
@@ -34,27 +35,38 @@ namespace Backend_API.Controllers
 
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("/Customers")]
-        public async Task<IActionResult> GetAllCustomers()
+        public async Task<IActionResult> GetCustomers([FromBody] CustomerFilterRQ customerFilter)
         {
+            if (customerFilter.IsNullOrEmpty())
+            {
+                return BadRequest();
+            }
+
             var customersDTOs = new List<CustomerDTO>();
 
             try
             {
-                var customers = await _repository.Customers.GetAllCustomersAsync();
+                var customers = await _customerService.GetCustomersAsync(customerFilter);
+
+                if (customers.IsNullOrEmpty())
+                {
+                    return Problem("No customers found!");
+                }
 
                 foreach (var customer in customers)
                 {
                     customersDTOs.Add(_customerService.MapCustomerToDTO(customer));
                 }
+
+                return Ok(customersDTOs);
             }
             catch (Exception ex)
             {
-                return Problem(ex.Message);
+                //add loging
+                return StatusCode(500, ex.Message);
             }
-
-            return Ok(customersDTOs);
         }
 
         [HttpGet]
@@ -123,7 +135,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Customers")]
+        [Route("/Customers/Create")]
         public async Task<IActionResult> InsertCustomer([FromBody] CustomerDTO customerDTO)
         {
             if (!_dataValidationService.ValidateCustomerDTO(customerDTO))
@@ -251,6 +263,28 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("/Customers/GridFilterData")]
+        public async Task<IActionResult> GetUserFilterBaseValues()
+        {
+            try
+            {
+                var result = _customerService.GetUserFilterBaseValues();
+
+                if (result is null)
+                {
+                    return Problem("No data fetched!");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                //add loging
                 return StatusCode(500, ex.Message);
             }
         }

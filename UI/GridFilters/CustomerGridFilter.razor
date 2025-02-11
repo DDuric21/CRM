@@ -1,0 +1,135 @@
+﻿
+@inject ICustomerService customerService
+
+@if (customerGridFilterData is null)
+{    
+    <Loader></Loader>
+}
+else
+{
+    <div class="row bg-light bg-gradient p-4" style="border-radius:50px">
+
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <h4 class="m-0">Grid Filter</h4>
+            <div class="d-flex justify-content-center col-1">
+                <button type="submit" class="btn btn-primary" @onclick="() => ExecuteFilter()">Filter</button>
+            </div>
+        </div>
+
+        <div class="col-2 dropdown p-2">
+            <label>Status:</label>
+            <button class="form-select text-truncate" type="button" data-dropdown-id="statusDropdown" id="dropdownButton" data-bs-toggle="dropdown">
+                @typesButtonText
+            </button>
+
+            <ul class="dropdown-menu" data-bs-auto-close="outside">
+                @foreach (var status in selectedCustomerTypes)
+                {                       
+                    <li>
+                        <label class="dropdown-item">
+                            <input type="checkbox" class="form-check-input me-2" data-dropdown-id="statusDropdown" value="@status.Type"
+                            @bind="status.IsSelected">
+                            @status.Type
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-2 dropdown p-2">
+            <label>Status:</label>
+            <button class="form-select text-truncate" type="button" data-dropdown-id="statusDropdown" id="dropdownButton" data-bs-toggle="dropdown">
+                @statusesButtonText
+            </button>
+
+            <ul class="dropdown-menu" data-bs-auto-close="outside">
+                @foreach (var status in selectedCustomerStatuses)
+                {                       
+                    <li>
+                        <label class="dropdown-item">
+                            <input type="checkbox" class="form-check-input me-2" data-dropdown-id="statusDropdown" value="@status.Status"
+                            @bind="status.IsSelected">
+                            @status.Status
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+        
+        <div class="col-2 p-2">
+            <label>First Name:</label>
+            <input class="form-control" @bind="customerFilter.FirstName" placeholder="Enter first name" />
+        </div>
+
+        <div class="col-2 p-2">
+            <label>Last Name:</label>
+            <input class="form-control" @bind="customerFilter.LastName" placeholder="Enter last name" />
+        </div>
+
+        <div class="col-2 p-2">
+            <label>Last Name:</label>
+            <input class="form-control" @bind="customerFilter.PersonalID" placeholder="Enter Personal ID" />
+        </div>
+
+        <div class="col-4 p-2">
+            <label>Born between:</label>
+            <div class="d-flex gap-2">
+                <input type="date" class="form-control" @bind="customerFilter.BirthdayDateStart" />
+                <input type="date" class="form-control" @bind="customerFilter.BirthdayDateEnd" />
+            </div>
+        </div>
+    </div>    
+}
+
+
+@code {    
+    [Parameter] 
+    public EventCallback<CustomerFilterRQ> OnFilterExecute { get; set; }
+
+    private CustomerFilterRQ customerFilter = new CustomerFilterRQ();
+    private CustomerGridFilterDataRS customerGridFilterData { get; set; }
+    private IEnumerable<SelectedStatus> selectedCustomerStatuses = new List<SelectedStatus>();
+    private IEnumerable<SelectedCustomerType> selectedCustomerTypes = new List<SelectedCustomerType>();
+    
+    private string statusesButtonText => selectedCustomerStatuses
+        .Where(x => x.IsSelected)
+        .Select(x => x.Status)
+        .Any() 
+        ? string.Join(", ", selectedCustomerStatuses.Where(x => x.IsSelected).Select(x => x.Status)) 
+        : "Select Status";    
+    private string typesButtonText => selectedCustomerTypes
+        .Where(x => x.IsSelected)
+        .Select(x => x.Type)
+        .Any() 
+        ? string.Join(", ", selectedCustomerTypes.Where(x => x.IsSelected).Select(x => x.Type)) 
+        : "Select Customer Type";
+
+    private async Task ExecuteFilter()
+    {
+        customerFilter.CustomerStatuses = selectedCustomerStatuses
+            .Where(x => x.IsSelected)
+            .Select(x => x.Status)
+            .ToList();
+        customerFilter.CustomerTypes = selectedCustomerTypes
+            .Where(x => x.IsSelected)
+            .Select(x => x.Type)
+            .ToList();
+
+        await OnFilterExecute.InvokeAsync(customerFilter);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        customerGridFilterData = await customerService.GetCustomerFilterBaseValues();
+        
+        selectedCustomerStatuses = customerGridFilterData.CustomerStatuses
+            .Select(x => new SelectedStatus { Status = x })
+            .ToList();
+
+        selectedCustomerTypes = customerGridFilterData.CustomerTypes
+            .Select(x => new SelectedCustomerType { Type = x })
+            .ToList();
+
+        base.OnInitializedAsync();
+    }
+}

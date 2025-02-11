@@ -1,6 +1,7 @@
 ﻿using Backend_API.Data.Model;
 using Models.DTO;
-using System.Collections.Generic;
+using Models.Requests;
+using Models.Responses;
 
 namespace Backend_API.Services
 {
@@ -34,5 +35,9 @@ namespace Backend_API.Services
         List<Order> GetCustomerOrders(long customerID);
 
         List<Interaction> GetCustomerInteractions(long customerID);
+
+        CustomerGridFilterDataRS GetUserFilterBaseValues();
+
+        Task<List<Customer>> GetCustomersAsync(CustomerFilterRQ customerFilter);
     }
 }

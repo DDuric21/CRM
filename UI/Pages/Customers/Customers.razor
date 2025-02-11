@@ -4,12 +4,13 @@
 @inject ICustomerService customerService
 @inject ICrmModalService modal
 
+<CustomerGridFilter OnFilterExecute="GetFilteredCustomersAsync"/>
+
+<br />
 <h3>Customers</h3>
-
-
 <button id="btnAddCustomer" class="btn btn-primary" @onclick="Redirect">Add</button>
 
-@if (customers.IsNullOrEmpty())
+@if (customers is null)
 {
     <Loader />
 }
@@ -43,11 +44,14 @@ else
 @code {
     private List<CustomerDTO> customers = new List<CustomerDTO>();
 
-    protected override async Task OnInitializedAsync()
+    private async Task GetFilteredCustomersAsync(CustomerFilterRQ customerFilter)
     {
+        customers = null;
         try
         {            
-            var asyncCustomers = await customerService.GetCustomersAsync();
+            var asyncCustomers = await customerService.GetCustomersAsync(customerFilter);
+            
+            customers = new List<CustomerDTO>();
 
             await foreach(var customer in asyncCustomers)
             {
@@ -56,6 +60,7 @@ else
         }
         catch (Exception ex)
         {
+            customers = new List<CustomerDTO>();
             modal.ShowErrorMessage(ex.Message);
         }
     }

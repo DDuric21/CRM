@@ -1,4 +1,5 @@
 ﻿using Models.DTO;
+using Models.Requests;
 using Models.Responses;
 
 namespace UI.Services
@@ -16,9 +17,10 @@ namespace UI.Services
             _modalService = modalService;
         }
 
-        public async Task<IAsyncEnumerable<CustomerDTO>> GetCustomersAsync()
+        public async Task<IAsyncEnumerable<CustomerDTO>> GetCustomersAsync(CustomerFilterRQ customerFilter)
         {
-            var request = _communicationService.CreateRequest(HttpMethod.Get, "https://localhost:7076/Customers");            
+            var url = string.Format("https://localhost:7076/Customers");
+            var request = _communicationService.CreateRequest(HttpMethod.Post, url, customerFilter);          
 
             try
             {
@@ -55,7 +57,7 @@ namespace UI.Services
 
         public async Task<long> CreateNewCustomerAsync(CustomerDTO customerDTO)
         {
-            var request = _communicationService.CreateRequest(HttpMethod.Post, "https://localhost:7076/Customers", customerDTO);
+            var request = _communicationService.CreateRequest(HttpMethod.Post, "https://localhost:7076/Customers/Create", customerDTO);
             
             try
             {
@@ -170,6 +172,26 @@ namespace UI.Services
             try
             {
                 var response = await _communicationService.SendRequestAsync<IAsyncEnumerable<InteractionDTO>>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                //add logging
+                _modalService.ShowErrorMessage(ex.Message);
+
+                return null;
+            }
+        }
+
+        public async Task<CustomerGridFilterDataRS> GetCustomerFilterBaseValues()
+        {
+            var url = string.Format("https://localhost:7076/Customers/GridFilterData");
+            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<CustomerGridFilterDataRS>(request);
 
                 return response;
             }
