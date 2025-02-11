@@ -60,6 +60,9 @@ namespace Backend_API.Data.DbContext
             modelBuilder.Entity<Customer>()
                 .HasMany(x => x.Addresses)
                 .WithOne(x => x.Customer);
+            modelBuilder.Entity<Customer>()
+                .HasIndex(x => x.PersonalID)
+                .IsUnique();
 
             modelBuilder.Entity<User>();
 

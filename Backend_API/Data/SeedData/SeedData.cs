@@ -75,19 +75,25 @@ namespace Backend_API.Data.SeedData
                 {
                     new Customer
                     {
-                        Name = "Test Name1",
+                        FirstName = "Test",
+                        LastName =  "Name1",
+                        PersonalID =  "04766934440",
                         Birthday = new DateTime(1995,05,16,0,0,0),
                         TypeID = 1
                     },
                     new Customer
                     {
-                        Name = "Test Name2",
+                        FirstName = "Test",
+                        LastName =  "Name2",
+                        PersonalID =  "54745617737",
                         Birthday = new DateTime(1970,01,01,0,0,0),
                         TypeID = 1
                     },
                     new Customer
                     {
-                        Name = "Test Name3",
+                        FirstName = "Test",
+                        LastName =  "Name3",
+                        PersonalID =  "37046495774",
                         Birthday = new DateTime(2000,03,21,0,0,0),
                         TypeID = 1
                     }

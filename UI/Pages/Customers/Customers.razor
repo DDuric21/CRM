@@ -27,7 +27,7 @@ else
             @foreach (var customer in customers)
             {
                 <tr role="button" @ondblclick="() => RedirectToCustomer(customer.Id)">
-                    <td>@customer.Name</td>
+                    <td>@(customer.FirstName + " " + customer.LastName)</td>
                     <td>@customer.Birthday.ToLocalTime().ToString("dd-MM-yyyy")</td>
                     <td>@GetLegalAddress(customer.Addresses)</td>
                     <td>

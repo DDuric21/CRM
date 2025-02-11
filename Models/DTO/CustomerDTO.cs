@@ -7,7 +7,11 @@ namespace Models.DTO
         // should be removed later
         public long Id { get; set; }
 
-        public string? Name { get; set; }
+        public string? FirstName { get; set; }
+
+        public string? LastName { get; set; }
+
+        public string PersonalID{ get; set; }
 
         public List<AddressDTO> Addresses { get; set; }
 

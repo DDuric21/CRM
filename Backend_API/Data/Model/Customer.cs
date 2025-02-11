@@ -4,7 +4,11 @@ namespace Backend_API.Data.Model
 {
     public class Customer : BaseModel
     {
-        public string? Name { get; set; }
+        public string? FirstName { get; set; }
+
+        public string? LastName { get; set; }
+
+        public string PersonalID { get; set; }
 
         public virtual ICollection<Address> Addresses { get; set; }
 

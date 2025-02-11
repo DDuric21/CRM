@@ -20,7 +20,9 @@
         <div class="top-container">
             <div class="top-left-container">
                 <EditForm class="newCustomer-form" Model="@customerDTO" OnSubmit="@CreateNewResidentialCustomer">
-                    <InputText placeholder="Name" @bind-Value="customerDTO.Name" /><br>
+                    <InputText placeholder="FirstName" @bind-Value="customerDTO.FirstName" /><br>
+                    <InputText placeholder="LastName" @bind-Value="customerDTO.LastName" /><br>
+                    <InputText placeholder="PersonalID" @bind-Value="customerDTO.PersonalID" /><br>
 			        <InputDate @bind-Value="customerDTO.Birthday" /><br>
                     <InputText placeholder="Full address" @bind-Value="addressDTO.FullAddress" /><br>
                     <button type="submit" name="submit" class="button">Create</button>

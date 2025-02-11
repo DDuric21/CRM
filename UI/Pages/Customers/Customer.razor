@@ -1,12 +1,13 @@
 ﻿@inject ICustomerService customerService
 @inject ICrmModalService modal
 
-<h1>@CustomerDTO.Name</h1>
+<h1>@(CustomerDTO.FirstName + " " + CustomerDTO.LastName)</h1>
 <br />
 
 <EditForm Model="@CustomerDTO" OnSubmit="@SaveChanges">
     <fieldset disabled="@(!IsAdmin)">
-        <InputText @bind-Value="CustomerDTO.Name"></InputText>
+        <InputText @bind-Value="CustomerDTO.FirstName"></InputText>
+        <InputText @bind-Value="CustomerDTO.LastName"></InputText>
         <InputDate @bind-Value="CustomerDTO.Birthday"></InputDate>
         <button type="submit" name="submit" class="btn btn-primary">Save Changes</button>
     </fieldset>

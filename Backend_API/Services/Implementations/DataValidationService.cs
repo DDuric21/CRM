@@ -18,7 +18,17 @@ namespace Backend_API.Services
                 return false;
             }
 
-            if (string.IsNullOrEmpty(customerDTO.Name))
+            if (string.IsNullOrEmpty(customerDTO.FirstName))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(customerDTO.LastName))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(customerDTO.PersonalID))
             {
                 return false;
             }

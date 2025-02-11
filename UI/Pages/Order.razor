@@ -13,11 +13,12 @@
 else
 {
     <fieldset disabled="@IsDisabled()">
-        <h1>@customerDTO.Name</h1>
+        <h1>@(customerDTO.FirstName + " " + customerDTO.LastName)</h1>
         <br />
 
         <div class="align-items-stretch">
-            <input type="text" @bind-value="customerDTO.Name" />
+            <input type="text" @bind-value="customerDTO.FirstName" />
+            <input type="text" @bind-value="customerDTO.LastName" />
             <input type="text" @bind-value="customerDTO.Birthday" />
             <button type="submit" name="submit" class="btn btn-primary" @onclick="SubmitOrder" >SubmitOrder</button>
         </div>
