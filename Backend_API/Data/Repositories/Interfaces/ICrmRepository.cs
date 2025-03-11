@@ -14,5 +14,6 @@ namespace Backend_API.Data.Repositories
         IRefreshTokenRepository RefreshTokens { get; }
         IGenericRepository<Interaction> Interactions { get; }
         IBillingProfileRepository BillingProfiles { get; }
+        IGenericRepository<News> News { get; }
     }
 }

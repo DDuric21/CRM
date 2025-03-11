@@ -157,5 +157,19 @@ namespace Backend_API.Data.Repositories
                 return _billingProfiles;
             }
         }
+
+        public IGenericRepository<News> _news;
+        public IGenericRepository<News> News
+        {
+            get
+            {
+                if (_news == null)
+                {
+                    _news = new GenericRepository<News>(_context);
+                }
+
+                return _news;
+            }
+        }
     }
 }

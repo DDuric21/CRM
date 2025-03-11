@@ -60,6 +60,8 @@ namespace Backend_API.Data.Mappings
                 .ForPath(dest => dest.User.LastName, opt => opt.MapFrom(src => src.LastName))
                 .ForPath(dest => dest.User.UserName, opt => opt.MapFrom(src => src.UserName))
                 .ForPath(dest => dest.User.UserStatusID, opt => opt.MapFrom(src => (int)src.UserStatus));
+            CreateMap<News, NewsDTO>()
+                .ForPath(dest => dest.NewsType, opt => opt.MapFrom(src => (NewsType)src.NewsTypeID));
         }
     }
 }

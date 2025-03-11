@@ -137,6 +137,7 @@ namespace Backend_API.Data.DbContext
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Interaction> Interactions { get; set; }
         public DbSet<BillingProfile> BillingProfiles { get; set; }
+        public DbSet<News> News { get; set; }
         #endregion
     }
 }

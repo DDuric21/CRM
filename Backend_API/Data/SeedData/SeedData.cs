@@ -65,6 +65,8 @@ namespace Backend_API.Data.SeedData
             CreateCustomerAssetOptions(context);
 
             CreateCustomerInteractions(context);
+
+            CreateNews(context);
         }
 
         private static void CreateCustomers(CrmDbContext context)
@@ -454,6 +456,90 @@ namespace Backend_API.Data.SeedData
                         TypeID = 2,
                         Description = "I just bought a boat navigation system!"
                     }
+                });
+
+                context.SaveChanges();
+            }
+        }
+
+        private static void CreateNews(CrmDbContext context)
+        {
+            if (!context.News.Any())
+            {
+                context.News.AddRange(new List<News>
+                {
+                    new News
+                    {
+                        Title = "5G Rollout Accelerates Globally, Paving the Way for N5G Networks",
+                        Content = "The global rollout of 5G networks is accelerating, with telecom companies expanding coverage worldwide. This is setting the stage for next-generation networks like N5G, which will offer even faster speeds and enhanced connectivity for IoT devices.",
+                        NewsTypeID = 2,
+                    },
+                    new News
+                    {
+                        Title = "Telecom Giants Partner to Develop N5G Networks for Smarter Cities",
+                        Content = "Major telecom providers are collaborating to develop N5G (Next Generation 5G) networks designed to enable smarter cities. These networks will support advanced applications such as autonomous vehicles, smart infrastructure, and enhanced urban management.",
+                        NewsTypeID = 2,
+                    },
+                    new News
+                    {
+                        Title = "Europe Leads the World in 5G Connectivity with N5G Trials Underway",
+                        Content = "Europe continues to lead the world in 5G adoption, with trials of N5G networks currently underway in several countries. These trials are focused on ultra-low latency applications, including telemedicine and industrial automation, marking a significant step toward the future of mobile connectivity.",
+                        NewsTypeID = 2,
+                    },
+                    new News
+                    {
+                        Title = "China's Huawei Prepares for N5G Launch as 5G Networks Expand",
+                        Content = "China's telecom giant Huawei is preparing for the launch of N5G technologies, which will complement the rapid expansion of 5G networks globally. The company is focusing on enhancing network efficiency and security to address growing concerns around data privacy and cyber threats.",
+                        NewsTypeID = 2,
+                    },
+                    new News
+                    {
+                        Title = "Telecom Industry Faces Challenges with 5G Spectrum Allocation for N5G Networks",
+                        Content = "The telecom industry is facing challenges in spectrum allocation as governments work to ensure enough bandwidth for the continued growth of 5G networks and the upcoming N5G technologies. These challenges could impact the speed and scalability of future telecom infrastructure.",
+                        NewsTypeID = 2,
+                    },
+                    new News
+                    {
+                        Title = "Company Expands to New Markets",
+                        Content = "We are excited to announce our expansion into new international markets...",
+                        NewsTypeID = 1,
+                    },
+                    new News
+                    {
+                        Title = "New Product Launch",
+                        Content = "Introducing our latest innovation, designed to make your life easier...",
+                        NewsTypeID = 1,
+                    },
+                    new News
+                    {
+                        Title = "Annual Report Released",
+                        Content = "Our annual report highlights our achievements and future goals...",
+                        NewsTypeID = 1,
+                    },
+                    new News
+                    {
+                        Title = "Employee of the Month Announced",
+                        Content = "Congratulations to Jane Doe for her outstanding contributions this month...",
+                        NewsTypeID = 1,
+                    },
+                    new News
+                    {
+                        Title = "Sustainability Initiative",
+                        Content = "Our company is taking new steps to reduce its carbon footprint and promote green energy...",
+                        NewsTypeID = 1,
+                    },
+                    new News
+                    {
+                        Title = "Upcoming Webinar",
+                        Content = "Join us for an exclusive webinar on industry trends and insights...",
+                        NewsTypeID = 1,
+                    },
+                    new News
+                    {
+                        Title = "Office Renovation Update",
+                        Content = "Exciting changes are coming to our headquarters to improve workspace efficiency and comfort...",
+                        NewsTypeID = 1,
+                    },
                 });
 
                 context.SaveChanges();
