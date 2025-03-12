@@ -2,6 +2,7 @@
 
 @inject ICrmModalService modalService
 @inject INewsService newsService
+@inject IAssetService assetService
 
 
 <h1>Welcome to CRM app!</h1>
@@ -9,27 +10,19 @@
 <div class="d-flex align-items-center mw-75 mh-75 gap-3">
     <div class="w-50 h-100">
         <NewsFeed Title="What's new?" NewsData="@globalNews" />
-        <hr style="margin-left: -1%; width: 45vw"/>
+        <hr style="margin-left: -1%; width: 44vw"/>
         <NewsFeed Title="Company information" NewsData="@companyNews" />
     </div>
     <div class="d-flex justify-content-center align-items-center w-100" style="height: 50vh;">
         <div class="w-75">
-            <DataPieChart Labels="@pieChartLabels" ChartData="@pieChartData" />
+            <h4 align="center">Customers assets</h4>
+            <DataPieChart ChartData="@pieChartData" />
         </div>
     </div>
 </div>
 
 @code {
-    private List<string> pieChartLabels = new List<string>
-    {
-        "5G Deployments", "Broadband Expansion", "IoT Growth", "Cloud Adoption", "Network Security"
-    };
-
-    private List<int> pieChartData = new List<int>
-    {
-        30, 25, 15, 20, 10
-    };
-
+    private Dictionary<ItemState, int> pieChartData;
     private List<NewsDTO> globalNews;
     private List<NewsDTO> companyNews;
 
@@ -43,15 +36,28 @@
             new RetrieveNewsRQ { NewsType = NewsType.GeneralInfo, Amount = 10 },
         };
 
-        var news = await newsService.GetNewsAsync(newsFilter);
+        var results = await GetCombinedTasks(
+            newsService.GetNewsAsync(newsFilter),
+            assetService.GetAssetsChartDataAsync()      
+        );
 
-        companyNews = news
+        companyNews = results.Item1
             .Where(x => x.NewsType == NewsType.CompanyInfo)
             .ToList();
 
-        globalNews = news
+        globalNews = results.Item1
             .Where(x => x.NewsType == NewsType.GeneralInfo)
             .ToList();
+
+        pieChartData = results.Item2;
+    }
+
+
+    private async Task<(T1, T2)> GetCombinedTasks<T1, T2>(Task<T1> task1, Task<T2> task2)
+    {
+        await Task.WhenAll(task1, task2);
+
+        return (await task1, await task2);
     }
     
 }

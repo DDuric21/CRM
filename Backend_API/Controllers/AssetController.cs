@@ -3,6 +3,7 @@ using Backend_API.Data.Repositories;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
+using Models.Helpers;
 
 namespace Backend_API.Controllers
 {
@@ -62,6 +63,29 @@ namespace Backend_API.Controllers
             }
 
             return asset.Result;
+        }
+
+
+        [HttpGet]
+        [Route("/Assets/ChartData")]
+        public async Task<IActionResult> GetAssetsChartData()
+        {
+            try
+            {
+                var assets = await _assetService.GetAssetsChartDataAsync();
+
+                if (assets.IsNullOrEmpty())
+                {
+                    return Problem("No assets chart data found");
+                }
+
+                return Ok(assets);
+            }
+            catch (Exception ex)
+            {
+                //add loging
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost]

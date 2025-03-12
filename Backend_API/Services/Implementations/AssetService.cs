@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Models.DTO;
 using Models.Enums;
 using Models.Helpers;
@@ -96,6 +97,24 @@ namespace Backend_API.Services
             var asset = _mapper.Map<Asset>(assetDTO);
 
             return asset;
+        }
+
+        //timePeriod filtering TODO! Curently no way of knowing when state was changed
+        public async Task<Dictionary<ItemState, int>> GetAssetsChartDataAsync(DateTime timePeriod = new DateTime())
+        {
+            var assetStatisticsData = await _repository.CustomerAssets
+                .Where(x => x.DateCreated >= timePeriod)
+                .GroupBy(x => x.AssetStatusID)
+                .Select(g => new                
+                {
+                    AssetStatusID = g.Key,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            var result = assetStatisticsData.ToDictionary(x => (ItemState)x.AssetStatusID, x => x.Count);
+
+            return result;
         }
     }
 }

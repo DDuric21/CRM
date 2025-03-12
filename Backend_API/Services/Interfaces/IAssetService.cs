@@ -1,5 +1,6 @@
 ﻿using Backend_API.Data.Model;
 using Models.DTO;
+using Models.Enums;
 
 namespace Backend_API.Services
 {
@@ -25,5 +26,7 @@ namespace Backend_API.Services
         Asset MapDtoToAsset(AssetDTO assetDTO);
 
         IEnumerable<Asset> GetAssetsWithOptions();
+
+        Task<Dictionary<ItemState, int>> GetAssetsChartDataAsync(DateTime timePeriod = new DateTime());
     }
 }

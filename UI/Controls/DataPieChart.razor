@@ -12,13 +12,11 @@ else
 
 @code {
     [Parameter] 
-    public List<int> ChartData { get; set; }
-    [Parameter] 
-    public List<string> Labels { get; set; }
+    public Dictionary<ItemState, int> ChartData { get; set; }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (ChartData != null)
         {
             await RenderPieChart();
         }
@@ -26,24 +24,19 @@ else
 
     private async Task RenderPieChart()
     {
-        if (Labels == null || ChartData == null)
-        {
-            return;
-        }
-
         var chartData = new
         {
             type = "pie",
             data = new
             {
-                labels = Labels.ToArray(),
+                labels = ChartData.Keys.Select(x => x.ToString()).ToArray(),
                 datasets = new[]
                 {
                     new
                     {
-                        data = ChartData.ToArray(),
-                        backgroundColor = new[] { "#FF5733", "#33A1FF", "#FFEB33", "#4CAF50", "#9C27B0" },
-                        hoverBackgroundColor = new[] { "#FF5733", "#33A1FF", "#FFEB33", "#4CAF50", "#9C27B0" }
+                        data = ChartData.Values.ToArray(),
+                        backgroundColor = new[] { "#33A1FF", "#FF5733", "#FFEB33" },
+                        hoverBackgroundColor = new[] { "#33A1FF", "#FF5733", "#FFEB33" }
                     }
                 }
             }

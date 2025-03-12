@@ -1,4 +1,5 @@
 ﻿using Models.DTO;
+using Models.Enums;
 
 namespace UI.Services
 {
@@ -23,6 +24,27 @@ namespace UI.Services
             try
             {
                 var response = await _communicationService.SendRequestAsync<IAsyncEnumerable<AssetDTO>>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                //add logging
+                _modalService.ShowErrorMessage(ex.Message);
+
+                return null;
+            }
+        }
+
+
+        public async Task<Dictionary<ItemState, int>> GetAssetsChartDataAsync()
+        {
+            var url = string.Format("https://localhost:7076/Assets/ChartData");
+            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<Dictionary<ItemState, int>>(request);
 
                 return response;
             }
