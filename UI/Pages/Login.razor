@@ -19,17 +19,19 @@
     <div class="form">
         <div class="login">
             <div class="login-header">
-            <h3>Login</h3>
-            <p>Please enter your credentials to login.</p>
+                <h3>Login</h3>
+                <p>Please enter your credentials to login.</p>
             </div>
         </div>
         <EditForm class="login-form" Model="@userDTO" OnSubmit="@SubmitLogin">
             <input placeholder="username" name="username" @bind-value="userDTO.UserName" oninput="@RemoveWarningText" />
             <input type="password" placeholder="password" name="password" @bind-value="userDTO.Password" oninput="@RemoveWarningText" />
-            <button type="submit" name="submit" class="submitButton">LOGIN</button>
+            <button type="submit" name="submit" class="submitButton">
+                <span class="spinner-border spinner-border-sm" role="status" hidden="@(!showLoading)"></span>
+                <span>LOGIN</span>                
+            </button>
         </EditForm>
-        <p class="warning-text" hidden="@(!showCredentialsWarning)">@warningText</p>
-        <Loader Hide="@(!showLoading)"></Loader>
+        <p class="warning-text" hidden="@(!showCredentialsWarning)">@warningText</p>        
     </div>
 </div>
 
