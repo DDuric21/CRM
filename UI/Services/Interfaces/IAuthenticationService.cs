@@ -1,5 +1,6 @@
 ﻿using Models.Authentication;
 using Models.DTO;
+using UI.Authentication;
 
 namespace UI.Services
 {
@@ -8,5 +9,7 @@ namespace UI.Services
         Task<AuthenticationResult> Login(string username, string password);
 
         Task<UserDTO> RegisterNewUserAsync(UserDTO userDTO);
+
+        UserSession CreateUserSessionFromJwt(string token);
     }
 }

@@ -39,7 +39,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 return StatusCode(500, ex.Message);
             }
         }
@@ -68,7 +68,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 return StatusCode(500, ex.Message);
             }
         }

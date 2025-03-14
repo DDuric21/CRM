@@ -1,20 +1,23 @@
 ﻿using Backend_API.Data.DbContext;
 using Backend_API.Data.Model;
+using Backend_API.Services;
 using Microsoft.AspNetCore.Identity;
+using Models.Authentication;
+using System.Security.Claims;
 
 namespace Backend_API.Data.SeedData
 {
     public class SeedData
     {
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly CrmUserManager _userManager;
+        private readonly CrmRoleManager _roleManager;
         private const string _adminRole = "admin";
         private const string _userRole = "user";
         private const string _testRole = "test";
 
         public SeedData(
-            UserManager<User> userManager,
-            RoleManager<IdentityRole> roleManager)
+            CrmUserManager userManager,
+            CrmRoleManager roleManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -104,7 +107,7 @@ namespace Backend_API.Data.SeedData
                     }
                 });
 
-                //needed so that FK constraints dont appear
+                //needed so that FK constraints don't appear
                 context.SaveChanges();
             }
         }
@@ -150,7 +153,7 @@ namespace Backend_API.Data.SeedData
                     }
                 });
 
-                //needed so that FK constraints dont appear
+                //needed so that FK constraints don't appear
                 context.SaveChanges();
             }
         }
@@ -181,7 +184,7 @@ namespace Backend_API.Data.SeedData
                     },
                 });
 
-                //needed so that FK constraints dont appear
+                //needed so that FK constraints don't appear
                 context.SaveChanges();
             }
         }
@@ -189,14 +192,19 @@ namespace Backend_API.Data.SeedData
         private async static Task CreateRolesAsync(IServiceScope scope)
         {
             var services = scope.ServiceProvider;
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = services.GetRequiredService<CrmRoleManager>();
 
-            if (!roleManager.Roles.Any())
+            if (roleManager.Roles.Any())
             {
-                await roleManager.CreateAsync(new IdentityRole(_adminRole));
-                await roleManager.CreateAsync(new IdentityRole(_userRole));
-                await roleManager.CreateAsync(new IdentityRole(_testRole));
+                return;
             }
+
+            await roleManager.CreateAsync(new IdentityRole(_adminRole));
+            await CreateAdminRoleClaimsAsync(roleManager);
+            await roleManager.CreateAsync(new IdentityRole(_userRole));
+            await CreateUserRoleClaimsAsync(roleManager);
+            await roleManager.CreateAsync(new IdentityRole(_testRole));
+            await CreateUserTestClaimsAsync(roleManager);
         }
 
         private async static Task CreateUsersAsync(IServiceScope scope)
@@ -252,6 +260,87 @@ namespace Backend_API.Data.SeedData
             if (admiResult.Succeeded)
             {
                 await userManager.AddToRoleAsync(adminUser, _adminRole);
+            }
+        }
+
+        private static async Task CreateAdminRoleClaimsAsync(CrmRoleManager roleManager)
+        {
+            var adminPermissions = new[]
+            {
+                CrmPermissionNames.ReadUser,
+                CrmPermissionNames.EditUser,
+                CrmPermissionNames.CreateUser,
+                CrmPermissionNames.DeleteUser,
+                CrmPermissionNames.ReadCustomer,
+                CrmPermissionNames.EditCustomer,
+                CrmPermissionNames.DeleteCustomer,
+                CrmPermissionNames.CreateCustomer,
+                CrmPermissionNames.ReadAsset,
+                CrmPermissionNames.EditAsset,
+                CrmPermissionNames.DeleteAsset,
+                CrmPermissionNames.CreateAsset
+            };
+
+            var adminRole = roleManager.Roles.FirstOrDefault(x => x.Name == _adminRole);
+
+            if (adminRole is null)
+            {
+                return;
+            }
+
+            foreach (var permission in adminPermissions)
+            {
+                await roleManager.AddClaimAsync(adminRole, new Claim(CrmJwtClaimNames.Permission, permission));
+            }
+        }
+
+        private static async Task CreateUserRoleClaimsAsync(CrmRoleManager roleManager)
+        {
+            var userPermissions = new[]
+            {
+                CrmPermissionNames.ReadUser,
+                CrmPermissionNames.EditUser,
+                CrmPermissionNames.CreateUser,
+                CrmPermissionNames.ReadCustomer,
+                CrmPermissionNames.EditCustomer,
+                CrmPermissionNames.CreateCustomer,
+                CrmPermissionNames.ReadAsset,
+                CrmPermissionNames.EditAsset,
+                CrmPermissionNames.CreateAsset
+            };
+
+            var userRole = roleManager.Roles.FirstOrDefault(x => x.Name == _userRole);
+
+            if (userRole is null)
+            {
+                return;
+            }
+
+            foreach (var permission in userPermissions)
+            {
+                await roleManager.AddClaimAsync(userRole, new Claim(CrmJwtClaimNames.Permission, permission));
+            }
+        }
+
+        private static async Task CreateUserTestClaimsAsync(CrmRoleManager roleManager)
+        {
+            var testPermissions = new[]
+            {
+                CrmPermissionNames.ReadUser,
+                CrmPermissionNames.ReadCustomer,
+                CrmPermissionNames.ReadAsset
+            };
+
+            var testRole = roleManager.Roles.FirstOrDefault(x => x.Name == _testRole);
+
+            if (testRole is null)
+            {
+                return;
+            }
+
+            foreach (var permission in testPermissions)
+            {
+                await roleManager.AddClaimAsync(testRole, new Claim(CrmJwtClaimNames.Permission, permission));
             }
         }
 

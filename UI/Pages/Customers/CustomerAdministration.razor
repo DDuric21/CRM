@@ -1,5 +1,7 @@
 ﻿@page "/Customers/Admin/{customerId:long}"
 
+@attribute [Authorize(Roles = "admin")]
+
 @inject ICustomerService customerService
 @inject ICrmModalService modal
 @inject NavigationManager navigationManager

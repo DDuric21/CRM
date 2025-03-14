@@ -31,7 +31,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
                 return ExceptionResponse;
             }
@@ -50,7 +50,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
 
                 return null;
@@ -75,7 +75,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
             }
         }
@@ -104,7 +104,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
             }
         }
@@ -122,7 +122,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
                 return 0;
             }
@@ -141,7 +141,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
                 return 0;
             }

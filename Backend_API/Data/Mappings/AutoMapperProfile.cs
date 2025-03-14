@@ -4,6 +4,7 @@ using Backend_API.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Models.DTO;
 using Models.Enums;
+using System.Security.Claims;
 
 namespace Backend_API.Data.Mappings
 {
@@ -44,7 +45,16 @@ namespace Backend_API.Data.Mappings
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.UserEmail))
                 .ForPath(dest => dest.UserStatusID, opt => opt.MapFrom(src => (int)src.UserStatus));
             CreateMap<UserData, UserDTO>()
-                .ForPath(dest => dest.UserRoles, opt => opt.MapFrom(src => src.UserRoles.Select(name => new UserRoleDTO { RoleName = name }).ToList()))
+                .ForPath(
+                    dest => dest.UserRoles, 
+                    opt => opt.MapFrom(
+                        src => src.UserRoles
+                            .Select(x => new UserRoleDTO 
+                            { 
+                                RoleName = x.Key.Name, 
+                                Permissions = x.Value.Select(y => y.Type)
+                            })
+                            .ToList()))
                 .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User.Email))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
@@ -54,7 +64,14 @@ namespace Backend_API.Data.Mappings
                 .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Name)); 
             CreateMap<UserDTO, UserData>()
-                .ForPath(dest => dest.UserRoles, opt => opt.MapFrom(src => src.UserRoles.Select(x => x.RoleName).ToList()))
+                .ForPath(
+                    dest => dest.UserRoles, 
+                    opt => opt.MapFrom(
+                        src => src.UserRoles.ToDictionary(
+                            x => new IdentityRole(x.RoleName), 
+                            x => x.Permissions
+                                .Select(y => new Claim("permission", y))
+                                .ToList())))
                 .ForPath(dest => dest.User.Email, opt => opt.MapFrom(src => src.UserEmail))
                 .ForPath(dest => dest.User.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForPath(dest => dest.User.LastName, opt => opt.MapFrom(src => src.LastName))

@@ -1,10 +1,9 @@
-﻿using Models.Authentication;
-using Models.DTO;
-using Backend_API.Data.Model;
+﻿using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
-using Models.Helpers;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Models.Authentication;
+using Models.DTO;
+using Models.Helpers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -14,6 +13,7 @@ namespace Backend_API.Services
     public sealed class AuthenticationService : IAuthenticationService
     {
         private readonly CrmUserManager _userManager;
+        private readonly IUserService _userService;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly ICrmRepository _repository;
         private readonly IConfiguration _configuration;
@@ -24,23 +24,25 @@ namespace Backend_API.Services
             IConfiguration configuration,
             ICrmRepository repository,
             TokenValidationParameters tokenValidationParameters,
-            CrmUserManager userManager)
+            CrmUserManager userManager,
+            IUserService userService)
         {
             _tokenValidationParameters = tokenValidationParameters;
             _userManager = userManager;
             _repository = repository;
             _configuration = configuration;
+            _userService = userService;
         }
 
-        public bool ValidateLogin(UserDTO userDTO)
+        public async Task<bool> ValidateLoginAsync(UserDTO userDTO)
         {
-            var user = _userManager.FindByNameAsync(userDTO.UserName).Result;
-
+            var user = await _userManager.FindByNameAsync(userDTO.UserName);
             if (user.IsNullOrEmpty())
             {
                 return false;
             }
-            var isPasswordCorrect = _userManager.CheckPasswordAsync(user, userDTO.Password).Result;
+
+            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, userDTO.Password);
             if (!isPasswordCorrect)
             {
                 return false;
@@ -62,22 +64,33 @@ namespace Backend_API.Services
             return authenticationResult;
         }
 
-        public AuthenticationResult GenerateJwtToken(User user)
+        public async Task<AuthenticationResult> GenerateJwtTokenAsync(string userName)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
             var secret = _configuration.GetSection("JwtConfiguration:Secret").Value;
             var key = Encoding.UTF8.GetBytes(secret);
 
-            user = _userManager.FindByNameAsync(user.UserName).Result;
+            var userData = await _userService.GetUserDataAsync(userName);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
-                new Claim("Id", user.Id),
-                new Claim(JwtRegisteredClaimNames.Name, user.UserName),
+                new Claim(CrmJwtClaimNames.Id, userData.User.Id),
+                new Claim(JwtRegisteredClaimNames.Name, userData.User.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString())
+                new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString()),
             };
+
+            foreach (var role in userData.UserRoles)
+            {
+                claims.Add(new Claim(CrmJwtClaimNames.Role, role.Key.Name));
+                claims.Add(new Claim(CrmJwtClaimNames.Role, "test"));
+
+                foreach (var roleClaim in role.Value)
+                {
+                    claims.Add(new Claim(CrmJwtClaimNames.Permission, roleClaim.Value));
+                }
+            }
 
             var tokenDescripter = new SecurityTokenDescriptor
             {
@@ -90,7 +103,7 @@ namespace Backend_API.Services
             var jwtToken = jwtTokenHandler.WriteToken(token);
 
             var existingRefreshToken = _repository.RefreshTokens
-                .Where(x => x.UserId == user.Id)
+                .Where(x => x.UserId == userData.User.Id)
                 .Select(x => new
                 {
                     x.ExpiryDate,
@@ -106,7 +119,7 @@ namespace Backend_API.Services
                 ExpiryDate = DateTime.UtcNow.AddMonths(6),
                 IsRevoked = false,
                 IsUsed = false,
-                UserId = user.Id
+                UserId = userData.User.Id
             };
 
             if (existingRefreshToken.IsNullOrEmpty()
@@ -125,7 +138,7 @@ namespace Backend_API.Services
             };
         }
 
-        public async Task<User> GetRefreshTokenUser(string refreshToken)
+        public async Task<User> GetRefreshTokenUserAsync(string refreshToken)
         {
             var userId = _repository.RefreshTokens
                 .Where(x => x.Token == refreshToken)

@@ -11,7 +11,7 @@ namespace Backend_API.Services
         /// </summary>
         /// <param name="userDTO">User that requested login</param>
         /// <returns>True if has perrmision, False if not</returns>
-        bool ValidateLogin(UserDTO userDTO);
+        Task<bool> ValidateLoginAsync(UserDTO userDTO);
 
         /// <summary>
         /// Verifies if the given token request is valid
@@ -23,15 +23,15 @@ namespace Backend_API.Services
         /// <summary>
         /// Generates a web token
         /// </summary>
-        /// <param name="user">User requesting login</param>
+        /// <param name="userName">UserName requesting login</param>
         /// <returns>Returns result of generating token</returns>
-        AuthenticationResult GenerateJwtToken(User user);
+        Task<AuthenticationResult> GenerateJwtTokenAsync(string userName);
 
         /// <summary>
         /// Finds user registrated for given refresh token
         /// </summary>
         /// <param name="refreshToken">Refresh token</param>
         /// <returns>Returns user assosiated with given refresh token</returns>
-        Task<User> GetRefreshTokenUser(string refreshToken);
+        Task<User> GetRefreshTokenUserAsync(string refreshToken);
     }
 }

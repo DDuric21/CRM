@@ -1,4 +1,6 @@
 ﻿using Backend_API.Data.Model;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Backend_API.Data.DataClasses
 {
@@ -6,6 +8,6 @@ namespace Backend_API.Data.DataClasses
     {
         public User User { get; set; }
 
-        public IEnumerable<string> UserRoles { get; set; }
+        public Dictionary<IdentityRole, IEnumerable<Claim>> UserRoles { get; set; }
     }
 }

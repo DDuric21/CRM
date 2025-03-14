@@ -29,7 +29,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
                 return new BillingProfileDTO();
             }
@@ -47,7 +47,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
             }
         }
@@ -63,7 +63,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
             }
         }

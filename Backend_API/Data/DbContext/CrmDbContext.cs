@@ -100,6 +100,8 @@ namespace Backend_API.Data.DbContext
                 .HasForeignKey(x => x.AddressID)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<RolePermission>();
         }
 
         public override int SaveChanges()
@@ -138,6 +140,7 @@ namespace Backend_API.Data.DbContext
         public DbSet<Interaction> Interactions { get; set; }
         public DbSet<BillingProfile> BillingProfiles { get; set; }
         public DbSet<News> News { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
         #endregion
     }
 }

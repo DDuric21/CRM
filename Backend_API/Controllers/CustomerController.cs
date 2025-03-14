@@ -64,7 +64,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 return StatusCode(500, ex.Message);
             }
         }
@@ -81,7 +81,7 @@ namespace Backend_API.Controllers
 
                 if (customer.IsNullOrEmpty())
                 {
-                    //add loging
+                    //add logging
                     return Problem();
                 }
 
@@ -89,7 +89,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 return Problem(ex.Message);
             }
 
@@ -152,7 +152,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 return StatusCode(500, ex.Message);
             }
         }
@@ -171,7 +171,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 return StatusCode(500, ex.Message);
             }
 
@@ -200,7 +200,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 return StatusCode(500, ex.Message);
             }
 
@@ -284,7 +284,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 return StatusCode(500, ex.Message);
             }
         }

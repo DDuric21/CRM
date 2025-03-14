@@ -22,24 +22,19 @@ namespace Backend_API.Controllers
 
         [HttpPost]
         [Route("/Login")]
-        public ActionResult<AuthenticationResult> LoginUser([FromBody] UserDTO userDTO)
+        public async Task<IActionResult> LoginUser([FromBody] UserDTO userDTO)
         {
             if (userDTO.IsNullOrEmpty())
             {
                 return BadRequest();
             }
 
-            if (!_authenticationService.ValidateLogin(userDTO))
+            if (!await _authenticationService.ValidateLoginAsync(userDTO))
             {
                 return Forbid();
             }
 
-            var identityUser = new User
-            {
-                UserName = userDTO.UserName
-            };
-
-            var jwtToken = _authenticationService.GenerateJwtToken(identityUser);
+            var jwtToken = await _authenticationService.GenerateJwtTokenAsync(userDTO.UserName);
 
             return Ok(new AuthenticationResult
             {
@@ -76,7 +71,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 return StatusCode(500, ex.Message);
             }
         }
@@ -92,9 +87,10 @@ namespace Backend_API.Controllers
                 return SignOut();
             }
 
-            var refreshTokenUser = _authenticationService.GetRefreshTokenUser(tokenRequest.RefreshToken);// OVO NE TREBA IMAŠ INFO U aCCESS TOKENU
+            // OVO NE TREBA IMAŠ INFO U aCCESS TOKENU
+            var refreshTokenUser = await _authenticationService.GetRefreshTokenUserAsync(tokenRequest.RefreshToken);
 
-            var jwtToken = _authenticationService.GenerateJwtToken(refreshTokenUser.Result);
+            var jwtToken = await _authenticationService.GenerateJwtTokenAsync(refreshTokenUser.UserName);
 
             authenticationResult.IsAuthenticated = true;
             authenticationResult.Token = jwtToken.Token;

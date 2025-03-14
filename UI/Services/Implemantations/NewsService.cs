@@ -29,7 +29,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
 
                 return null;

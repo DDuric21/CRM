@@ -53,8 +53,9 @@
 
             if (loginResult.IsAuthenticated)
             {
+                var userSession = authenticationService.CreateUserSessionFromJwt(loginResult.Token);
                 var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)authenticationStateProvider;
-                await crmAuthenticationStateProvider.UpdateAuthenticationState(new UserSession { UserName = userDTO.UserName });
+                await crmAuthenticationStateProvider.UpdateAuthenticationState(userSession);
                 navigationManager.NavigateTo("/index");
             }
             else

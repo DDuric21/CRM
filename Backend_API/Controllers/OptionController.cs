@@ -49,7 +49,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
             }
 
             return 0;
@@ -67,7 +67,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
             }
 
             return isDeleted;
@@ -83,7 +83,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
             }
 
             return 0;

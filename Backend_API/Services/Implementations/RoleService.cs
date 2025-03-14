@@ -6,11 +6,11 @@ namespace Backend_API.Services
 {
     public class RoleService : IRoleService
     {
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly CrmRoleManager _roleManager;
         private readonly IMapper _mapper;
 
         public RoleService(
-            RoleManager<IdentityRole> roleManager,
+            CrmRoleManager roleManager,
             IMapper mapper)
         {
             _roleManager = roleManager;

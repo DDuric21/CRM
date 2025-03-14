@@ -8,6 +8,7 @@ using Models.Enums;
 using Models.Helpers;
 using Models.Requests;
 using Models.Responses;
+using System.Security.Claims;
 
 namespace Backend_API.Services
 {
@@ -15,12 +16,12 @@ namespace Backend_API.Services
     {
         private readonly IMapper _mapper;
         private readonly CrmUserManager _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly CrmRoleManager _roleManager;
 
         public UserService(
             IMapper mapper,
             CrmUserManager userManager,
-            RoleManager<IdentityRole> roleManager)
+            CrmRoleManager roleManager)
         {
             _mapper = mapper;
             _userManager = userManager;
@@ -36,9 +37,10 @@ namespace Backend_API.Services
                 return null;
             }
 
-            var roles = await _userManager.GetRolesAsync(user);
+            var rolesName = await _userManager.GetRolesAsync(user);
+            var roles = await _roleManager.GetClaimsAsync(rolesName);
 
-            var userData =  new UserData
+            var userData = new UserData
             {
                 User = user,
                 UserRoles = roles
@@ -87,9 +89,11 @@ namespace Backend_API.Services
 
             foreach (var user in filteredUsers)
             {
-                var roles = await _userManager.GetRolesAsync(user);
+                var rolesName = await _userManager.GetRolesAsync(user);
 
-                if (userFilter.UserRoles.IsNullOrEmpty() || userFilter.UserRoles.Intersect(roles).Any())
+                var roles = rolesName.ToDictionary(x => new IdentityRole(x), x => Enumerable.Empty<Claim>());
+
+                if (userFilter.UserRoles.IsNullOrEmpty() || userFilter.UserRoles.Intersect(rolesName).Any())
                 {
                     usersData.Add(new UserData { User = user, UserRoles = roles });
                 }
@@ -137,10 +141,12 @@ namespace Backend_API.Services
             }
 
             var oldRoles = await _userManager.GetRolesAsync(user);
-            var rolesToAdd = userData.UserRoles
-                .Where(x => !oldRoles.Contains(x));
+            var rolesToAdd = userData.UserRoles.Keys
+                .Where(x => !oldRoles.Contains(x.Name))
+                .Select(x => x.Name);
+
             var rolesToRemove = oldRoles
-                .Where(x => !userData.UserRoles.Contains(x));
+                .Where(x => !rolesToAdd.Contains(x));
 
             MapUserDataForUpdate(userData.User, user);
 
@@ -165,7 +171,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 throw;
             }
         }
@@ -220,7 +226,7 @@ namespace Backend_API.Services
             return userFilterBaseValues;
         }
 
-        #region mapings
+        #region mappings
         public UserDTO MapUserToDTO(User user)
         {
             return _mapper.Map<UserDTO>(user);

@@ -65,7 +65,7 @@ namespace Backend_API.Startup
                     options.SignIn.RequireConfirmedEmail = false;
                 })
                 .AddUserManager<CrmUserManager>()
-                .AddRoles<IdentityRole>()
+                .AddRoleManager<CrmRoleManager>()
                 .AddEntityFrameworkStores<CrmDbContext>();
 
             var secret = builder.Configuration.GetSection("JwtConfiguration:Secret").Value;

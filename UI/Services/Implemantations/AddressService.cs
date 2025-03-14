@@ -28,7 +28,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
             }
         }
@@ -46,7 +46,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
                 return new AddressDTO();
             }
@@ -64,7 +64,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // loging
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
                 return 0;
             }

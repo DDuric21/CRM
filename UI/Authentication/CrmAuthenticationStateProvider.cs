@@ -1,5 +1,6 @@
 ﻿using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using Models.Authentication;
 using Models.Helpers;
 using System.Security.Claims;
 
@@ -21,7 +22,7 @@ namespace UI.Authentication
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             try
-            {
+            {   
                 var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>(USER_SESSION);
 
                 if (userSession.IsNullOrEmpty())
@@ -29,11 +30,7 @@ namespace UI.Authentication
                     return await Task.FromResult(new AuthenticationState(_anonymus));
                 }
 
-                var claims = new List<Claim>()
-                {
-                    new Claim(ClaimTypes.Name, userSession.UserName),
-                    //new Claim(ClaimTypes.Role, userSession.Role),
-                };
+                var claims = GetUserSessionClaims(userSession);
 
                 var identity = new ClaimsIdentity(AUTH_TYPE);
                 identity.AddClaims(claims);
@@ -41,7 +38,7 @@ namespace UI.Authentication
 
                 return await Task.FromResult(new AuthenticationState(claimsPrincipal));
             }
-            catch
+            catch (Exception ex)
             {
                 return await Task.FromResult(new AuthenticationState(_anonymus));
             }
@@ -54,23 +51,39 @@ namespace UI.Authentication
                 await _sessionStorage.RemoveItemAsync(USER_SESSION);
 
                 NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_anonymus)));
+                
+                return;
             }
-            else
+
+            await _sessionStorage.SaveItemEncryptedAsync(USER_SESSION, userSession);
+
+            var claims = GetUserSessionClaims(userSession);
+
+            var identity = new ClaimsIdentity(AUTH_TYPE);
+            identity.AddClaims(claims);
+
+            var user = new ClaimsPrincipal(identity);
+
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+        }
+
+        private IEnumerable<Claim> GetUserSessionClaims(UserSession userSession)
+        {
+            var claims = new List<Claim>();
+
+            claims.Add(new Claim(ClaimTypes.Name, userSession.UserName));
+
+            foreach (var role in userSession.Roles)
             {
-                await _sessionStorage.SaveItemEncryptedAsync(USER_SESSION, userSession);
-
-                var claims = new List<Claim>()
-                {
-                    new Claim(ClaimTypes.Name, userSession.UserName),
-                    //new Claim(ClaimTypes.Role, userSession.Role),
-                };
-
-                var identity = new ClaimsIdentity(AUTH_TYPE);
-                identity.AddClaims(claims);
-                var user = new ClaimsPrincipal(identity);
-
-                NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
+
+            foreach (var permission in userSession.Permissions)
+            {
+                claims.Add(new Claim(CrmClaimTypes.Permission, permission));
+            }
+
+            return claims;
         }
     }
 }

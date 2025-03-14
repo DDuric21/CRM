@@ -67,7 +67,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                //add loging
+                //add logging
                 return new AddressDTO();
             }
         }

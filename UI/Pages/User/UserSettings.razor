@@ -3,6 +3,7 @@
 
 @inject IUserService userService
 @inject IRoleService roleService
+@attribute [Authorize(Policy = CrmPolicyNames.EditUser)]
 
 <PageTitle>User Settings</PageTitle>
 

@@ -4,6 +4,7 @@ using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Models.Authentication;
 using UI;
 using UI.Authentication;
 using UI.Services;
@@ -29,7 +30,13 @@ builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<ICrmModalService, CrmModalService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CrmAuthenticationStateProvider>();
 builder.Services.AddScoped<ICookie, Cookie>();
-builder.Services.AddAuthorizationCore();
+
+builder.Services.AddAuthorizationCore(options =>
+{
+    options.AddPolicy(CrmPolicyNames.EditUser, policy =>
+        policy.RequireClaim(CrmClaimTypes.Permission, CrmPermissionNames.EditUser));
+});
+
 builder.Services.AddBlazoredModal();
 
 await builder.Build().RunAsync();
