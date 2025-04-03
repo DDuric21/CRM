@@ -1,5 +1,7 @@
-﻿using Backend_API.Data.Model;
+﻿using Backend_API.Data.DataClasses;
+using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Models.Authentication;
 using Models.DTO;
@@ -16,12 +18,12 @@ namespace Backend_API.Services
         private readonly IUserService _userService;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly ICrmRepository _repository;
-        private readonly IConfiguration _configuration;
+        private readonly JwtConfiguration _configuration;
         private readonly int RefreshTokenLenght = 23;
         private readonly string RefreshTokenCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
         public AuthenticationService(
-            IConfiguration configuration,
+            IOptions<JwtConfiguration> configuration,
             ICrmRepository repository,
             TokenValidationParameters tokenValidationParameters,
             CrmUserManager userManager,
@@ -30,7 +32,7 @@ namespace Backend_API.Services
             _tokenValidationParameters = tokenValidationParameters;
             _userManager = userManager;
             _repository = repository;
-            _configuration = configuration;
+            _configuration = configuration.Value;
             _userService = userService;
         }
 
@@ -68,34 +70,18 @@ namespace Backend_API.Services
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
-            var secret = _configuration.GetSection("JwtConfiguration:Secret").Value;
-            var key = Encoding.UTF8.GetBytes(secret);
+            var key = Encoding.UTF8.GetBytes(_configuration.Secret);
 
             var userData = await _userService.GetUserDataAsync(userName);
 
-            var claims = new List<Claim>
-            {
-                new Claim(CrmJwtClaimNames.Id, userData.User.Id),
-                new Claim(JwtRegisteredClaimNames.Name, userData.User.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString()),
-            };
-
-            foreach (var role in userData.UserRoles)
-            {
-                claims.Add(new Claim(CrmJwtClaimNames.Role, role.Key.Name));
-                claims.Add(new Claim(CrmJwtClaimNames.Role, "test"));
-
-                foreach (var roleClaim in role.Value)
-                {
-                    claims.Add(new Claim(CrmJwtClaimNames.Permission, roleClaim.Value));
-                }
-            }
+            var claims = GenerateJwtClaims(userData);
 
             var tokenDescripter = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.Add(TimeSpan.Parse(_configuration.GetSection("JwtConfiguration:ExpiryTimeFrame").Value)),
+                Issuer = _configuration.Issuer,
+                Audience = _configuration.Audience,
+                Expires = DateTime.UtcNow.Add(_configuration.ExpiryTimeFrame),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
             };
 
@@ -132,7 +118,7 @@ namespace Backend_API.Services
 
             return new AuthenticationResult
             {
-                Token = jwtToken,
+                AccessToken = jwtToken,
                 RefreshToken = refreshToken.Token,
                 IsAuthenticated = true
             };
@@ -194,6 +180,28 @@ namespace Backend_API.Services
             authenticationResult.IsAuthenticated = authenticationResult.ErrorMessages.Count == 0;
 
             return authenticationResult;
+        }
+
+        private static List<Claim> GenerateJwtClaims(UserData userData)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Name, userData.User.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString()),
+            };
+
+            foreach (var role in userData.UserRoles)
+            {
+                claims.Add(new Claim(CrmJwtClaimNames.Role, role.Key.Name));
+
+                foreach (var roleClaim in role.Value)
+                {
+                    claims.Add(new Claim(CrmJwtClaimNames.Permission, roleClaim.Value));
+                }
+            }
+
+            return claims;
         }
 
         private AuthenticationResult VerifyRefreshToken(string refreshToken)

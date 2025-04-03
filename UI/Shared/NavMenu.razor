@@ -50,7 +50,7 @@
     private async void Logout()
     {
         var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)authenticationStateProvider;
-        await crmAuthenticationStateProvider.UpdateAuthenticationState(null);
+        await crmAuthenticationStateProvider.UpdateAuthenticationState();
         navigationManager.NavigateTo("/Login");
     }
 

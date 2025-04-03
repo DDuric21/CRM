@@ -15,10 +15,14 @@ namespace Backend_API.Startup
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("LocalPolicy");
+
+            app.UseRouting();
+
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
         }

@@ -39,7 +39,7 @@ namespace Backend_API.Controllers
             return Ok(new AuthenticationResult
             {
                 IsAuthenticated = true,
-                Token = jwtToken.Token,
+                AccessToken = jwtToken.AccessToken,
                 RefreshToken = jwtToken.RefreshToken
             });
         }
@@ -93,7 +93,7 @@ namespace Backend_API.Controllers
             var jwtToken = await _authenticationService.GenerateJwtTokenAsync(refreshTokenUser.UserName);
 
             authenticationResult.IsAuthenticated = true;
-            authenticationResult.Token = jwtToken.Token;
+            authenticationResult.AccessToken = jwtToken.AccessToken;
             authenticationResult.RefreshToken = jwtToken.RefreshToken;
 
             return Ok(authenticationResult);

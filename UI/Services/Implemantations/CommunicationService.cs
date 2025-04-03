@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
+using UI.Authentication;
 
 namespace UI.Services
 {
@@ -8,6 +9,8 @@ namespace UI.Services
         public HttpRequestMessage CreateRequest<T>(HttpMethod httpMethod, string url, T requestBody)
         {
             var request = new HttpRequestMessage(httpMethod, url);
+
+            AddBasicHeaders(request);
 
             var content = JsonContent.Create(requestBody);
             request.Content = content;
@@ -18,6 +21,8 @@ namespace UI.Services
         public HttpRequestMessage CreateRequest(HttpMethod httpMethod, string url)
         {
             var request = new HttpRequestMessage(httpMethod, url);
+
+            AddBasicHeaders(request);
 
             return request;
         }
@@ -41,6 +46,13 @@ namespace UI.Services
             var deserialisedResult = await JsonSerializer.DeserializeAsync<T>(result, options: options);
 
             return deserialisedResult;
+        }
+
+        private static void AddBasicHeaders(HttpRequestMessage request)
+        {
+            request.Headers.Add("Accept", "application/json");
+
+            request.Headers.Add("Authorization", $"Bearer { JasonWebToken.Value }");
         }
     }
 }

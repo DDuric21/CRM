@@ -9,5 +9,7 @@
         public const string Role = "role";
 
         public const string Permission = "permission";
+
+        public const string Expiration = "exp";
     }
 }

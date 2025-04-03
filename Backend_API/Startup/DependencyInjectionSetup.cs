@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Backend_API.Data.Model;
+using Newtonsoft.Json;
+using Microsoft.OpenApi.Models;
 
 namespace Backend_API.Startup
 {
@@ -15,17 +17,39 @@ namespace Backend_API.Startup
     {
         public static void RegisterServices(WebApplicationBuilder builder)
         {
+            var _config = builder.Configuration;
+
             builder.Services.AddControllers()
-                .AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddDbContext<CrmDbContext>(options =>
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer {token}'",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer"
                 });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement 
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
+                });
+            });
+
+            builder.Services.AddDbContext<CrmDbContext>(options => { options.UseSqlServer(_config.GetConnectionString("DefaultConnection")); });
             builder.Services.AddScoped<ICrmRepository, CrmRepository>();
 
             Register3AServices(builder);
@@ -68,18 +92,10 @@ namespace Backend_API.Startup
                 .AddRoleManager<CrmRoleManager>()
                 .AddEntityFrameworkStores<CrmDbContext>();
 
-            var secret = builder.Configuration.GetSection("JwtConfiguration:Secret").Value;
-            var key = Encoding.ASCII.GetBytes(secret);
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                RequireExpirationTime = false,
-                ValidateLifetime = true
-            };
-            builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtConfig"));
+            builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtConfiguration"));
+
+            var tokenValidationParameters = DefineTokenValidationParameters(builder);
+
             builder.Services.AddAuthentication(
                 options =>
                 {
@@ -91,9 +107,46 @@ namespace Backend_API.Startup
                 {
                     jwt.SaveToken = true;
                     jwt.TokenValidationParameters = tokenValidationParameters;
+                    jwt.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            Console.WriteLine($"Authentication failed: " +
+                                $"\nMessage: {context.Exception.Message}" +
+                                $"\nInnerException: {context.Exception.InnerException}" +
+                                $"\nData: {string.Join(',', context.Exception.Data)}");
+                            return Task.CompletedTask;
+                        },
+                        OnChallenge = context =>
+                        {
+                            Console.WriteLine($"JWT Authentication Challenge triggered.");
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             builder.Services.AddSingleton(tokenValidationParameters);
+        }
+
+        private static TokenValidationParameters DefineTokenValidationParameters(WebApplicationBuilder builder)
+        {
+            var jwtConfig = builder.Configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
+            var key = Encoding.ASCII.GetBytes(jwtConfig.Secret);
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtConfig.Issuer,
+                ValidateAudience = true,
+                ValidAudiences = new[] { jwtConfig.Audience },
+                IgnoreTrailingSlashWhenValidatingAudience = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                RequireExpirationTime = true,
+                ValidateLifetime = true
+            };
+
+            return tokenValidationParameters;
         }
     }
 }
