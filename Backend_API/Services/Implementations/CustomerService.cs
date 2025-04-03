@@ -130,7 +130,7 @@ namespace Backend_API.Services
             return interactions;
         }
 
-        public CustomerGridFilterDataRS GetUserFilterBaseValues()
+        public CustomerGridFilterDataRS GetCustomerFilterBaseValues()
         {
             var customerTypes = Enum.GetValues(typeof(CustomerType))
                 .Cast<CustomerType>()

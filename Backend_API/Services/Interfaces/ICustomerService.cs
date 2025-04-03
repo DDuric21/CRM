@@ -36,7 +36,7 @@ namespace Backend_API.Services
 
         List<Interaction> GetCustomerInteractions(long customerID);
 
-        CustomerGridFilterDataRS GetUserFilterBaseValues();
+        CustomerGridFilterDataRS GetCustomerFilterBaseValues();
 
         Task<List<Customer>> GetCustomersAsync(CustomerFilterRQ customerFilter);
     }
