@@ -9,6 +9,7 @@ using Models.Responses;
 
 namespace Backend_API.Controllers
 {
+    [Route("Customers")]
     public class CustomerController : Controller
     {
         private readonly ICrmRepository _repository;
@@ -36,7 +37,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Customers")]
         public async Task<IActionResult> GetCustomers([FromBody] CustomerFilterRQ customerFilter)
         {
             if (customerFilter.IsNullOrEmpty())
@@ -70,7 +70,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Customers/{customerId}")]
+        [Route("{customerId}")]
         public async Task<IActionResult> GetCustomer(long customerId)
         {
             var customerDTO = new CustomerDTO();
@@ -97,7 +97,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Customers/Assets")]
+        [Route("Assets")]
         public async Task<IActionResult> GetCustomerAssets([FromBody] long id)
         {
             var customerAssets = _customerService.GetCustomerAssets(id);
@@ -114,7 +114,7 @@ namespace Backend_API.Controllers
 
 
         [HttpGet]
-        [Route("/Customers/Assets/{customerAssetsID}")]
+        [Route("Assets/{customerAssetsID}")]
         public async Task<IActionResult> GetCustomerAssetData(long customerAssetsID)
         {
             if (customerAssetsID <= 0)
@@ -135,7 +135,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Customers/Create")]
+        [Route("Create")]
         public async Task<IActionResult> InsertCustomer([FromBody] CustomerDTO customerDTO)
         {
             if (!_dataValidationService.ValidateCustomerDTO(customerDTO))
@@ -158,7 +158,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpDelete]
-        [Route("/Customers/{id}")]
+        [Route("{id}")]
         public async Task<IActionResult> DeleteCustomer(long id)
         {
             try
@@ -179,7 +179,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPut]
-        [Route("/Customers")]
         public async Task<IActionResult> UpdateCustomer([FromBody] CustomerDTO customerDTO)
         {
             if (!_dataValidationService.ValidateCustomerDTO(customerDTO))
@@ -208,7 +207,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Customers/Orders/{customerID}")]
+        [Route("Orders/{customerID}")]
         public async Task<IActionResult> GetCustomerOrders(long customerID)
         {
             var orderDTOs = new List<OrderDTO>();
@@ -238,7 +237,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Customers/Interactions/{customerID}")]
+        [Route("Interactions/{customerID}")]
         public async Task<IActionResult> GetCustomerInteractions(long customerID)
         {
             var interactionDTOs = new List<InteractionDTO>();
@@ -268,7 +267,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Customers/GridFilterData")]
+        [Route("GridFilterData")]
         public async Task<IActionResult> GetUserFilterBaseValues()
         {
             try
