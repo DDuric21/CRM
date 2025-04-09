@@ -10,6 +10,6 @@ namespace UI.Services
 
         Task<UserDTO> RegisterNewUserAsync(UserDTO userDTO);
 
-        UserSession CreateUserSessionFromJwt(string token);
+        UserSession CreateUserSession();
     }
 }

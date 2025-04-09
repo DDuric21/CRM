@@ -59,7 +59,7 @@ namespace UI.Authentication
 
             JasonWebToken.Value = token;
 
-            var userSession = _authenticationService.CreateUserSessionFromJwt(token);
+            var userSession = _authenticationService.CreateUserSession();
             if (userSession.IsNullOrEmpty())
             {
                 await ClearSession();

@@ -1,15 +1,15 @@
-﻿using Models.Authentication;
-using Backend_API.Data.DbContext;
+﻿using Backend_API.Data.DbContext;
+using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Backend_API.Data.Model;
-using Newtonsoft.Json;
 using Microsoft.OpenApi.Models;
+using Models.Authentication;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace Backend_API.Startup
 {
@@ -74,7 +74,8 @@ namespace Backend_API.Startup
                         var allowedOrigins = builder.Configuration.GetSection("CORS:AllowedOrigins").Get<string[]>();
                         policy.WithOrigins(allowedOrigins)
                         .AllowAnyHeader()
-                        .AllowAnyMethod();    
+                        .AllowAnyMethod()
+                        .AllowCredentials();   
                     });
             });
 
@@ -132,7 +133,7 @@ namespace Backend_API.Startup
         private static TokenValidationParameters DefineTokenValidationParameters(WebApplicationBuilder builder)
         {
             var jwtConfig = builder.Configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
-            var key = Encoding.ASCII.GetBytes(jwtConfig.Secret);
+            var key = Encoding.UTF8.GetBytes(jwtConfig.Secret);
 
             var tokenValidationParameters = new TokenValidationParameters
             {

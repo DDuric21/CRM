@@ -1,5 +1,4 @@
 ﻿using Models.DTO;
-using Models.Helpers;
 using Models.Responses;
 
 namespace UI.Services
@@ -19,8 +18,8 @@ namespace UI.Services
 
         public async Task UpdateAddressesAsync(List<AddressDTO> addresses)
         {
-            var url = string.Format("https://localhost:7076/Addresses/");
-            var request = _communicationService.CreateRequest(HttpMethod.Put, url, addresses);
+            var url = "Addresses";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, addresses);
 
             try
             {
@@ -35,8 +34,8 @@ namespace UI.Services
 
         public async Task<AddressDTO> CreateNewAddressAsync(AddressDTO addressDTO)
         {
-            var url = string.Format("https://localhost:7076/Addresses/");
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, addressDTO);
+            var url = "Addresses";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, addressDTO);
 
             try
             {
@@ -54,8 +53,8 @@ namespace UI.Services
 
         public async Task<int> DeleteAddressAsync(long addressId)
         {
-            var url = string.Format("https://localhost:7076/Addresses/{0}", addressId);
-            var request = _communicationService.CreateRequest(HttpMethod.Delete, url);
+            var url = $"Addresses/{addressId}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Delete, url);
 
             try
             {

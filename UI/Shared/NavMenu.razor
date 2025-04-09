@@ -51,7 +51,7 @@
     {
         var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)authenticationStateProvider;
         await crmAuthenticationStateProvider.UpdateAuthenticationState();
-        navigationManager.NavigateTo("/Login");
+        navigationManager.NavigateTo("/Login", true);
     }
 
 }

@@ -20,8 +20,8 @@ namespace UI.Services
 
         public async Task<int> SubmitOrderAsync(OrderDTO orderDTO)
         {
-            var url = string.Format("https://localhost:7076/Order/{0}", orderDTO.OrderID);
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, orderDTO);
+            var url = $"Order/{orderDTO.OrderID}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, orderDTO);
 
             try
             {
@@ -39,8 +39,8 @@ namespace UI.Services
 
         public async Task<OrderDTO> GetOrderDataAsync(Guid id)
         {
-            var url = string.Format("https://localhost:7076/Order/{0}", id);
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = $"Order/{id}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {
@@ -65,9 +65,8 @@ namespace UI.Services
                 WithOptions = withOptions
             };
 
-            var url = string.Format("https://localhost:7076/Order");
-
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, createOrderRQ);
+            var url = "Order";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, createOrderRQ);
 
             try
             {
@@ -82,7 +81,7 @@ namespace UI.Services
 
         public async Task CreateOrderAsync(Guid orderID, long customerID, long customerAssetID = 0)
         {
-            var url = string.Format("https://localhost:7076/Order");
+            var url = "Order";
             var orderDTO = new OrderDTO
             {
                 OrderID = orderID,
@@ -96,7 +95,7 @@ namespace UI.Services
                 }
             };
 
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, orderDTO);
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, orderDTO);
 
             try
             {
@@ -111,8 +110,8 @@ namespace UI.Services
 
         public async Task<int> UpdateAsset(OrderDTO orderDTO)
         {
-            var url = string.Format("https://localhost:7076/Order");
-            var request = _communicationService.CreateRequest(HttpMethod.Put, url, orderDTO);
+            var url = "Order";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, orderDTO);
 
             try
             {
@@ -130,8 +129,8 @@ namespace UI.Services
 
         public async Task<int> DeleteAsset(long custoemrAssetID)
         {
-            var url = string.Format("https://localhost:7076/Order");
-            var request = _communicationService.CreateRequest(HttpMethod.Delete, url, custoemrAssetID);
+            var url = "Order";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Delete, url, custoemrAssetID);
 
             try
             {

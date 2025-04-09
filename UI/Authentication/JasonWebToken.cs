@@ -5,6 +5,8 @@ namespace UI.Authentication
 {
     public static class JasonWebToken
     {
+        private static readonly TimeSpan TokenExpirationTolerance = TimeSpan.FromSeconds(30);
+
         private static DateTime ExpiryTime { get; set; }
 
         private static Dictionary<string, object> jwtValue { get; set; }
@@ -22,20 +24,19 @@ namespace UI.Authentication
                 jwt = value;
                 DecodeJwt();
                 ExpiryTime = ReadExpiryTime();
+                Console.WriteLine($"{ExpiryTime} <= {DateTime.UtcNow.Add(TokenExpirationTolerance)} {IsExpired}");
             }
         }
 
-        public static bool IsExpired()
-        {
-            return ExpiryTime <= DateTime.UtcNow;
-        }
+        public static bool IsExpired => ExpiryTime <= DateTime.UtcNow.Add(TokenExpirationTolerance);
 
         private static DateTime ReadExpiryTime()
         {
-            var expiryTime = ReadValue(CrmJwtClaimNames.Expiration).FirstOrDefault();
+            var expiryTime = ReadValue(CrmJwtClaimNames.Expiration)
+                .FirstOrDefault();
 
-            var expiryTimeValue = DateTime.TryParse(expiryTime, out var parsedValue)
-                ? parsedValue
+            var expiryTimeValue = long.TryParse(expiryTime, out var unixTimestamp)
+                ? DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).DateTime
                 : DateTime.MinValue;
 
             return expiryTimeValue;
@@ -45,7 +46,7 @@ namespace UI.Authentication
         {
             if (string.IsNullOrEmpty(jwt))
             {
-                jwtValue = null;
+                jwtValue = new Dictionary<string, object>();
                 return;
             }
 

@@ -6,7 +6,7 @@
         
         public string Token { get; set; }
         
-        public string TokenId { get; set; }
+        public string AccessTokenId { get; set; }
 
         public bool IsUsed { get; set; }
 

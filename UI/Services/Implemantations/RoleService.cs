@@ -17,8 +17,8 @@ namespace UI.Services
 
         public async Task<IEnumerable<UserRoleDTO>> GetApplicableRolesAsync()
         {
-            var url = string.Format("https://localhost:7076/Roles");
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = "Roles";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {

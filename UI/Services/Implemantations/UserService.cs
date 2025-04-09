@@ -20,8 +20,8 @@ namespace UI.Services
 
         public async Task<UserDTO> GetUserDataAsync(string username)
         {
-            var url = string.Format("https://localhost:7076/Users/{0}", username);
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = $"Users/{username}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {
@@ -41,7 +41,7 @@ namespace UI.Services
         public async Task ChangeUserStatus(ChangeUserStatusRQ changeStatusRequest)
         {
             var url = DefineChangeStatusURL(changeStatusRequest);
-            var request = _communicationService.CreateRequest(HttpMethod.Put, url);
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url);
 
             try
             {
@@ -61,10 +61,10 @@ namespace UI.Services
             switch (request.NewUserStatus)
             {
                 case ItemState.Active:
-                    url = string.Format("https://localhost:7076/Users/Activate/{0}", request.UserName);
+                    url = $"Users/Activate/{request.UserName}";
                     break;
                 case ItemState.Inactive:
-                    url = string.Format("https://localhost:7076/Users/Deactivate/{0}", request.UserName);
+                    url = $"Users/Deactivate/{request.UserName}";
                     break;
                 default:
                     throw new Exception($"New User status not supported: {request.NewUserStatus}");
@@ -75,8 +75,8 @@ namespace UI.Services
 
         public async Task<IAsyncEnumerable<UserDTO>> GetUsersAsync(UserFilterRQ userFilter)
         {
-            var url = string.Format("https://localhost:7076/Users");
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, userFilter);
+            var url = "Users";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, userFilter);
 
             try
             {
@@ -95,8 +95,8 @@ namespace UI.Services
 
         public async Task<bool> UpdateUserDataAsync(UserDTO userDTO)
         {
-            var url = string.Format("https://localhost:7076/Users/Update");
-            var request = _communicationService.CreateRequest(HttpMethod.Put, url, userDTO);
+            var url = "Users/Update";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, userDTO);
 
             var isSuccessful = false;
 
@@ -115,8 +115,8 @@ namespace UI.Services
 
         public async Task<UserGridFilterDataRS> GetUserFilterBaseValues()
         {
-            var url = string.Format("https://localhost:7076/Users/GridFilterData");
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = "Users/GridFilterData";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {

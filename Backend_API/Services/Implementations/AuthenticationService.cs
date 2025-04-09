@@ -1,6 +1,7 @@
 ﻿using Backend_API.Data.DataClasses;
 using Backend_API.Data.Model;
 using Backend_API.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Models.Authentication;
@@ -21,6 +22,8 @@ namespace Backend_API.Services
         private readonly JwtConfiguration _configuration;
         private readonly int RefreshTokenLenght = 23;
         private readonly string RefreshTokenCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        private readonly JwtSecurityTokenHandler _jwtTokenHandler;
+        public readonly string RefreshTokenCookieKey = "refreshToken";
 
         public AuthenticationService(
             IOptions<JwtConfiguration> configuration,
@@ -34,6 +37,8 @@ namespace Backend_API.Services
             _repository = repository;
             _configuration = configuration.Value;
             _userService = userService;
+
+            _jwtTokenHandler = new JwtSecurityTokenHandler();
         }
 
         public async Task<bool> ValidateLoginAsync(UserDTO userDTO)
@@ -53,26 +58,110 @@ namespace Backend_API.Services
             return true;
         }
 
-        public AuthenticationResult VerifyTokenRequest(TokenRequest tokenRequest)
+        public async Task<bool> VerifyTokenRequestAsync(RefreshTokenRQ tokenRequest, string refreshToken)
         {
-            var authenticationResult = VerifyAccessToken(tokenRequest.Token);
+            bool isAccessTokenValid = ValidateAccessToken(tokenRequest.AccessToken);
 
-            if (authenticationResult.ErrorMessages.Any(x => x.Equals("Token expired"))) //možda loše rješenje
-            {
-                var refreshTokenValidationResult = VerifyRefreshToken(tokenRequest.RefreshToken);
-                authenticationResult.IsAuthenticated = refreshTokenValidationResult.IsAuthenticated;
-            }
+            bool isRefreshTokenValid = await ValidateRefreshTokenAsync(refreshToken);
 
-            return authenticationResult;
+            var isValid = isAccessTokenValid && isRefreshTokenValid;
+
+            return isValid;
         }
 
-        public async Task<AuthenticationResult> GenerateJwtTokenAsync(string userName)
+        public async Task<AuthenticationResult> RefreshJwtAsync(string accessToken, string refreshToken)
         {
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
+            var userName = ReadAccessTokenData(accessToken, JwtRegisteredClaimNames.Name)
+                .FirstOrDefault();
 
+            if (userName is null)
+            {
+                return null;
+            }
+
+            var result = new AuthenticationResult();
+            try
+            {
+                await MarkRefreshTokenAsUsed(refreshToken);
+
+                result = await GenerateJwtAuthenticationResultAsync(userName);
+            }
+            catch (Exception ex)
+            {
+                //add logging
+                result.IsAuthenticated = false;
+            }
+
+            return result;
+        }
+
+        public async Task<AuthenticationResult> GenerateJwtAuthenticationResultAsync(string userName)
+        {
+            var result = new AuthenticationResult();
+
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                return result;
+            }
+
+            try
+            {
+                var userData = await _userService.GetUserDataAsync(userName);
+
+                var token = GenerateSecurityToken(userData);
+                var jwt = _jwtTokenHandler.WriteToken(token);
+
+                var refreshToken = await HandleRefreshToken(userData, token);
+
+                result = new AuthenticationResult
+                {
+                    AccessToken = jwt,
+                    RefreshToken = refreshToken.Token,
+                    IsAuthenticated = true
+                };
+            }
+            catch (Exception ex) 
+            {
+                //add logging
+            }
+
+            return result;
+        }
+
+        private async Task MarkRefreshTokenAsUsed(string refreshToken)
+        {
+            var token = await _repository.RefreshTokens
+                .Where(x => x.Token == refreshToken)
+                .FirstAsync();
+
+            token.IsUsed = true;
+
+            await _repository.RefreshTokens.PartialUpdateAsync(token, x => x.IsUsed);
+        }
+
+        private async Task<RefreshToken> HandleRefreshToken(UserData userData, SecurityToken token)
+        {
+            var refreshToken = await GetValidUserRefreshTokenAsync(userData);
+
+            if (refreshToken is null)
+            {
+                refreshToken = await GenerateRefreshTokenAsync(userData, token);
+            }
+            else
+            {
+                if (refreshToken.AccessTokenId != token.Id)
+                {
+                    refreshToken.AccessTokenId = token.Id;
+                    await _repository.RefreshTokens.PartialUpdateAsync(refreshToken, x => x.AccessTokenId);
+                }
+            }
+
+            return refreshToken;
+        }
+
+        private SecurityToken GenerateSecurityToken(UserData userData)
+        {
             var key = Encoding.UTF8.GetBytes(_configuration.Secret);
-
-            var userData = await _userService.GetUserDataAsync(userName);
 
             var claims = GenerateJwtClaims(userData);
 
@@ -85,43 +174,20 @@ namespace Backend_API.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
             };
 
-            var token = jwtTokenHandler.CreateToken(tokenDescripter);
-            var jwtToken = jwtTokenHandler.WriteToken(token);
+            var token = _jwtTokenHandler.CreateToken(tokenDescripter);
+            
+            return token;
+        }
 
-            var existingRefreshToken = _repository.RefreshTokens
-                .Where(x => x.UserId == userData.User.Id)
-                .Select(x => new
-                {
-                    x.ExpiryDate,
-                    x.Token
-                })
-                .OrderByDescending(x => x.ExpiryDate)
-                .FirstOrDefault();
+        public IEnumerable<string> ReadAccessTokenData(string accessToken, string claimName)
+        {
+            var token = _jwtTokenHandler.ReadJwtToken(accessToken);
 
-            var refreshToken = new RefreshToken
-            {
-                Token = existingRefreshToken?.Token,
-                TokenId = token.Id,
-                ExpiryDate = DateTime.UtcNow.AddMonths(6),
-                IsRevoked = false,
-                IsUsed = false,
-                UserId = userData.User.Id
-            };
+            var claimValues = token.Claims
+                .Where(x => x.Type == claimName)
+                .Select(x => x.Value);
 
-            if (existingRefreshToken.IsNullOrEmpty()
-                || existingRefreshToken?.ExpiryDate < DateTime.UtcNow)
-            {
-                refreshToken.Token = GenerateRefreshToken();
-
-                _repository.RefreshTokens.Insert(refreshToken);
-            }
-
-            return new AuthenticationResult
-            {
-                AccessToken = jwtToken,
-                RefreshToken = refreshToken.Token,
-                IsAuthenticated = true
-            };
+            return claimValues;
         }
 
         public async Task<User> GetRefreshTokenUserAsync(string refreshToken)
@@ -140,49 +206,86 @@ namespace Backend_API.Services
             return user;
         }
 
-        private string GenerateRefreshToken()
+        public void SetRefreshTokenCookie(IResponseCookies responseCookies, string refreshToken)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(7),
+                Path = "/",
+                IsEssential = true,
+            };
+
+            responseCookies.Append(RefreshTokenCookieKey, refreshToken, cookieOptions);
+        }
+
+        public void DeleteRefreshTokenCookie(IResponseCookies responseCookies)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(-1)
+            };
+
+            responseCookies.Append("refreshToken", string.Empty, cookieOptions);
+        }
+
+        private async Task<RefreshToken> GenerateRefreshTokenAsync(UserData userData, SecurityToken accessToken)
+        {
+            var newRefreshTokenValue = GenerateNewRefreshToken();
+
+            var newRefreshToken = new RefreshToken
+            {
+                Token = newRefreshTokenValue,
+                AccessTokenId = accessToken.Id,
+                ExpiryDate = DateTime.UtcNow.AddDays(6),
+                UserId = userData.User.Id
+            };
+
+            await _repository.RefreshTokens.InsertAsync(newRefreshToken);
+
+            return newRefreshToken;
+        }
+
+        private async Task<RefreshToken> GetValidUserRefreshTokenAsync(UserData userData)
+        {
+             var validRefrrefreshToken = await _repository.RefreshTokens
+                .Where(x => x.UserId == userData.User.Id
+                    && !x.IsRevoked
+                    && !x.IsUsed
+                    && x.ExpiryDate > DateTime.UtcNow)
+                .FirstOrDefaultAsync();
+
+            return validRefrrefreshToken;
+        }
+
+        private string GenerateNewRefreshToken()
         {
             var random = new Random();
             return new string(Enumerable.Repeat(RefreshTokenCharacters, RefreshTokenLenght)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private AuthenticationResult VerifyAccessToken(string accessToken)
+        private bool ValidateAccessToken(string accessToken)
         {
-            var authenticationResult = new AuthenticationResult();
-
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-
-            var tokenInVerification = jwtTokenHandler.ValidateToken(accessToken, _tokenValidationParameters, out var validatedToken);
-
-            if (validatedToken is JwtSecurityToken jwtSecurityToken)
+            try
             {
-                var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
-
-                if (!result)
-                {
-                    authenticationResult.ErrorMessages.Add("Token is not valid.");
-
-                    return authenticationResult;
-                }
+                _jwtTokenHandler.ValidateToken(accessToken, _tokenValidationParameters, out var validatedToken);
             }
-            var claimExpiry = tokenInVerification.Claims
-                .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp)
-                .Value;
-
-            var utcExpiryDate = HelperMethods.ParseClaimExpiryToDatetime(claimExpiry);
-
-            if (utcExpiryDate < DateTime.UtcNow)
+            catch (Exception ex)
             {
-                authenticationResult.ErrorMessages.Add("Token expired");
+                //add logging
+                return false;
             }
 
-            authenticationResult.IsAuthenticated = authenticationResult.ErrorMessages.Count == 0;
-
-            return authenticationResult;
+            return true;
         }
 
-        private static List<Claim> GenerateJwtClaims(UserData userData)
+        private List<Claim> GenerateJwtClaims(UserData userData)
         {
             var claims = new List<Claim>
             {
@@ -204,37 +307,32 @@ namespace Backend_API.Services
             return claims;
         }
 
-        private AuthenticationResult VerifyRefreshToken(string refreshToken)
+        private async Task<bool> ValidateRefreshTokenAsync(string refreshToken)
         {
-            AuthenticationResult authenticationResult = new AuthenticationResult();
-
-            var storedRefreshToken = _repository.RefreshTokens
+            var storedRefreshToken = await _repository.RefreshTokens
                 .Where(x => x.Token == refreshToken)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
-            if (storedRefreshToken == null)
+            if (storedRefreshToken is null)
             {
-                authenticationResult.ErrorMessages.Add("Refresh token doesn't exist");
-                return authenticationResult;
+                // add logging
+                return false;
             }
 
             if (storedRefreshToken.IsUsed
                 || storedRefreshToken.IsRevoked)
             {
-                authenticationResult.ErrorMessages.Add("RefreshToken is already used or has been revoked");
-                return authenticationResult;
+                // add logging
+                return false;
             }
 
             if (storedRefreshToken.ExpiryDate < DateTime.UtcNow)
             {
-                authenticationResult.ErrorMessages.Add("RefreshToken is expired.");
-                return authenticationResult;
+                // add logging
+                return false;
             }
 
-            authenticationResult.IsAuthenticated = authenticationResult.ErrorMessages.Count == 0;
-
-            return authenticationResult;
+            return true;
         }
-
     }
 }

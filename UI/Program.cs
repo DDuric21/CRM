@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Models.Authentication;
 using UI;
 using UI.Authentication;
+using UI.Authentication.HttpHandlers;
 using UI.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -23,7 +24,7 @@ var stream = await httpClient.GetStreamAsync("appCustomSettings.json");
 builder.Configuration.AddJsonStream(stream);
 var config = builder.Configuration.GetSection("profiles:iisBackend").Get<ApiConfig>();
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(config.SecureBackendUrl) });
+builder.Services.AddScoped(sp => new HttpClient(new CookieHandler()) { BaseAddress = new Uri(config.SecureBackendUrl) });
 
 builder.Services.AddSingleton(config);
 
@@ -37,7 +38,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IInteractionService, InteractionService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<ICommunicationService, CommunicationService>();
+builder.Services.AddScoped<ICommunicationService, CrmCommunicationService>();
 builder.Services.AddScoped<IBillingProfileService, BillingProfileService>();
 builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<ICrmModalService, CrmModalService>();

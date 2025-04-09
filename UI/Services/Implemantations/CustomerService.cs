@@ -19,8 +19,8 @@ namespace UI.Services
 
         public async Task<IAsyncEnumerable<CustomerDTO>> GetCustomersAsync(CustomerFilterRQ customerFilter)
         {
-            var url = string.Format("https://localhost:7076/Customers");
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, customerFilter);          
+            var url = "Customers";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, customerFilter);          
 
             try
             {
@@ -38,8 +38,8 @@ namespace UI.Services
 
         public async Task<CustomerDTO> GetCustomerDataAsync(long customerID)
         {
-            var url = string.Format("https://localhost:7076/Customers/{0}", customerID);
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = $"Customers/{customerID}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {
@@ -57,7 +57,8 @@ namespace UI.Services
 
         public async Task<long> CreateNewCustomerAsync(CustomerDTO customerDTO)
         {
-            var request = _communicationService.CreateRequest(HttpMethod.Post, "https://localhost:7076/Customers/Create", customerDTO);
+            var url = "Customers/Create";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, customerDTO);
             
             try
             {
@@ -74,8 +75,8 @@ namespace UI.Services
 
         public async Task DeleteCustomer(long customerID)
         {
-            var url = string.Format("https://localhost:7076/Customers/{0}", customerID);
-            var request = _communicationService.CreateRequest(HttpMethod.Delete, url);
+            var url = "Customers/{customerID}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Delete, url);
 
             try
             {
@@ -90,8 +91,8 @@ namespace UI.Services
 
         public async Task UpdateCustomer(CustomerDTO customerDTO)
         {
-            var url = string.Format("https://localhost:7076/Customers/");
-            var request = _communicationService.CreateRequest(HttpMethod.Put, url, customerDTO);
+            var url = "Customers";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, customerDTO);
 
             try
             {
@@ -106,8 +107,8 @@ namespace UI.Services
 
         public async Task<IAsyncEnumerable<AssetDTO>> GetCustomerAssetsAsync(long id)
         {
-            var url = string.Format("https://localhost:7076/Customers/Assets");
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, id);
+            var url = "Customers/Assets";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, id);
 
             try
             {
@@ -126,8 +127,8 @@ namespace UI.Services
 
         public async Task<AssetDTO> GetCustomerAssetDataAsync(long customerAssetid)
         {
-            var url = string.Format("https://localhost:7076/Customers/Assets/{0}", customerAssetid);
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = $"Customers/Assets/{customerAssetid}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {
@@ -146,8 +147,8 @@ namespace UI.Services
 
         public async Task<IAsyncEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID)
         {
-            var url = string.Format("https://localhost:7076/Customers/Orders/{0}", customerID);
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = $"Customers/Orders/{customerID}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {
@@ -166,8 +167,8 @@ namespace UI.Services
 
         public async Task<IAsyncEnumerable<InteractionDTO>> GetCustomerInteractionsAsync(long customerID)
         {
-            var url = string.Format("https://localhost:7076/Customers/Interactions/{0}", customerID);
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = $"Customers/Interactions/{customerID}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {
@@ -186,8 +187,8 @@ namespace UI.Services
 
         public async Task<CustomerGridFilterDataRS> GetCustomerFilterBaseValues()
         {
-            var url = string.Format("https://localhost:7076/Customers/GridFilterData");
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = "Customers/GridFilterData";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {

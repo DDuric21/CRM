@@ -18,8 +18,8 @@ namespace UI.Services
 
         public async Task<BillingProfileDTO> CreateNewBillingProfileAsync(long customerID)
         {
-            var url = string.Format("https://localhost:7076/BillingProfiles/");
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, customerID);
+            var url = "BillingProfiles";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, customerID);
 
             try
             {
@@ -38,8 +38,8 @@ namespace UI.Services
 
         public async Task UpdateBillingProfileAsync(BillingProfileDTO billingProfileDTO)
         {
-            var url = string.Format("https://localhost:7076/BillingProfiles/");
-            var request = _communicationService.CreateRequest(HttpMethod.Put, url, billingProfileDTO);
+            var url = "BillingProfiles";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, billingProfileDTO);
 
             try
             {
@@ -54,8 +54,8 @@ namespace UI.Services
 
         public async Task DeactivateBillingProfileAsync(string billingProfileId)
         {
-            var url = $"https://localhost:7076/BillingProfiles/{billingProfileId}";
-            var request = _communicationService.CreateRequest(HttpMethod.Delete, url);
+            var url = $"BillingProfiles/{billingProfileId}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Delete, url);
 
             try
             {

@@ -18,8 +18,8 @@ namespace UI.Services
 
         public async Task<IEnumerable<NewsDTO>> GetNewsAsync(IEnumerable<RetrieveNewsRQ> newsFilter)
         {
-            var url = string.Format("https://localhost:7076/News");
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, newsFilter);
+            var url = "News";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, newsFilter);
 
             try
             {

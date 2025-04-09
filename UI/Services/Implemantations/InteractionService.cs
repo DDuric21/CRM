@@ -18,8 +18,8 @@ namespace UI.Services
 
         public async Task<long> SaveNewInteractionAsync(InteractionDTO interactionDTO)
         {
-            var url = string.Format("https://localhost:7076/Interactions/");
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, interactionDTO);
+            var url = "Interactions";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, interactionDTO);
 
             try
             {
@@ -37,8 +37,8 @@ namespace UI.Services
 
         public async Task UpdateInteractionAsync(InteractionDTO interactionDTO)
         {
-            var url = string.Format("https://localhost:7076/Interactions/");
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, interactionDTO);
+            var url = "Interactions";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, interactionDTO);
 
             try
             {

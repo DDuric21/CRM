@@ -1,8 +1,6 @@
 ﻿using Models.Authentication;
 using Models.DTO;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using UI.Authentication;
 
 namespace UI.Services
@@ -22,40 +20,33 @@ namespace UI.Services
 
         public async Task<AuthenticationResult> Login(string username, string password)
         {
-            var httpClient = new HttpClient();
             var userDto = new UserDTO
             {
                 UserName = username,
                 Password = password
             };
 
-            var response = await httpClient.PostAsJsonAsync("https://localhost:7076/Login", userDto);
-
-            var deserializedResponse = new AuthenticationResult();
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return deserializedResponse;
-            }
-
+            var url = "Login";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, userDto, false);
+            var content = JsonContent.Create(userDto);
             try
             {
-                deserializedResponse = await response.Content.ReadFromJsonAsync<AuthenticationResult>();
+                var response = await _communicationService.SendAuthenticationRequestAsync<AuthenticationResult>(request);
 
-                return deserializedResponse;
+                return response;
             }
             catch (Exception ex)
             {
+                // logging
                 _modalService.ShowErrorMessage(ex.Message);
+                return new AuthenticationResult();
             }
-
-            return new AuthenticationResult();
         }
 
         public async Task<UserDTO> RegisterNewUserAsync(UserDTO userDTO)
         {
-            var url = string.Format("https://localhost:7076/Register");
-            var request = _communicationService.CreateRequest(HttpMethod.Post, url, userDTO);
+            var url = "Register";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, userDTO);
 
             try
             {
@@ -71,21 +62,23 @@ namespace UI.Services
             }
         }
 
-        public UserSession CreateUserSessionFromJwt(string token)
+        public UserSession CreateUserSession()
         {
-            if (string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrWhiteSpace(JasonWebToken.Value))
             {
                 throw new ArgumentException("Invalid token provided");
             }
 
             var userSession = new UserSession();
             
-            userSession.UserName = JasonWebToken.ReadValue(CrmJwtClaimNames.Name).FirstOrDefault();
+            userSession.UserName = JasonWebToken.ReadValue(CrmJwtClaimNames.Name)
+                .FirstOrDefault();
 
             userSession.Roles = JasonWebToken.ReadValue(CrmJwtClaimNames.Role);
             userSession.Permissions = JasonWebToken.ReadValue(CrmJwtClaimNames.Permission);
 
             return userSession;
         }
+
     }
 }

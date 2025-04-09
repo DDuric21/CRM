@@ -1,5 +1,4 @@
-﻿using Backend_API.Data.Model;
-using Backend_API.Services;
+﻿using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.Authentication;
 using Models.DTO;
@@ -34,14 +33,17 @@ namespace Backend_API.Controllers
                 return Forbid();
             }
 
-            var jwtToken = await _authenticationService.GenerateJwtTokenAsync(userDTO.UserName);
+            var authenticationResult = await _authenticationService.GenerateJwtAuthenticationResultAsync(userDTO.UserName);
 
-            return Ok(new AuthenticationResult
+            if (!authenticationResult.IsAuthenticated)
             {
-                IsAuthenticated = true,
-                AccessToken = jwtToken.AccessToken,
-                RefreshToken = jwtToken.RefreshToken
-            });
+                return Problem("Token failed to generate!");
+            }
+
+            _authenticationService.SetRefreshTokenCookie(Response.Cookies, authenticationResult.RefreshToken);
+            authenticationResult.RefreshToken = null;
+
+            return Ok(authenticationResult);
         }
 
         [HttpPost]
@@ -78,25 +80,28 @@ namespace Backend_API.Controllers
 
         [HttpPost]
         [Route("/RefreshToken")]
-        public async Task<IActionResult> RefreshToken(TokenRequest tokenRequest)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRQ tokenRequest)
         {
-            var authenticationResult = _authenticationService.VerifyTokenRequest(tokenRequest);
+            var refreshToken = Request.Cookies[((AuthenticationService)_authenticationService).RefreshTokenCookieKey];
+            var isValid = await _authenticationService.VerifyTokenRequestAsync(tokenRequest, refreshToken);
+
+            if (!isValid)
+            {
+                _authenticationService.DeleteRefreshTokenCookie(Response.Cookies);
+                return Unauthorized();
+            }
+
+            var authenticationResult = await _authenticationService.RefreshJwtAsync(tokenRequest.AccessToken, refreshToken);
 
             if (!authenticationResult.IsAuthenticated)
             {
-                return SignOut();
+                _authenticationService.DeleteRefreshTokenCookie(Response.Cookies);
+                return Problem("Token failed refreshing!");
             }
 
-            // OVO NE TREBA IMAŠ INFO U aCCESS TOKENU
-            var refreshTokenUser = await _authenticationService.GetRefreshTokenUserAsync(tokenRequest.RefreshToken);
+            _authenticationService.SetRefreshTokenCookie(Response.Cookies, authenticationResult.RefreshToken);
 
-            var jwtToken = await _authenticationService.GenerateJwtTokenAsync(refreshTokenUser.UserName);
-
-            authenticationResult.IsAuthenticated = true;
-            authenticationResult.AccessToken = jwtToken.AccessToken;
-            authenticationResult.RefreshToken = jwtToken.RefreshToken;
-
-            return Ok(authenticationResult);
+            return Ok(authenticationResult.AccessToken);
         }
     }
 }

@@ -18,8 +18,8 @@ namespace UI.Services
 
         public async Task<IAsyncEnumerable<AssetDTO>> GetAssetsAsync(bool withOptions = false)
         {
-            var url = string.Format("https://localhost:7076/Assets{0}", $"?withOptions={withOptions}");
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = $"Assets?withOptions={withOptions}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {
@@ -39,8 +39,8 @@ namespace UI.Services
 
         public async Task<Dictionary<ItemState, int>> GetAssetsChartDataAsync()
         {
-            var url = string.Format("https://localhost:7076/Assets/ChartData");
-            var request = _communicationService.CreateRequest(HttpMethod.Get, url);
+            var url = "Assets/ChartData";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {

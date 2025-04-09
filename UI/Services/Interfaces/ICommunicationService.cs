@@ -2,10 +2,12 @@
 {
     public interface ICommunicationService
     {
-        HttpRequestMessage CreateRequest(HttpMethod httpMethod, string url);
+        Task<HttpRequestMessage> CreateRequestAsync(HttpMethod httpMethod, string url);
 
-        HttpRequestMessage CreateRequest<T>(HttpMethod httpMethod, string url, T requestBody);
+        Task<HttpRequestMessage> CreateRequestAsync<T>(HttpMethod httpMethod, string url, T requestBody, bool addHeaders = true);
 
         Task<T> SendRequestAsync<T>(HttpRequestMessage request);
+
+        Task<T> SendAuthenticationRequestAsync<T>(HttpRequestMessage request);
     }
 }
