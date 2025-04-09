@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Repositories;
 using Backend_API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Helpers;
@@ -9,6 +10,7 @@ using Models.Responses;
 
 namespace Backend_API.Controllers
 {
+    [Authorize]
     [Route("Customers")]
     public class CustomerController : Controller
     {
