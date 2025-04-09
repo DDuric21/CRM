@@ -71,7 +71,8 @@ namespace Backend_API.Startup
                 options.AddPolicy("LocalPolicy",
                     policy =>
                     {
-                        policy.AllowAnyOrigin() // dodati samo svoje
+                        var allowedOrigins = builder.Configuration.GetSection("CORS:AllowedOrigins").Get<string[]>();
+                        policy.WithOrigins(allowedOrigins)
                         .AllowAnyHeader()
                         .AllowAnyMethod();    
                     });

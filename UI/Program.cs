@@ -13,7 +13,20 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+var httpClient = new HttpClient
+{
+    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress),
+
+};
+
+var stream = await httpClient.GetStreamAsync("appCustomSettings.json");
+builder.Configuration.AddJsonStream(stream);
+var config = builder.Configuration.GetSection("profiles:iisBackend").Get<ApiConfig>();
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(config.SecureBackendUrl) });
+
+builder.Services.AddSingleton(config);
+
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
