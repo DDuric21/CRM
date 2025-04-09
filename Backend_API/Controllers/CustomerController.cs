@@ -268,11 +268,11 @@ namespace Backend_API.Controllers
 
         [HttpGet]
         [Route("GridFilterData")]
-        public async Task<IActionResult> GetUserFilterBaseValues()
+        public async Task<IActionResult> GetCustomerFilterBaseValues()
         {
             try
             {
-                var result = _customerService.GetUserFilterBaseValues();
+                var result = _customerService.GetCustomerFilterBaseValues();
 
                 if (result is null)
                 {
