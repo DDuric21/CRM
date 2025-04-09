@@ -9,6 +9,6 @@ DependencyInjectionSetup.RegisterServices(builder);
 var app = builder.Build();
 
 ApplicationConfigurationSetup.ExecuteMigrations(app);
-ApplicationConfigurationSetup.InitialzeConfiguration(app);
+ApplicationConfigurationSetup.InitializeConfiguration(app);
 
 app.Run();

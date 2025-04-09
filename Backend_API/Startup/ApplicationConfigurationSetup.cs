@@ -6,7 +6,7 @@ namespace Backend_API.Startup
 {
     public static class ApplicationConfigurationSetup
     {
-        public static void InitialzeConfiguration(WebApplication app)
+        public static void InitializeConfiguration(WebApplication app)
         {
             if (app.Environment.IsDevelopment())
             {
