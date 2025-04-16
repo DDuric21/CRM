@@ -7,7 +7,8 @@ using Models.Responses;
 
 namespace Backend_API.Controllers
 {
-    public class BillingProfileController : Controller
+    [Route("BillingProfiles")]
+    public class BillingProfileController : AuthorizationController
     {
         private readonly IBillingProfileService _billingProfileService; 
         private readonly IMapper _mapper;
@@ -22,7 +23,6 @@ namespace Backend_API.Controllers
 
 
         [HttpPost]
-        [Route("/BillingProfiles")]
         public async Task<IActionResult> CreateNewBillingProfile([FromBody] long customerID)
         {
             if (customerID <= 0)
@@ -53,7 +53,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPut]
-        [Route("/BillingProfiles")]
         public async Task<IActionResult> UpdateBillingProfile([FromBody] BillingProfileDTO billingProfileDTO)
         {
             if (billingProfileDTO is null)
@@ -80,7 +79,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpDelete]
-        [Route("/BillingProfiles/{billingProfileId}")]
+        [Route("{billingProfileId}")]
         public async Task<IActionResult> DeactivateBillingProfile(string billingProfileId)
         {
             if (string.IsNullOrWhiteSpace(billingProfileId))

@@ -6,7 +6,8 @@ using Models.Responses;
 
 namespace Backend_API.Controllers
 {
-    public class InteractionController : Controller
+    [Route("Interactions")]
+    public class InteractionController : AuthorizationController
     {
         private readonly IInteractionService _interactionService;
 
@@ -17,7 +18,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Interactions")]
         public async Task<IActionResult> CreateInteraction([FromBody] InteractionDTO interactionDTO)
         {
             if (interactionDTO.IsNullOrEmpty())
@@ -46,7 +46,6 @@ namespace Backend_API.Controllers
 
 
         [HttpPut]
-        [Route("/Interactions")]
         public async Task<IActionResult> UpdateInteraction([FromBody] InteractionDTO interactionDTO)
         {
             if (interactionDTO.IsNullOrEmpty())

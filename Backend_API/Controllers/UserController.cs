@@ -7,7 +7,8 @@ using Models.Responses;
 
 namespace Backend_API.Controllers
 {
-    public class UserController : Controller
+    [Route("Users")]
+    public class UserController : AuthorizationController
     {
         private readonly IUserService _userService;
 
@@ -17,7 +18,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Users/{username}")]
+        [Route("{username}")]
         public async Task<IActionResult> GetUserData(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
@@ -46,7 +47,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Users")]
         public async Task<IActionResult> GetUsers([FromBody] UserFilterRQ userFilter)
         {
             try
@@ -70,7 +70,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPut]
-        [Route("/Users/Update")]
+        [Route("Update")]
         public async Task<IActionResult> UpdateUserData([FromBody] UserDTO userDTO)
         {
             if (userDTO.IsNullOrEmpty())
@@ -94,7 +94,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPut]
-        [Route("/Users/Deactivate/{username}")]
+        [Route("Deactivate/{username}")]
         public async Task<IActionResult> DeactivateUser(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
@@ -121,7 +121,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPut]
-        [Route("/Users/Activate/{username}")]
+        [Route("Activate/{username}")]
         public async Task<IActionResult> ActivateUser(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
@@ -148,7 +148,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Users/GridFilterData")]
+        [Route("GridFilterData")]
         public async Task<IActionResult> GetUserFilterBaseValues()
         {
             try

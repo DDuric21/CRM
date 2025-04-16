@@ -5,7 +5,8 @@ using Models.Requests;
 
 namespace Backend_API.Controllers
 {
-    public class NewsController : Controller
+    [Route("News")]
+    public class NewsController : AuthorizationController
     {
         private readonly INewsService _newsService;
 
@@ -15,7 +16,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/News")]
         public async Task<IActionResult> GetNews([FromBody] IEnumerable<RetrieveNewsRQ> retrieveNewsRQs)
         {
             if (retrieveNewsRQs.IsNullOrEmpty())
@@ -42,6 +42,5 @@ namespace Backend_API.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
     }
 }

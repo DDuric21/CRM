@@ -4,7 +4,8 @@ using Models.Helpers;
 
 namespace Backend_API.Controllers
 {
-    public class RoleController : Controller
+    [Route("Roles")]
+    public class RoleController : AuthorizationController
     {
         private readonly IRoleService _roleService;
 
@@ -14,7 +15,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Roles")]
         public async Task<IActionResult> GetAllApplicableRoles()
         {
             try

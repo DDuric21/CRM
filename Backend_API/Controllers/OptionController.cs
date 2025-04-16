@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend_API.Controllers
 {
-    public class OptionController : Controller
+    [Route("Options")]
+    public class OptionController : AuthorizationController
     {
         private readonly ICrmRepository _repository;
 
@@ -15,7 +16,6 @@ namespace Backend_API.Controllers
 
 
         [HttpGet]
-        [Route("/Options")]
         public IEnumerable<Option> GetAll()
         {
             var options = _repository.Options.GetAllAsync();
@@ -24,7 +24,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Options/{id}")]
+        [Route("{id}")]
         public Option GetById(long id)
         {
             var option = _repository.Options.GetByIdAsync(id);
@@ -38,7 +38,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Options")]
         public int InsertOption(Option option)
         {
             try
@@ -56,7 +55,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpDelete]
-        [Route("/Options/{id}")]
+        [Route("{id}")]
         public string DeleteOption(long id)
         {
             var isDeleted = string.Empty;
@@ -74,7 +73,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPut]
-        [Route("/Options")]
         public int UpdateOption(Option option)
         {
             try

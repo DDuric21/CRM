@@ -20,7 +20,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Login")]
+        [Route("Login")]
         public async Task<IActionResult> LoginUser([FromBody] UserDTO userDTO)
         {
             if (userDTO.IsNullOrEmpty())
@@ -47,7 +47,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Register")]
+        [Route("Register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserDTO userDTO)
         {
             if (userDTO is null
@@ -79,7 +79,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/RefreshToken")]
+        [Route("RefreshToken")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRQ tokenRequest)
         {
             var refreshToken = Request.Cookies[((AuthenticationService)_authenticationService).RefreshTokenCookieKey];

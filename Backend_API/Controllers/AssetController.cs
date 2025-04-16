@@ -7,7 +7,8 @@ using Models.Helpers;
 
 namespace Backend_API.Controllers
 {
-    public class AssetController : Controller
+    [Route("Assets")]
+    public class AssetController : AuthorizationController
     {
         private readonly ICrmRepository _repository;
         private readonly IAssetService _assetService;
@@ -21,7 +22,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Assets")]
         public async Task<IActionResult> GetAll(bool withOptions)
         {
             var assetDTOs = new List<AssetDTO>();
@@ -52,7 +52,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Assets/{id}")]
+        [Route("{id}")]
         public Asset GetById(long id)
         {
             var asset = _repository.Assets.GetByIdAsync(id);
@@ -67,7 +67,7 @@ namespace Backend_API.Controllers
 
 
         [HttpGet]
-        [Route("/Assets/ChartData")]
+        [Route("ChartData")]
         public async Task<IActionResult> GetAssetsChartData()
         {
             try
@@ -89,7 +89,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Assets")]
         public int InsertAsset(Asset asset)
         {
             try
@@ -107,7 +106,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpDelete]
-        [Route("/Assets/{id}")]
+        [Route("{id}")]
         public string DeleteAsset(long id)
         {
             var isDeleted = string.Empty;
@@ -125,7 +124,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPut]
-        [Route("/Assets")]
         public int UpdateAsset(Asset asset)
         {
             try
@@ -139,7 +137,5 @@ namespace Backend_API.Controllers
 
             return 0;
         }
-
-
     }
 }

@@ -8,7 +8,8 @@ using Models.Responses;
 
 namespace Backend_API.Controllers
 {
-    public class OrderController : Controller
+    [Route("/Order")]
+    public class OrderController : AuthorizationController
     {
         private readonly IOrderService _orderService;
 
@@ -20,7 +21,7 @@ namespace Backend_API.Controllers
 
 
         [HttpGet]
-        [Route("/Order/{orderID:Guid}")]
+        [Route("{orderID:Guid}")]
         public async Task<IActionResult> GetOrderData(Guid orderID)
         {
             if (orderID == Guid.Empty)
@@ -48,7 +49,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Order")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRQ request)
         {
             if (request.IsNullOrEmpty()
@@ -75,7 +75,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Order/{orderID}")]
+        [Route("{orderID}")]
         public async Task<IActionResult> SubmitOrder([FromBody] OrderDTO orderDTO)
         {
             if (orderDTO.IsNullOrEmpty())
@@ -104,7 +104,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpDelete]
-        [Route("/Order")]
         public async Task<IActionResult> DeactivateCustomerAsset([FromBody] OrderDTO orderDTO)
         {
             if (orderDTO.IsNullOrEmpty())
@@ -127,7 +126,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPut]
-        [Route("/Order")]
         public async Task<IActionResult> UpdateCustomerAsset([FromBody] OrderDTO orderDTO)
         {
             if (orderDTO.IsNullOrEmpty()

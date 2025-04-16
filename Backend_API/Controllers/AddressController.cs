@@ -8,7 +8,8 @@ using Models.Responses;
 
 namespace Backend_API.Controllers
 {
-    public class AddressController : Controller
+    [Route("Addresses")]
+    public class AddressController : AuthorizationController
     {
         private readonly ICrmRepository _repository;
         private readonly IAddressService _addressService;
@@ -25,7 +26,6 @@ namespace Backend_API.Controllers
     }
 
         [HttpGet]
-        [Route("/Addresses")]
         public IEnumerable<Address> GetAll()
         {
             var addresses = _repository.Addresses.GetAllAsync();
@@ -34,7 +34,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpGet]
-        [Route("/Addresses/{id}")]
+        [Route("{id}")]
         public Address GetById(long id)
         {
             var address = _repository.Addresses.GetByIdAsync(id);
@@ -48,7 +48,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPost]
-        [Route("/Addresses")]
         public async Task<IActionResult> InsertAddress([FromBody] AddressDTO addressDTO)
         {
             if (!_dataValidationService.ValidateAddressDTO(addressDTO))
@@ -75,7 +74,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpDelete]
-        [Route("/Addresses/{id}")]
+        [Route("{id}")]
         public async Task<IActionResult> DeleteAddress(long id)
         {
             try
@@ -97,7 +96,7 @@ namespace Backend_API.Controllers
         }
 
         [HttpPut]
-        [Route("/Addresses/{id}")]
+        [Route("{id}")]
         public int UpdateAddress(Address address)
         {
             try
@@ -113,7 +112,6 @@ namespace Backend_API.Controllers
         }
 
         [HttpPut]
-        [Route("/Addresses")]
         public async Task<IActionResult> UpdateAddresses([FromBody] List<AddressDTO> addressDTOs)
         {
             try
