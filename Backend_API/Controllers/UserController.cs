@@ -1,4 +1,5 @@
-﻿using Backend_API.Services;
+﻿using Backend_API.Logging;
+using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Helpers;
@@ -41,7 +42,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(GetUserData), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -64,7 +65,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(GetUsers), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -88,7 +89,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(UpdateUserData), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -115,7 +116,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(DeactivateUser), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -142,7 +143,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(ActivateUser), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -164,7 +165,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(GetUserFilterBaseValues), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }

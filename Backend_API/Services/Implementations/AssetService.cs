@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
+using Backend_API.Logging;
 using Microsoft.EntityFrameworkCore;
 using Models.DTO;
 using Models.Enums;
@@ -62,7 +63,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(AssetService), ex.Message);
                 return new List<AssetDTO>();
             }
         }

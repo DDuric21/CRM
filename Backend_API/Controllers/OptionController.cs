@@ -1,5 +1,6 @@
 ﻿using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
+using Backend_API.Logging;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend_API.Controllers
@@ -48,7 +49,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(InsertOption), ex.Message);
             }
 
             return 0;
@@ -66,7 +67,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(DeleteOption), ex.Message);
             }
 
             return isDeleted;
@@ -81,7 +82,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(UpdateOption), ex.Message);
             }
 
             return 0;

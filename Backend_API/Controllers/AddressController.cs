@@ -1,5 +1,6 @@
 ﻿using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
+using Backend_API.Logging;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
@@ -68,7 +69,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(InsertAddress), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -90,7 +91,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(DeleteAddress), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -105,7 +106,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(UpdateAddress), ex.Message);
             }
 
             return 0;
@@ -131,7 +132,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(UpdateAddresses), ex.Message);
                 return StatusCode(500, ex.Message);
             }
 

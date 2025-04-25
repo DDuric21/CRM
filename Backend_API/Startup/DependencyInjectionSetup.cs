@@ -18,6 +18,7 @@ namespace Backend_API.Startup
         public static void RegisterServices(WebApplicationBuilder builder)
         {
             var _config = builder.Configuration;
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddControllers()
                 .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);

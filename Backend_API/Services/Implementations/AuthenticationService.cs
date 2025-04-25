@@ -1,6 +1,7 @@
 ﻿using Backend_API.Data.DataClasses;
 using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
+using Backend_API.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -88,7 +89,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(AuthenticationService), ex.Message);
                 result.IsAuthenticated = false;
             }
 
@@ -120,9 +121,9 @@ namespace Backend_API.Services
                     IsAuthenticated = true
                 };
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(AuthenticationService), ex.Message);
             }
 
             return result;
@@ -278,7 +279,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(AuthenticationService), ex.Message);
                 return false;
             }
 

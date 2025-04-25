@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend_API.Data.DataClasses;
 using Backend_API.Data.Models;
+using Backend_API.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Models.DTO;
@@ -171,7 +172,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(UserService), ex.Message);
                 throw;
             }
         }
@@ -182,7 +183,7 @@ namespace Backend_API.Services
 
             if (user is null || user.UserStatusID == (int)ItemState.Inactive)
             {
-                //add logging
+                DynamicLogger.LogError(nameof(UserService), "User not found or is inactive");
                 return new IdentityResult();
             }
 
@@ -198,7 +199,7 @@ namespace Backend_API.Services
 
             if (user is null || user.UserStatusID == (int)ItemState.Active)
             {
-                //add logging
+                DynamicLogger.LogError(nameof(UserService), "User not found or is inactive");
                 return new IdentityResult();
             }
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
+using Backend_API.Logging;
 using Models.DTO;
 using Models.Helpers;
 
@@ -67,7 +68,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(AddressService), ex.Message);
                 return new AddressDTO();
             }
         }

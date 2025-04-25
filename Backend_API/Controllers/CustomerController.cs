@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Repositories;
+using Backend_API.Logging;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
@@ -64,7 +65,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(GetCustomers), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -81,7 +82,7 @@ namespace Backend_API.Controllers
 
                 if (customer.IsNullOrEmpty())
                 {
-                    //add logging
+                    DynamicLogger.LogError(nameof(GetCustomer), $"No customer found for ID: {customerId}");
                     return Problem();
                 }
 
@@ -89,7 +90,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(GetCustomer), ex.Message);
                 return Problem(ex.Message);
             }
 
@@ -152,7 +153,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(InsertCustomer), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -171,7 +172,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(DeleteCustomer), ex.Message);
                 return StatusCode(500, ex.Message);
             }
 
@@ -199,7 +200,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(UpdateCustomer), ex.Message);
                 return StatusCode(500, ex.Message);
             }
 
@@ -283,7 +284,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(GetCustomerFilterBaseValues), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }

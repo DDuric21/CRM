@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
+using Backend_API.Logging;
 using Models.DTO;
 using Models.Enums;
 using Models.Helpers;
@@ -75,7 +76,7 @@ namespace Backend_API.Services
         {
             if (!order.CustomerAssetsID.HasValue)
             {
-                //add logging
+                DynamicLogger.LogError(nameof(OrderService), "Order does not contain associated asset ID");
                 return 0;
             }
 

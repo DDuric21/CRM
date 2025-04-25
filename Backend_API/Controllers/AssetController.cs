@@ -1,5 +1,6 @@
 ﻿using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
+using Backend_API.Logging;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
@@ -83,7 +84,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(GetAssetsChartData), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -99,10 +100,9 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(InsertAsset), ex.Message);
+                return 0;
             }
-
-            return 0;
         }
 
         [HttpDelete]
@@ -117,7 +117,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(DeleteAsset), ex.Message);
             }
 
             return isDeleted;
@@ -132,7 +132,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(UpdateAsset), ex.Message);
             }
 
             return 0;

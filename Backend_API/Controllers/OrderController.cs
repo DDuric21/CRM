@@ -1,4 +1,5 @@
-﻿using Backend_API.Services;
+﻿using Backend_API.Logging;
+using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Enums;
@@ -43,7 +44,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(GetOrderData), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -69,7 +70,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(CreateOrder), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -98,7 +99,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(SubmitOrder), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -120,7 +121,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(DeactivateCustomerAsset), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -145,7 +146,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(UpdateCustomerAsset), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }

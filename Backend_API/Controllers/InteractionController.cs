@@ -1,4 +1,5 @@
-﻿using Backend_API.Services;
+﻿using Backend_API.Logging;
+using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Helpers;
@@ -39,7 +40,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(CreateInteraction), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -67,7 +68,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, nameof(UpdateInteraction), ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
