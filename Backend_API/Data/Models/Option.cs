@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Backend_API.Data.Model
+namespace Backend_API.Data.Models
 {
     public class Option : BaseModel
     {

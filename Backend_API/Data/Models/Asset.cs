@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Backend_API.Data.Model
+namespace Backend_API.Data.Models
 {
     public class Asset : BaseModel
     {

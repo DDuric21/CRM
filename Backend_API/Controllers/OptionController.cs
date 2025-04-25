@@ -1,4 +1,4 @@
-﻿using Backend_API.Data.Model;
+﻿using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 

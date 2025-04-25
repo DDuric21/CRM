@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Backend_API.Data.Model
+namespace Backend_API.Data.Models
 {
     public class Order : ITrackChanges
     {

@@ -1,5 +1,5 @@
 ﻿using Backend_API.Data.DataClasses;
-using Backend_API.Data.Model;
+using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;

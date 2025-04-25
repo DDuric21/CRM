@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Backend_API.Data.Model;
+using Backend_API.Data.Models;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;

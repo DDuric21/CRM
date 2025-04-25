@@ -1,4 +1,4 @@
-﻿using Backend_API.Data.Model;
+﻿using Backend_API.Data.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

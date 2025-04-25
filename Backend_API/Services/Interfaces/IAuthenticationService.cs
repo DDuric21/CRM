@@ -1,4 +1,4 @@
-﻿using Backend_API.Data.Model;
+﻿using Backend_API.Data.Models;
 using Models.Authentication;
 using Models.DTO;
 

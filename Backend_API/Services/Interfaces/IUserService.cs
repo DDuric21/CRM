@@ -1,5 +1,5 @@
 ﻿using Backend_API.Data.DataClasses;
-using Backend_API.Data.Model;
+using Backend_API.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Models.DTO;
 using Models.Requests;
