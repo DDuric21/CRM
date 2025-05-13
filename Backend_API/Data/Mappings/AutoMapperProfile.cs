@@ -22,7 +22,10 @@ namespace Backend_API.Data.Mappings
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Option.Price));
             CreateMap<Asset, AssetDTO>();
             CreateMap<BillingProfile, BillingProfileDTO>()
-                .ForMember(dest => dest.BilingProfileStatus, opt => opt.MapFrom(src => (ItemState)src.BillingProfileStatusID));
+                .ForMember(dest => dest.BilingProfileStatus, opt => opt.MapFrom(src => (ItemState)src.BillingProfileStatusID))
+                .ForMember(dest => dest.BillingProfileId, opt => opt.MapFrom(src => src.BillingProfileId))
+                .ForMember(dest => dest.CustomerID, opt => opt.MapFrom(src => src.CustomerID))
+                .ForMember(dest => dest.BillingAddress, opt => opt.MapFrom(src => src.Address));
 
             CreateMap<Customer, CustomerDTO>()
                 .ForMember(dest => dest.CustomerStatus, opt => opt.MapFrom(src => (ItemState)src.CustomerStatusID))
@@ -66,7 +69,12 @@ namespace Backend_API.Data.Mappings
             CreateMap<BillingProfileDTO, BillingProfile>()
                 .ForMember(dest => dest.BillingProfileId, opt => opt.MapFrom(src => src.BillingProfileId))
                 .ForMember(dest => dest.CustomerID, opt => opt.MapFrom(src => src.CustomerID))
-                .ForMember(dest => dest.BillingProfileStatusID, opt => opt.MapFrom(src => (int)src.BilingProfileStatus));
+                .ForMember(dest => dest.BillingProfileStatusID, opt => opt.MapFrom(src => (int)src.BilingProfileStatus))
+                .ForMember(dest => dest.AddressID, opt =>
+                {
+                    opt.PreCondition(src => src.BillingAddress != null);
+                    opt.MapFrom(src => src.BillingAddress.Id);
+                });
 
             CreateMap<AssetDTO, CustomerAssets>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.CustomerAssetID))
