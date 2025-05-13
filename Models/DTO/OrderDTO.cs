@@ -12,7 +12,7 @@ namespace Models.DTO
 
         public OrderStatus OrderStatus { get; set; }
 
-        public CrudAction Action { get; set; }
+        public OrderAction Action { get; set; }
 
         public DateTime DateCreated { get; set; }
 

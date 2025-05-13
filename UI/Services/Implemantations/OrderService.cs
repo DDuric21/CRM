@@ -8,7 +8,6 @@ namespace UI.Services
     {
         private readonly ICommunicationService _communicationService;
         private readonly ICrmModalService _modalService;
-        private const int ExceptionResponse = -1;
 
         public OrderService(
             ICommunicationService communicationService,
@@ -18,14 +17,14 @@ namespace UI.Services
             _modalService = modalService;
         }
 
-        public async Task<int> SubmitOrderAsync(OrderDTO orderDTO)
+        public async Task<bool> SubmitOrderAsync(OrderDTO orderDTO)
         {
             var url = $"Order/{orderDTO.OrderID}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, orderDTO);
 
             try
             {
-                var response = await _communicationService.SendRequestAsync<int>(request);
+                var response = await _communicationService.SendRequestAsync<bool>(request);
 
                 return response;
             }
@@ -33,7 +32,7 @@ namespace UI.Services
             {
                 // logging
                 _modalService.ShowErrorMessage(ex.Message);
-                return ExceptionResponse;
+                return false;
             }
         }
 
@@ -76,73 +75,6 @@ namespace UI.Services
             {
                 // logging
                 _modalService.ShowErrorMessage(ex.Message);
-            }
-        }
-
-        public async Task CreateOrderAsync(Guid orderID, long customerID, long customerAssetID = 0)
-        {
-            var url = "Order";
-            var orderDTO = new OrderDTO
-            {
-                OrderID = orderID,
-                CustomerDTO = new CustomerDTO
-                {
-                    Id = customerID,
-                },
-                AssetDTO = new AssetDTO
-                {
-                    CustomerAssetID = customerAssetID
-                }
-            };
-
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, orderDTO);
-
-            try
-            {
-                var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
-            }
-            catch (Exception ex)
-            {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
-            }
-        }
-
-        public async Task<int> UpdateAsset(OrderDTO orderDTO)
-        {
-            var url = "Order";
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, orderDTO);
-
-            try
-            {
-                var response = await _communicationService.SendRequestAsync<int>(request);
-
-                return response;
-            }
-            catch (Exception ex)
-            {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
-                return 0;
-            }
-        }
-
-        public async Task<int> DeleteAsset(long custoemrAssetID)
-        {
-            var url = "Order";
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Delete, url, custoemrAssetID);
-
-            try
-            {
-                var response = await _communicationService.SendRequestAsync<int>(request);
-
-                return response;
-            }
-            catch (Exception ex)
-            {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
-                return 0;
             }
         }
     }

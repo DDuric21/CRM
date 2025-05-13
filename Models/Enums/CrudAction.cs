@@ -1,6 +1,6 @@
 ﻿namespace Models.Enums
 {
-    public enum CrudAction
+    public enum OrderAction
     {
         Create = 1,
         Update = 2,

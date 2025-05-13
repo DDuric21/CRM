@@ -8,5 +8,7 @@ namespace UI.Services
         Task<IAsyncEnumerable<AssetDTO>> GetAssetsAsync(bool withOptions);
 
         Task<Dictionary<ItemState, int>> GetAssetsChartDataAsync();
+
+        Task<IEnumerable<OptionDTO>> GetAssetAvailableOptionsAsync(long assetID);
     }
 }

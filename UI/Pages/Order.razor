@@ -83,7 +83,10 @@ else
         if (!string.IsNullOrWhiteSpace(Action))
         {
             (var actionID , var customerAssetID) = ParseActionParameter();
-            orderDTO.AssetDTO = await customerService.GetCustomerAssetDataAsync(customerAssetID);
+            if (actionID != (int)OrderAction.Create)
+            {
+                orderDTO.AssetDTO = await customerService.GetCustomerAssetDataAsync(customerAssetID);
+            }
         }
 
         SetOrderAction();
@@ -95,14 +98,14 @@ else
 
         var response = await orderService.SubmitOrderAsync(orderDTO);
 
-        if (response <= 0)
-        {
-            modalService.ShowErrorMessage("Order not submitted successfully");
-        }
-        else
+        if (response)
         {
             await modalService.ShowDialog("Order successfully submitted", ModalDialogType.OK);
             navigationManager.NavigateTo($"/Customers/{customerDTO.Id}");
+        }
+        else
+        {
+            modalService.ShowErrorMessage("Order not submitted successfully");
         }
     }
 
@@ -111,8 +114,8 @@ else
         if ((int)orderDTO.Action <= 0)
         {
             orderDTO.Action = actionID > 0
-            ? (CrudAction)actionID
-            : CrudAction.Create;
+            ? (OrderAction)actionID
+            : OrderAction.Create;
         }
     }
 

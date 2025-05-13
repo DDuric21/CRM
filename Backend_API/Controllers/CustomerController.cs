@@ -123,14 +123,14 @@ namespace Backend_API.Controllers
                 return BadRequest("Incorrect ID");
             }
 
-            var asset = _customerService.GetCustomerAssetData(customerAssetsID);
+            var customerAsset = await _customerService.GetCustomerAssetDataAsync(customerAssetsID);
 
-            if (asset.IsNullOrEmpty())
+            if (customerAsset.IsNullOrEmpty())
             {
                 return Ok(new AssetDTO());
             }
 
-            var assetDTO = _assetService.MapAssetToDTO(asset, customerAssetsID);
+            var assetDTO = _mapper.Map<AssetDTO>(customerAsset);
 
             return Ok(assetDTO);
         }

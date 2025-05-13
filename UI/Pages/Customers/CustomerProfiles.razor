@@ -11,33 +11,33 @@
         {
             <tr>
                 <BillingProfile 
-                    BillingProfileDTO="customerBillingProfile.Value" 
-                    PossibleAddreses="CustomerDTO.Addresses"
-                    IsEditable="customerBillingProfile.Key.IsEditable">
+                BillingProfileDTO="customerBillingProfile.Value" 
+                PossibleAddreses="CustomerDTO.Addresses"
+                IsEditable="customerBillingProfile.Key.IsEditable">
                 </BillingProfile>
                 @if (customerBillingProfile.Value.BilingProfileStatus != ItemState.Inactive)
                 {
                     <td style="padding-left: 10px">
                         <button 
-                            hidden="@customerBillingProfile.Key.IsEditable" 
-                            class="btn btn-outline-secondary" 
-                            @onclick="() => EditBillingProfile(customerBillingProfile.Key.CustomId)"><em class="oi oi-pencil"></em> Edit
+                        hidden="@customerBillingProfile.Key.IsEditable" 
+                        class="btn btn-outline-secondary" 
+                        @onclick="() => EditBillingProfile(customerBillingProfile.Key.CustomId)"><em class="oi oi-pencil"></em> Edit
                         </button>
                         <button 
-                            hidden="@(!customerBillingProfile.Key.IsEditable)"
-                            class="btn btn-primary" 
-                            @onclick="() => SaveBillingProfile(customerBillingProfile.Value)">Save
+                        hidden="@(!customerBillingProfile.Key.IsEditable)"
+                        class="btn btn-primary" 
+                        @onclick="() => SaveBillingProfile(customerBillingProfile.Value)">Save
                         </button>
                     </td>
                     <td style="padding-left: 10px">
                         <button 
-                            hidden="@(customerBillingProfile.Key.IsEditable)"
-                            class="btn btn-danger" 
-                            @onclick="() => DeactivateBillingProfile(customerBillingProfile.Key.CustomId)">Deactivate
+                        hidden="@(customerBillingProfile.Key.IsEditable)"
+                        class="btn btn-danger" 
+                        @onclick="() => DeactivateBillingProfile(customerBillingProfile.Key.CustomId)">Deactivate
                         </button>
                     </td>                    
                 }
-           </tr>
+            </tr>
         }
     </tbody>
 </table>
@@ -54,7 +54,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // so that BillingProfile wont explode if any profile doesnt have address object
+        // so that BillingProfile wont explode if any profile doesn't have address object
         BillingProfiles.FindAll(x => x.BillingAddress is null).ForEach(x => x.BillingAddress = new AddressDTO());
 
         customerBillingProfiles = BillingProfiles
@@ -108,13 +108,14 @@
         // problem je što u BillingProfile.razor mi na select element bindamo samo id a ne cijeli objekt
         if (billingProfileDTO.BillingAddress.Id > 0)
         {
-            billingProfileDTO.BillingAddress = CustomerDTO.Addresses.First(x => x.Id == billingProfileDTO.BillingAddress.Id);            
+            billingProfileDTO.BillingAddress = CustomerDTO.Addresses.First(x => x.Id == billingProfileDTO.BillingAddress.Id);
         }
 
         await billingProfileService.UpdateBillingProfileAsync(billingProfileDTO);
                 
-        var interactionForEdit = customerBillingProfiles.Keys.First(x => x.CustomId == billingProfileDTO.BillingProfileId);
-        interactionForEdit.IsEditable = false;
+        var profileForEdit = customerBillingProfiles.Keys
+            .First(x => x.CustomId == billingProfileDTO.BillingProfileId);
+        profileForEdit.IsEditable = false;
 
         StateHasChanged();
     }

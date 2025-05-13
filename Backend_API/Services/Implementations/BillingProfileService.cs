@@ -37,6 +37,12 @@ namespace Backend_API.Services
 
         public async Task<int> UpdateBillingProfileAsync(BillingProfile billingProfile)
         {
+            //should change logic for this part
+            if (billingProfile.BillingProfileStatusID <= 0)
+            {
+                billingProfile.BillingProfileStatusID = (int)ItemState.Active;
+            }
+
             RemoveObjectsBeforeUpdate(billingProfile);
 
             return await _repository.BillingProfiles.UpdateBillingProfileAsync(billingProfile);

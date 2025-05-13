@@ -36,6 +36,24 @@ namespace UI.Services
             }
         }
 
+        public async Task<IEnumerable<OptionDTO>> GetAssetAvailableOptionsAsync(long assetID)
+        {
+            var url = $"Options/AvailableOptions/{assetID}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<IEnumerable<OptionDTO>>(request);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                //add logging
+                _modalService.ShowErrorMessage(ex.Message);
+
+                return null;
+            }
+        }
+
 
         public async Task<Dictionary<ItemState, int>> GetAssetsChartDataAsync()
         {

@@ -1,7 +1,10 @@
 ﻿using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
 using Backend_API.Logging;
+using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Models.DTO;
+using Models.Helpers;
 
 namespace Backend_API.Controllers
 {
@@ -9,12 +12,15 @@ namespace Backend_API.Controllers
     public class OptionController : AuthorizationController
     {
         private readonly ICrmRepository _repository;
+        private readonly IOptionService _optionService;
 
-        public OptionController(ICrmRepository crmRepository)
+        public OptionController(
+            ICrmRepository crmRepository,
+            IOptionService optionService)
         {
             _repository = crmRepository;
+            _optionService = optionService;
         }
-
 
         [HttpGet]
         public IEnumerable<Option> GetAll()
@@ -22,6 +28,34 @@ namespace Backend_API.Controllers
             var options = _repository.Options.GetAllAsync();
 
             return options.Result;
+        }
+
+        [HttpGet]
+        [Route("AvailableOptions/{assetId}")]
+        public async Task<IActionResult> GetAssetAvailableOptions(long assetId)
+        {
+            if (assetId <= 0)
+            {
+                return BadRequest("Invalid assetID");
+            }
+
+            try
+            {
+                var options = await _optionService.GetAssetAvailableOptionsAsync(assetId);
+
+                if (options.IsNullOrEmpty())
+                {
+                    DynamicLogger.LogTo("HME", nameof(GetAssetAvailableOptions), $"No options found for assetID: {assetId}");
+                    options = new List<OptionDTO>();
+                }
+
+                return Ok(options);
+            }
+            catch (Exception ex)
+            {
+                DynamicLogger.LogException(ex, nameof(GetAssetAvailableOptions), ex.Message);
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet]

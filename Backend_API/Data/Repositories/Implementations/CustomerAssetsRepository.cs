@@ -1,5 +1,6 @@
 ﻿using Backend_API.Data.DbContext;
 using Backend_API.Data.Models;
+using Backend_API.Logging;
 using Microsoft.EntityFrameworkCore;
 using Models.Helpers;
 
@@ -23,24 +24,39 @@ namespace Backend_API.Data.Repositories
                 return 0;
             }
 
-            _context.Entry(existingCustomerAsset).CurrentValues.SetValues(updatedAsset);
+            try
+            {
+                _context.Entry(existingCustomerAsset).CurrentValues.SetValues(updatedAsset);
+                _context.Entry(existingCustomerAsset).State = EntityState.Modified;
 
-            var updatedAssetOptions = updatedAsset.CustomerAssetOptions;
-            var existingAssetOptions = existingCustomerAsset.CustomerAssetOptions;
+                UpdateCustomerAssetOption(updatedAsset, existingCustomerAsset);
+
+                var result = await SaveAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                DynamicLogger.LogException(ex, nameof(UpdateCustomerAssetDataAsync), ex.Message);
+                return 0;
+            }
+        }
+
+        private void UpdateCustomerAssetOption(CustomerAssets updatedAsset, CustomerAssets existingCustomerAsset)
+        {
+            var updatedAssetOptions = updatedAsset.CustomerAssetOptions ?? new List<CustomerAssetOptions>();
+            var existingAssetOptions = existingCustomerAsset.CustomerAssetOptions ?? new List<CustomerAssetOptions>();
 
             // I believe some of this should be in service and not here
             UpdateAssetOptions(updatedAssetOptions, existingAssetOptions);
-
-            _context.Entry(existingCustomerAsset).State = EntityState.Modified;
-
-            return await SaveAsync();
         }
 
         private void UpdateAssetOptions(ICollection<CustomerAssetOptions> updatedAssetOptions, ICollection<CustomerAssetOptions> existingAssetOptions)
         {
             RemoveDeletedOptions(updatedAssetOptions, existingAssetOptions);
 
-            UpdateExistingOptions(updatedAssetOptions, existingAssetOptions);
+            //Currently nothing to update
+            //UpdateExistingOptions(updatedAssetOptions, existingAssetOptions);
 
             AddNewOptions(updatedAssetOptions, existingAssetOptions);
         }
@@ -61,6 +77,11 @@ namespace Backend_API.Data.Repositories
         {
             var newOptions = updatedAssetOptions
                 .Where(x => !existingAssetOptions.Select(y => y.OptionID).Contains(x.OptionID))
+                .Select(x => new CustomerAssetOptions
+                {
+                    CustomerAssetsID = x.CustomerAssetsID,
+                    OptionID = x.OptionID
+                })
                 .ToList();
 
             if (!newOptions.IsNullOrEmpty())

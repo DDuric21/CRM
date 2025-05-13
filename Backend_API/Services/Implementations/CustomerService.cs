@@ -90,26 +90,17 @@ namespace Backend_API.Services
             return assets;
         }
 
-        public Asset GetCustomerAssetData(long customerAssetsID)
+        public async Task<CustomerAssets> GetCustomerAssetDataAsync(long customerAssetsID)
         {
-            var retrievedData = _repository.CustomerAssets
+            var retrievedData = await _repository.CustomerAssets
                 .Where(x => x.Id == customerAssetsID)
-                .Select(y => new
-                {
-                    Asset = y.Asset,
-                    Options = y.CustomerAssetOptions.Select(z => z.Option).ToList()
-                })
-                .FirstOrDefault();
+                .Include(x => x.Asset)
+                .Include(x => x.BillingProfile)
+                .Include(x => x.CustomerAssetOptions)
+                .ThenInclude(y => y.Option)
+                .FirstOrDefaultAsync();
 
-            var asset = new Asset();
-
-            if (!retrievedData.IsNullOrEmpty())
-            {
-                asset = retrievedData.Asset;
-                asset.Options = retrievedData.Options;
-            }
-
-            return asset;
+            return retrievedData;
         }
 
         public List<Order> GetCustomerOrders(long customerID)

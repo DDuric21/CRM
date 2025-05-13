@@ -30,7 +30,7 @@ namespace Backend_API.Services
 
         IEnumerable<CustomerAssets> GetCustomerAssets(long id);
 
-        Asset GetCustomerAssetData(long customerAssetsID);
+        Task<CustomerAssets> GetCustomerAssetDataAsync(long customerAssetsID);
 
         List<Order> GetCustomerOrders(long customerID);
 

@@ -56,6 +56,7 @@ namespace Backend_API.Services
                     var assetDTO = _mapper.Map<AssetDTO>(customerAsset.Asset);
                     assetDTO.CustomerAssetID = customerAsset.Id;
                     assetDTO.AssetStatus = (ItemState)customerAsset.AssetStatusID;
+                    assetDTO.BillingProfile = new BillingProfileDTO { BillingProfileId = customerAsset.BillingProfileId};
                     assetDTOs.Add(assetDTO);
                 }
 

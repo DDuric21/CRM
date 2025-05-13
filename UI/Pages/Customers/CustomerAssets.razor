@@ -65,15 +65,15 @@
         };
         orderService.CreateOrderAsync(order);
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
-        navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}");
+        navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={(int)OrderAction.Create}:0");
     }
 
     private async void EditAsset(bool isDelete, long customerAssetID)
     {
         var orderID = Guid.NewGuid();
         var action = isDelete
-            ? CrudAction.Delete
-            : CrudAction.Update;
+            ? OrderAction.Delete
+            : OrderAction.Update;
 
         var asset = assets.First(x => x.CustomerAssetID == customerAssetID);
         var order = new OrderDTO
