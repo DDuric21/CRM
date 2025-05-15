@@ -40,7 +40,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(CreateInteraction), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -68,7 +68,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(UpdateInteraction), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }

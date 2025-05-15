@@ -45,7 +45,7 @@ namespace Backend_API.Controllers
 
                 if (options.IsNullOrEmpty())
                 {
-                    DynamicLogger.LogTo("HME", nameof(GetAssetAvailableOptions), $"No options found for assetID: {assetId}");
+                    DynamicLogger.LogWarning($"No options found for assetID: {assetId}");
                     options = new List<OptionDTO>();
                 }
 
@@ -53,7 +53,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(GetAssetAvailableOptions), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -83,7 +83,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(InsertOption), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
             }
 
             return 0;
@@ -101,7 +101,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(DeleteOption), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
             }
 
             return isDeleted;
@@ -116,7 +116,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(UpdateOption), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
             }
 
             return 0;

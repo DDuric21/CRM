@@ -84,7 +84,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(GetAssetsChartData), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -100,7 +100,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(InsertAsset), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return 0;
             }
         }
@@ -117,7 +117,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(DeleteAsset), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
             }
 
             return isDeleted;
@@ -132,7 +132,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(UpdateAsset), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
             }
 
             return 0;

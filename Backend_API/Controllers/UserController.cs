@@ -42,7 +42,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(GetUserData), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -65,7 +65,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(GetUsers), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -89,7 +89,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(UpdateUserData), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -116,7 +116,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(DeactivateUser), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -143,7 +143,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(ActivateUser), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -165,7 +165,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(GetUserFilterBaseValues), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }

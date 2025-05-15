@@ -37,7 +37,7 @@ namespace Backend_API.Data.Repositories
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(UpdateCustomerAssetDataAsync), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return 0;
             }
         }

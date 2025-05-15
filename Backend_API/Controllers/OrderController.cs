@@ -41,7 +41,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(GetOrderData), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -68,7 +68,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(CreateOrder), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -95,7 +95,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(SubmitOrder), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }

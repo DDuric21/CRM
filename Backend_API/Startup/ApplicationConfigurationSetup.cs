@@ -1,6 +1,8 @@
 ﻿using Backend_API.Data.DbContext;
 using Backend_API.Data.SeedData;
+using Backend_API.Middleware;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Backend_API.Startup
 {
@@ -24,6 +26,10 @@ namespace Backend_API.Startup
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseMiddleware<CorrelationIdMiddleware>();
+            app.UseMiddleware<ApiPerformanceMiddleware>();
+            app.UseMiddleware<ApiLoggingMiddleware>();
+
             app.MapControllers();
         }
 
@@ -35,6 +41,22 @@ namespace Backend_API.Startup
                 var context = scope.ServiceProvider.GetRequiredService<CrmDbContext>();
                 context.Database.Migrate();
             }
+        }
+
+        internal static void ConfigurateLogger(WebApplicationBuilder builder)
+        {
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.WithThreadId()
+                .WriteTo.Map(
+                    keyPropertyName: "LogFilePath",
+                    configure: (logPath, wt) => wt.File(
+                        path: $"Logs/{logPath}.log",
+                        outputTemplate: builder.Configuration["Serilog:OutputTemplate"])
+                )
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
         }
     }
 }

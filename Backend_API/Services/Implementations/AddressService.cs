@@ -68,7 +68,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(AddressService), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return new AddressDTO();
             }
         }

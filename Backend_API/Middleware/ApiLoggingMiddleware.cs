@@ -30,7 +30,7 @@ namespace Backend_API.Middleware
 
             var responseLog = $"Status: {context.Response.StatusCode} Body: {responseBodyText}";
             var logMessage = $"Request: {requestLog} {Environment.NewLine} Response: {responseLog}";
-            DynamicLogger.LogTo(LogFolder, nameof(ApiLoggingMiddleware), logMessage);
+            DynamicLogger.Log(LogFolder, logMessage, nameof(ApiLoggingMiddleware));
 
             await memStream.CopyToAsync(originalBodyStream);
         }

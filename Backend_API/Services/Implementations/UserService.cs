@@ -172,7 +172,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(UserService), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 throw;
             }
         }
@@ -183,7 +183,7 @@ namespace Backend_API.Services
 
             if (user is null || user.UserStatusID == (int)ItemState.Inactive)
             {
-                DynamicLogger.LogError(nameof(UserService), "User not found or is inactive");
+                DynamicLogger.LogError("User not found or is inactive");
                 return new IdentityResult();
             }
 
@@ -199,7 +199,7 @@ namespace Backend_API.Services
 
             if (user is null || user.UserStatusID == (int)ItemState.Active)
             {
-                DynamicLogger.LogError(nameof(UserService), "User not found or is inactive");
+                DynamicLogger.LogError("User not found or is inactive");
                 return new IdentityResult();
             }
 

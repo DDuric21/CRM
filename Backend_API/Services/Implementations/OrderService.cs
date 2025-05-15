@@ -37,7 +37,7 @@ namespace Backend_API.Services
 
             if (order is null)
             {
-                DynamicLogger.LogError(nameof(GetOrderData), $"No order found for ID: {id}");
+                DynamicLogger.LogError($"No order found for ID: {id}");
                 return new OrderDTO();
             }
 
@@ -60,7 +60,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(CreateNewOrderAsync), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return false;
             }
 
@@ -84,7 +84,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(SubmitOrderDataAsync), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return false;
             } 
         }
@@ -107,7 +107,7 @@ namespace Backend_API.Services
                 }
                 catch (Exception ex)
                 {
-                    DynamicLogger.LogException(ex, nameof(UpdateOrderStatusAsync), "Error while updating order status to finished");
+                    DynamicLogger.LogException(ex, "Error while updating order status to finished");
                 }
             }
 
@@ -129,7 +129,7 @@ namespace Backend_API.Services
                     result = await UpdateCustomerAssetAsync(order.CustomerAssets, order.OrderID);
                     break;
                 default:
-                    DynamicLogger.LogError(nameof(SubmitOrderAsync), $"Unhandled order action used {order.ActionID}");
+                    DynamicLogger.LogError($"Unhandled order action used {order.ActionID}");
                     break;
             }
 
@@ -141,7 +141,7 @@ namespace Backend_API.Services
         {
             if (!order.CustomerAssetsID.HasValue)
             {
-                DynamicLogger.LogError(nameof(OrderService), "Order does not contain associated asset ID");
+                DynamicLogger.LogError("Order does not contain associated asset ID");
                 return 0;
             }
 
@@ -234,7 +234,7 @@ namespace Backend_API.Services
         {
             if (orderDTO?.AssetDTO?.CustomerAssetID <= 0)
             {
-                DynamicLogger.LogError(nameof(MapOptionsToOrderAsset), "Incorrect CustomerAssetID provided");
+                DynamicLogger.LogError("Incorrect CustomerAssetID provided");
                 throw new Exception("Incorrect CustomerAssetID provided");
             }
 

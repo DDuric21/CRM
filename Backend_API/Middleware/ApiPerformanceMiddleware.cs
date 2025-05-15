@@ -19,7 +19,9 @@ namespace Backend_API.Middleware
             await _next(context);
             stopwatch.Stop();
 
-            DynamicLogger.LogTo(LogFolder, nameof(ApiPerformanceMiddleware), $"Response time {stopwatch.ElapsedMilliseconds} ms");
+            var actionName = context.Request.RouteValues["action"]?.ToString();
+
+            DynamicLogger.Log(LogFolder, $"Response time {stopwatch.ElapsedMilliseconds} ms", actionName);
         }
     }
 }

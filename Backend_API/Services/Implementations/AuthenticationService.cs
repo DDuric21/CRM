@@ -89,7 +89,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(AuthenticationService), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 result.IsAuthenticated = false;
             }
 
@@ -123,7 +123,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(AuthenticationService), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
             }
 
             return result;
@@ -279,7 +279,7 @@ namespace Backend_API.Services
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, nameof(AuthenticationService), ex.Message);
+                DynamicLogger.LogException(ex, ex.Message);
                 return false;
             }
 

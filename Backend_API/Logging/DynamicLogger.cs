@@ -1,5 +1,6 @@
-﻿using Serilog;
-using Serilog.Context;
+﻿using Serilog.Context;
+using Serilog.Events;
+using System.Runtime.CompilerServices;
 
 namespace Backend_API.Logging
 {
@@ -8,13 +9,41 @@ namespace Backend_API.Logging
         private static IHttpContextAccessor? _httpContextAccessor;
         private const string ExceptionLogFolder = "Exceptions";
         private const string ErrorLogFolder = "Errors";
+        private const string WarningLogFolder = "HME";
 
         public static void Configure(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public static void LogTo(string folder, string source, string message)
+        public static void Log(string folder, string message, [CallerMemberName] string source = "")
+        {
+            LogTo(folder, message, source, LogEventLevel.Information);
+        }
+
+        public static void LogError(string message, [CallerMemberName] string source = "")
+        {
+            LogTo(ErrorLogFolder, message, source, LogEventLevel.Error);
+        }
+
+        public static void LogWarning(string message, [CallerMemberName] string source = "")
+        {
+            LogTo(WarningLogFolder, message, source, LogEventLevel.Warning);
+        }
+
+        public static void LogException(Exception? ex, string message, [CallerMemberName] string source = "")
+        {
+            var filePath = GetFilePath(ExceptionLogFolder);
+            var logMessage = CreateLogMessage(message);
+
+            using (LogContext.PushProperty("LogFilePath", filePath))
+            {
+                var logger = Serilog.Log.ForContext("SourceContext", source);
+                logger.Error(ex, logMessage);
+            }
+        }
+
+        private static void LogTo(string folder, string message, string source, LogEventLevel logEventLevel)
         {
             // Ignore OPTIONS requests
             // TODO: Find a better solution
@@ -28,32 +57,8 @@ namespace Backend_API.Logging
 
             using (LogContext.PushProperty("LogFilePath", filePath))
             {
-                var logger = Log.ForContext("SourceContext", source);
-                logger.Information(logMessage);
-            }
-        }
-
-        public static void LogException(Exception? ex, string source, string message)
-        {
-            var filePath = GetFilePath(ExceptionLogFolder);
-            var logMessage = CreateLogMessage(message);
-
-            using (LogContext.PushProperty("LogFilePath", filePath))
-            {
-                var logger = Log.ForContext("SourceContext", source);
-                logger.Error(ex, logMessage);
-            }
-        }
-
-        public static void LogError(string source, string message)
-        {
-            var filePath = GetFilePath(ErrorLogFolder);
-            var logMessage = CreateLogMessage(message);
-
-            using (LogContext.PushProperty("LogFilePath", filePath))
-            {
-                var logger = Log.ForContext("SourceContext", source);
-                logger.Error(logMessage);
+                var logger = Serilog.Log.ForContext("SourceContext", source);
+                logger.Write(logEventLevel, logMessage);
             }
         }
 
