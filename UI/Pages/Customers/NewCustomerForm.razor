@@ -17,16 +17,42 @@
 @switch (customerDTO.Type)
 {
     case (CustomerType.Residential):        
-        <div class="top-container">
-            <div class="top-left-container">
-                <EditForm class="newCustomer-form" Model="@customerDTO" OnSubmit="@CreateNewResidentialCustomer">
-                    <InputText placeholder="FirstName" @bind-Value="customerDTO.FirstName" /><br>
-                    <InputText placeholder="LastName" @bind-Value="customerDTO.LastName" /><br>
-                    <InputText placeholder="PersonalID" @bind-Value="customerDTO.PersonalID" /><br>
-			        <InputDate @bind-Value="customerDTO.Birthday" /><br>
-                    <InputText placeholder="Full address" @bind-Value="addressDTO.FullAddress" /><br>
-                    <button type="submit" name="submit" class="button">Create</button>
-                </EditForm>
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">New Residential Customer</h5>
+                        </div>
+                        <div class="card-body">
+                            <EditForm Model="@customerDTO" OnSubmit="@CreateNewResidentialCustomer">
+                                <div class="mb-3">
+                                    <label class="form-label">First Name</label>
+                                    <InputText class="form-control" @bind-Value="customerDTO.FirstName" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    <InputText class="form-control" @bind-Value="customerDTO.LastName" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Personal ID</label>
+                                    <InputText class="form-control" @bind-Value="customerDTO.PersonalID" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Birthday</label>
+                                    <InputDate class="form-control" @bind-Value="customerDTO.Birthday" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Full Address</label>
+                                    <InputText class="form-control" @bind-Value="addressDTO.FullAddress" />
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Create</button>
+                                </div>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         break;
