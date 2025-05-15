@@ -10,6 +10,7 @@ namespace Backend_API.Logging
         private const string ExceptionLogFolder = "Exceptions";
         private const string ErrorLogFolder = "Errors";
         private const string WarningLogFolder = "HME";
+        private const string CriticalErrorsLogFolder = "CRE";
 
         public static void Configure(IHttpContextAccessor httpContextAccessor)
         {
@@ -41,6 +42,11 @@ namespace Backend_API.Logging
                 var logger = Serilog.Log.ForContext("SourceContext", source);
                 logger.Error(ex, logMessage);
             }
+        }
+
+        public static void LogCritical(string message, [CallerMemberName] string source = "")
+        {
+            LogTo(CriticalErrorsLogFolder, message, source, LogEventLevel.Fatal);
         }
 
         private static void LogTo(string folder, string message, string source, LogEventLevel logEventLevel)

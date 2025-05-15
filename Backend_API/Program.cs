@@ -1,3 +1,4 @@
+using Backend_API.Handlers;
 using Backend_API.Logging;
 using Backend_API.Startup;
 
@@ -8,6 +9,8 @@ ApplicationConfigurationSetup.ConfigurateLogger(builder);
 DependencyInjectionSetup.RegisterServices(builder);
 
 var app = builder.Build();
+
+app.UseGlobalExceptionHandler();
 
 var httpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
 DynamicLogger.Configure(httpContextAccessor);
