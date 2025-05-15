@@ -12,30 +12,56 @@
     </div>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+<div class="@NavMenuCssClass">
     <nav class="flex-column">
+
+        <!-- Home -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="index" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <span class="oi oi-home me-2"></span> Home
             </NavLink>
         </div>
+
+        <!-- Customers -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="Customers/Customers">
-                <span class="oi oi-people" aria-hidden="true"></span> Customers
+                <span class="oi oi-people me-2"></span> Customers
             </NavLink>
         </div>
+
+        <!-- User Management (collapsible section) -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="User/Users" >
-                <span class="oi oi-shield" aria-hidden="true" ></span> Users
+            <NavLink class="nav-link" @onclick="ToggleUserManagement">
+                <div class="d-flex align-items-start" style="line-height: 1.1;">
+                    <span class="oi oi-shield me-2 mt-1"></span>
+                    <span class="text-break">User Management</span>
+                </div>
+                <span class="oi @(isUserManagementOpen ? "oi-chevron-bottom" : "oi-chevron-right")"></span>
             </NavLink>
+
+            @if (isUserManagementOpen)
+            {
+                <div class="ms-4">
+                    <NavLink class="nav-link" href="User/Users">
+                        <span class="oi oi-person me-2"></span> Users
+                    </NavLink>
+                    <NavLink class="nav-link" href="User/UserRoles">
+                        <span class="oi oi-lock-locked me-2"></span> User Roles
+                    </NavLink>
+                </div>
+            }
         </div>
+
+        <!-- Logout -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="Login" @onclick="Logout">
-                <span class="oi oi-account-logout" aria-hidden="true" ></span> Logout
+                <span class="oi oi-account-logout me-2"></span> Logout
             </NavLink>
         </div>
+
     </nav>
 </div>
+
 
 @code {
     private bool collapseNavMenu = true;
@@ -45,6 +71,13 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private bool isUserManagementOpen = false;
+
+    private void ToggleUserManagement()
+    {
+        isUserManagementOpen = !isUserManagementOpen;
     }
 
     private async void Logout()
