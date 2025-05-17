@@ -1,4 +1,5 @@
-﻿using Models.Authentication;
+﻿using Blazored.LocalStorage;
+using Models.Authentication;
 using Models.DTO;
 using System.Net.Http.Json;
 using UI.Authentication;
@@ -9,13 +10,17 @@ namespace UI.Services
     {
         private readonly ICrmModalService _modalService;
         private readonly ICommunicationService _communicationService;
+        private readonly ILocalStorageService _localStorageService;
+        private const string accessTokenKey = "accessToken_";
 
         public AuthenticationService(
             ICrmModalService modalService,
-            ICommunicationService communicationService)
+            ICommunicationService communicationService,
+            ILocalStorageService localStorageService)
         {
             _modalService = modalService;
             _communicationService = communicationService;
+            _localStorageService = localStorageService;
         }
 
         public async Task<AuthenticationResult> Login(string username, string password)
@@ -70,7 +75,7 @@ namespace UI.Services
             }
 
             var userSession = new UserSession();
-            
+
             userSession.UserName = JasonWebToken.ReadValue(CrmJwtClaimNames.Name)
                 .FirstOrDefault();
 
@@ -80,5 +85,41 @@ namespace UI.Services
             return userSession;
         }
 
+        public async Task ReadAccessTokenFromLocalStorageAsync()
+        {
+            try
+            {
+                var token = await _localStorageService.ReadEncryptedItemAsync<string>(accessTokenKey);
+                JasonWebToken.Value = token;
+            }
+            catch (Exception ex)
+            {
+                // logging
+            }
+        }
+
+        public async Task SaveAccessTokenToLocalStorageAsync(string token)
+        {
+            try
+            {
+                await _localStorageService.SaveItemEncryptedAsync(accessTokenKey, token);
+            }
+            catch (Exception ex)
+            {
+                // logging
+            }
+        }
+
+        public async Task RemoveAccessTokenFromLocalStorageAsync()
+        {
+            try
+            {
+                await _localStorageService.RemoveItemAsync(accessTokenKey);
+            }
+            catch (Exception ex)
+            {
+                // logging
+            }
+        }
     }
 }

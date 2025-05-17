@@ -11,5 +11,11 @@ namespace UI.Services
         Task<UserDTO> RegisterNewUserAsync(UserDTO userDTO);
 
         UserSession CreateUserSession();
+
+        Task ReadAccessTokenFromLocalStorageAsync();
+
+        Task SaveAccessTokenToLocalStorageAsync(string token);
+
+        Task RemoveAccessTokenFromLocalStorageAsync();
     }
 }

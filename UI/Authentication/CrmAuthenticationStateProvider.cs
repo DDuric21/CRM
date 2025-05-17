@@ -26,10 +26,15 @@ namespace UI.Authentication
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             try
-            {   
+            {
                 var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>(USER_SESSION);
 
                 if (userSession.IsNullOrEmpty())
+                {
+                    return await Task.FromResult(new AuthenticationState(_anonymus));
+                }
+
+                if (!await SetupJasonWebTokenStateAsync())
                 {
                     return await Task.FromResult(new AuthenticationState(_anonymus));
                 }
@@ -46,6 +51,7 @@ namespace UI.Authentication
             {
                 return await Task.FromResult(new AuthenticationState(_anonymus));
             }
+
         }
 
         public async Task UpdateAuthenticationState(string token = null)
@@ -57,7 +63,7 @@ namespace UI.Authentication
                 return;
             }
 
-            JasonWebToken.Value = token;
+            await UpdateJasonWebTokenStateAsync(token);
 
             var userSession = _authenticationService.CreateUserSession();
             if (userSession.IsNullOrEmpty())
@@ -68,29 +74,6 @@ namespace UI.Authentication
             }
 
             await SaveSession(userSession);
-        }
-
-        public async Task UpdateAuthenticationState(UserSession userSession)
-        {
-            if (userSession.IsNullOrEmpty())
-            {
-                await _sessionStorage.RemoveItemAsync(USER_SESSION);
-
-                NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_anonymus)));
-
-                return;
-            }
-
-            await _sessionStorage.SaveItemEncryptedAsync(USER_SESSION, userSession);
-
-            var claims = GetUserSessionClaims(userSession);
-
-            var identity = new ClaimsIdentity(AUTH_TYPE);
-            identity.AddClaims(claims);
-
-            var user = new ClaimsPrincipal(identity);
-
-            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
         }
 
         private async Task SaveSession(UserSession userSession)
@@ -111,7 +94,7 @@ namespace UI.Authentication
         {
             await _sessionStorage.RemoveItemAsync(USER_SESSION);
 
-            JasonWebToken.Value = null;
+            await ClearJasonWebTokenStateAsync();
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_anonymus)));
         }
@@ -133,6 +116,33 @@ namespace UI.Authentication
             }
 
             return claims;
+        }
+
+        private async Task<bool> SetupJasonWebTokenStateAsync()
+        {
+            var isTokenSet = !string.IsNullOrEmpty(JasonWebToken.Value);
+
+            if (!isTokenSet)
+            {
+                await _authenticationService.ReadAccessTokenFromLocalStorageAsync();
+
+                isTokenSet = !string.IsNullOrEmpty(JasonWebToken.Value);
+            }
+
+            return isTokenSet;
+        }
+
+        private async Task UpdateJasonWebTokenStateAsync(string token)
+        {
+            JasonWebToken.Value = token;
+
+            await _authenticationService.SaveAccessTokenToLocalStorageAsync(token);
+        }
+
+        private async Task ClearJasonWebTokenStateAsync()
+        {
+            JasonWebToken.Value = null;
+            await _authenticationService.RemoveAccessTokenFromLocalStorageAsync();
         }
     }
 }
