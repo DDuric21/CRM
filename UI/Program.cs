@@ -22,7 +22,7 @@ var httpClient = new HttpClient
 
 var stream = await httpClient.GetStreamAsync("appCustomSettings.json");
 builder.Configuration.AddJsonStream(stream);
-var config = builder.Configuration.GetSection("profiles:iisBackend").Get<ApiConfig>();
+var config = builder.Configuration.GetSection("profiles:iisBackend").Get<AppConfig>();
 
 builder.Services.AddScoped(sp => new HttpClient(new CookieHandler()) { BaseAddress = new Uri(config.SecureBackendUrl) });
 

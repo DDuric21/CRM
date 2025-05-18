@@ -7,11 +7,11 @@ namespace UI.Services
 {
     public class CrmCommunicationService : ICommunicationService
     {
-        private readonly ApiConfig _apiConfig;
+        private readonly AppConfig _apiConfig;
         private readonly HttpClient _httpClient;
 
         public CrmCommunicationService(
-            ApiConfig apiConfig,
+            AppConfig apiConfig,
             HttpClient httpClient)
         {
             _apiConfig = apiConfig;

@@ -26,6 +26,14 @@ namespace UI.Services
             _modalService.Show<ModalBase>(ErrorTitle, parameters);
         }
 
+        public async Task<ModalResult> ShowErrorMessageAsync(string message)
+        {
+            var parameters = new ModalParameters();
+            parameters.Add("body", message);
+
+            return await _modalService.Show<ModalBase>(ErrorTitle, parameters).Result;
+        }
+
         public void ShowWarningMessage(string message)
         {
             var parameters = new ModalParameters();

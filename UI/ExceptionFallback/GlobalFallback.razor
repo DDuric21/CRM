@@ -1,0 +1,50 @@
+﻿
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject AppConfig AppConfig
+
+<style>
+    .app-exception-fallback {
+        padding: 4rem;
+        text-align: center;
+    }
+</style>
+
+<div class="app-exception-fallback"><!--When icon for app is decided add here icon or some picture-->
+    <h1 class="text-danger">Something went wrong</h1>
+
+    @if (AppConfig.IsDevelopment())
+    {
+        <pre>@Exception?.ToString()</pre>
+    }
+    else
+    {
+        <p>We're sorry, please contact support and reload application.</p>
+    }
+
+    <button class="btn btn-primary mt-3" @onclick="ReloadApp">Reload</button>
+
+</div>
+
+
+@code {
+    [Parameter] public Exception Exception { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Exception is not null)
+        {
+            Console.WriteLine(Exception.ToString());
+            //send error to backend as Task(() => )
+            //Error.InnerException?.Message
+            //NavigationManager.Uri -> this will be the URL of the page that caused the error
+        }
+    }
+
+    private async Task ReloadApp()
+    {
+        await JS.InvokeVoidAsync("localStorage.clear");
+        await JS.InvokeVoidAsync("sessionStorage.clear");
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+}
