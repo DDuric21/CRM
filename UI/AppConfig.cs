@@ -10,7 +10,6 @@
 
         public bool IsDevelopment()
         {
-            Console.WriteLine($"Environment: {Environment}");
             return Environment == "Development";
         }
     }

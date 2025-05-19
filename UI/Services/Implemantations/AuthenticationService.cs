@@ -1,7 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Models.Authentication;
 using Models.DTO;
-using System.Net.Http.Json;
 using UI.Authentication;
 
 namespace UI.Services
@@ -33,7 +32,7 @@ namespace UI.Services
 
             var url = "Login";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, userDto, false);
-            var content = JsonContent.Create(userDto);
+
             try
             {
                 var response = await _communicationService.SendAuthenticationRequestAsync<AuthenticationResult>(request);

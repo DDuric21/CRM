@@ -24,7 +24,6 @@ namespace UI.Authentication
                 jwt = value;
                 DecodeJwt();
                 ExpiryTime = ReadExpiryTime();
-                Console.WriteLine($"{ExpiryTime} <= {DateTime.UtcNow.Add(TokenExpirationTolerance)} {IsExpired}");
             }
         }
 
