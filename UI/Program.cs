@@ -41,6 +41,7 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ICommunicationService, CrmCommunicationService>();
 builder.Services.AddScoped<IBillingProfileService, BillingProfileService>();
 builder.Services.AddScoped<INewsService, NewsService>();
+builder.Services.AddScoped<ILoggingService, LoggingService>();
 builder.Services.AddScoped<ICrmModalService, CrmModalService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CrmAuthenticationStateProvider>();
 builder.Services.AddScoped<ICookie, Cookie>();

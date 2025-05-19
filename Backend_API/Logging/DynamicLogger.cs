@@ -11,6 +11,7 @@ namespace Backend_API.Logging
         private const string ErrorLogFolder = "Errors";
         private const string WarningLogFolder = "HME";
         private const string CriticalErrorsLogFolder = "CRE";
+        private const string UIErrorLogFolder = "UI_ErrorLogs";
 
         public static void Configure(IHttpContextAccessor httpContextAccessor)
         {
@@ -47,6 +48,11 @@ namespace Backend_API.Logging
         public static void LogCritical(string message, [CallerMemberName] string source = "")
         {
             LogTo(CriticalErrorsLogFolder, message, source, LogEventLevel.Fatal);
+        }
+
+        public static void LogUIError(LogEventLevel logEventLevel, string message, [CallerMemberName] string source = "")
+        {
+            LogTo(UIErrorLogFolder, message, source, logEventLevel);
         }
 
         private static void LogTo(string folder, string message, string source, LogEventLevel logEventLevel)

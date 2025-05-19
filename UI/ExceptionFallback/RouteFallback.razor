@@ -2,23 +2,31 @@
 @inject NavigationManager Navigation
 @inject ICrmModalService ModalService
 @inject AppConfig AppConfig
+@inject ILoggingService LoggingService
 
 @code {
     [Parameter] public Exception Exception { get; set; }
 
-    protected override void OnParametersSet()
+    protected override async Task OnInitializedAsync()
     {
         if (Exception is not null)
         {
-            Console.WriteLine(Exception.ToString());
-            //send error to backend as Task(() => )
-            //Error.InnerException?.Message
-            //NavigationManager.Uri -> this will be the URL of the page that caused the error
-        }
-    }
+            var logDetails = new LogDetails
+            {
+                Message = Exception.Message,
+                StackTrace = ExceptionHelper.FlattenExceptionMessages(Exception),
+                Url = new Uri(Navigation.Uri).PathAndQuery,
+                LogLevel = "Error"
+            };
 
-    protected override async Task OnInitializedAsync()
-    {
+            var isSuccess = await LoggingService.SendErrorLogToServerAsync(logDetails);
+
+            if (!isSuccess)
+            {
+                Console.WriteLine("Failed to log exception to server.");
+            }
+        }
+
         if (AppConfig.IsDevelopment())
         {
             await ModalService.ShowErrorMessageAsync("An error occurred please try again");
@@ -28,6 +36,6 @@
             await ModalService.ShowErrorMessageAsync(Exception.Message);
         }
 
-        Navigation.NavigateTo("/", forceLoad: true);
+        Navigation.NavigateTo("/index", forceLoad: true);
     }
 }

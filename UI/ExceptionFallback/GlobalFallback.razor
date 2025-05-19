@@ -1,12 +1,13 @@
 ﻿
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
+@implements IAsyncDisposable
 @inject AppConfig AppConfig
 
 <style>
     .app-exception-fallback {
-        padding: 4rem;
-        text-align: center;
+    padding: 4rem;
+    text-align: center;
     }
 </style>
 
@@ -29,16 +30,41 @@
 
 @code {
     [Parameter] public Exception Exception { get; set; }
+    private IJSObjectReference? _module;
+    private bool _logged;
 
-    protected override void OnParametersSet()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (Exception is not null)
+        if (firstRender)
         {
-            Console.WriteLine(Exception.ToString());
-            //send error to backend as Task(() => )
-            //Error.InnerException?.Message
-            //NavigationManager.Uri -> this will be the URL of the page that caused the error
+            _module = await JS.InvokeAsync<IJSObjectReference>(
+              "import", "./js/modules.js");
         }
+
+        try
+        {
+            if (!_logged && Exception is not null && _module is not null)
+            {
+                _logged = true;
+                var path = new Uri(NavigationManager.Uri).PathAndQuery; 
+                await _module.InvokeVoidAsync(
+                    "logExceptionToServer",
+                    AppConfig.SecureBackendUrl, 
+                    Exception.Message, 
+                    Exception.StackTrace, 
+                    path, 
+                    "Fatal");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is not null) await _module.DisposeAsync();
     }
 
     private async Task ReloadApp()
