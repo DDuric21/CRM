@@ -103,7 +103,7 @@
     protected override async Task OnInitializedAsync()
     {
         AssetDTO = AssetDTO ?? new AssetDTO();
-        ConsolLogData();
+
         if (OrderDTO.OrderStatus == OrderStatus.Finished)
         {
             AssetDTO = OrderDTO.AssetDTO;
@@ -119,6 +119,11 @@
         if (ActionID == (int)OrderAction.Create)
         {            
             var assets = await assetService.GetAssetsAsync(true);
+            if (!await assets.AnyAsync())
+            {
+                modalService.ShowCustomerFriendlyMessage();
+                return;
+            }
             this.selectableAssets = await assets.ToListAsync();
 
             //add empty items for better UX
@@ -130,7 +135,7 @@
         if (ActionID == (int)OrderAction.Update)
         {
             ReorderSelectableBillingProfiles();
-            var options = await assetService.GetAssetAvailableOptionsAsync(AssetDTO.Id) ?? Array.Empty<OptionDTO>();
+            var options = await assetService.GetAssetAvailableOptionsAsync(AssetDTO.Id);
             var selectableAssetOptions = options.ToList();
             selectableAssetOptions.Insert(0, new OptionDTO());
 
@@ -149,22 +154,13 @@
     private void ReorderSelectableBillingProfiles()
     {
         var billingProfile = selectableBillingProfiles
-            .FirstOrDefault(x => x.BillingProfileId == AssetDTO.BillingProfile.BillingProfileId);
+            .FirstOrDefault(x => x.BillingProfileId == AssetDTO?.BillingProfile?.BillingProfileId);
 
         if (billingProfile != null)
         {
             selectableBillingProfiles.Remove(billingProfile);
             selectableBillingProfiles.Insert(0, billingProfile);
         }
-    }
-
-    private void ConsolLogData()
-    {
-        var orderData = System.Text.Json.JsonSerializer.Serialize(OrderDTO);
-        var assetData = System.Text.Json.JsonSerializer.Serialize(AssetDTO);
-        Console.WriteLine($"ActionID: {ActionID}");
-        Console.WriteLine($"Order: {orderData}");
-        Console.WriteLine($"Asset: {assetData}");
     }
 
     private void AddOption()

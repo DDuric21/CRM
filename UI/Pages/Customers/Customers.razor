@@ -46,22 +46,16 @@ else
 
     private async Task GetFilteredCustomersAsync(CustomerFilterRQ customerFilter)
     {
-        customers = null;
+        customers = new List<CustomerDTO>();
         try
         {            
             var asyncCustomers = await customerService.GetCustomersAsync(customerFilter);
-            
-            customers = new List<CustomerDTO>();
 
-            await foreach(var customer in asyncCustomers)
-            {
-                customers.Add(customer);
-            }
+            customers = await asyncCustomers.ToListAsync();
         }
         catch (Exception ex)
         {
-            customers = new List<CustomerDTO>();
-            modal.ShowErrorMessage(ex.Message);
+            modal.ShowCustomerFriendlyMessage();
         }
     }
 
@@ -74,7 +68,10 @@ else
             return;
         }
 
-        await customerService.DeleteCustomer(id);
+        if (!await customerService.DeleteCustomer(id))
+        {
+            modal.ShowCustomerFriendlyMessage();
+        }
     }
 
     protected void RedirectToCustomer(long id)

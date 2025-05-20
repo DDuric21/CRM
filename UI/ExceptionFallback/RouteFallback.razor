@@ -5,7 +5,8 @@
 @inject ILoggingService LoggingService
 
 @code {
-    [Parameter] public Exception Exception { get; set; }
+    [Parameter] 
+    public Exception Exception { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -16,15 +17,10 @@
                 Message = Exception.Message,
                 StackTrace = ExceptionHelper.FlattenExceptionMessages(Exception),
                 Url = new Uri(Navigation.Uri).PathAndQuery,
-                LogLevel = "Error"
+                LogLevel = LogLevel.Error.ToString()
             };
 
-            var isSuccess = await LoggingService.SendErrorLogToServerAsync(logDetails);
-
-            if (!isSuccess)
-            {
-                Console.WriteLine("Failed to log exception to server.");
-            }
+            LoggingService.SendErrorLogToServerAsync(logDetails);
         }
 
         if (AppConfig.IsDevelopment())

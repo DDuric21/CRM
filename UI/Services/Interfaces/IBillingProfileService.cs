@@ -6,7 +6,7 @@ namespace UI.Services
     public interface IBillingProfileService
     {
         Task<BillingProfileDTO> CreateNewBillingProfileAsync(long customerID);
-        Task UpdateBillingProfileAsync(BillingProfileDTO billingProfileDTO);
-        Task DeactivateBillingProfileAsync(string billingProfileId);
+        Task<bool> UpdateBillingProfileAsync(BillingProfileDTO billingProfileDTO);
+        Task<bool> DeactivateBillingProfileAsync(string billingProfileId);
     }
 }

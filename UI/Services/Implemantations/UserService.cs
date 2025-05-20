@@ -8,14 +8,14 @@ namespace UI.Services
     public class UserService : IUserService
     {
         private readonly ICommunicationService _communicationService;
-        private readonly ICrmModalService _modalService;
+        private readonly ILoggingService _loggingService;
 
         public UserService(
             ICommunicationService communicationService, 
-            ICrmModalService modalService)
+            ILoggingService loggingService)
         {
             _communicationService = communicationService;
-            _modalService = modalService;
+            _loggingService = loggingService;
         }
 
         public async Task<UserDTO> GetUserDataAsync(string username)
@@ -31,14 +31,12 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new UserDTO();
             }
         }
 
-        public async Task ChangeUserStatus(ChangeUserStatusRQ changeStatusRequest)
+        public async Task<bool> ChangeUserStatus(ChangeUserStatusRQ changeStatusRequest)
         {
             var url = DefineChangeStatusURL(changeStatusRequest);
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url);
@@ -46,11 +44,12 @@ namespace UI.Services
             try
             {
                 var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+                return true;
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return false;
             }
         }
 
@@ -86,10 +85,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return AsyncEnumerable.Empty<UserDTO>();
             }
         }
 
@@ -106,8 +103,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
             }
 
             return isSuccessful;
@@ -126,10 +122,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new UserGridFilterDataRS();
             }
         }
     }

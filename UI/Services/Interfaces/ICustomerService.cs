@@ -12,9 +12,9 @@ namespace UI.Services
 
         Task<CustomerDTO> GetCustomerDataAsync(long customerID);
 
-        Task DeleteCustomer(long customerID);
+        Task<bool> DeleteCustomer(long customerID);
 
-        Task UpdateCustomer(CustomerDTO customerDTO);
+        Task<bool> UpdateCustomer(CustomerDTO customerDTO);
 
         Task<IAsyncEnumerable<AssetDTO>> GetCustomerAssetsAsync(long id);
 

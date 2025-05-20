@@ -7,19 +7,19 @@ namespace UI.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly ICrmModalService _modalService;
         private readonly ICommunicationService _communicationService;
         private readonly ILocalStorageService _localStorageService;
+        private readonly ILoggingService _loggingService;
         private const string accessTokenKey = "accessToken_";
 
         public AuthenticationService(
-            ICrmModalService modalService,
             ICommunicationService communicationService,
-            ILocalStorageService localStorageService)
+            ILocalStorageService localStorageService,
+            ILoggingService loggingService)
         {
-            _modalService = modalService;
             _communicationService = communicationService;
             _localStorageService = localStorageService;
+            _loggingService = loggingService;
         }
 
         public async Task<AuthenticationResult> Login(string username, string password)
@@ -41,8 +41,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
                 return new AuthenticationResult();
             }
         }
@@ -60,9 +59,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new UserDTO();
             }
         }
 
@@ -93,7 +91,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
+                _loggingService.SendErrorLogToServerAsync(ex);
             }
         }
 
@@ -105,7 +103,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
+                _loggingService.SendErrorLogToServerAsync(ex);
             }
         }
 
@@ -117,7 +115,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
+                _loggingService.SendErrorLogToServerAsync(ex);
             }
         }
     }

@@ -8,7 +8,7 @@ namespace UI.Services
     {
         Task<UserDTO> GetUserDataAsync(string username);
 
-        Task ChangeUserStatus(ChangeUserStatusRQ request);
+        Task<bool> ChangeUserStatus(ChangeUserStatusRQ request);
 
         Task<IAsyncEnumerable<UserDTO>> GetUsersAsync(UserFilterRQ userFilter);
 

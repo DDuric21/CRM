@@ -6,14 +6,14 @@ namespace UI.Services
     public class BillingProfileService : IBillingProfileService
     {
         private readonly ICommunicationService _communicationService;
-        private readonly ICrmModalService _modalService;
+        private readonly ILoggingService _loggingService;
 
         public BillingProfileService(
             ICommunicationService communicationService,
-            ICrmModalService modalService)
+            ILoggingService loggingService)
         {
             _communicationService = communicationService;
-            _modalService = modalService;
+            _loggingService = loggingService;
         }
 
         public async Task<BillingProfileDTO> CreateNewBillingProfileAsync(long customerID)
@@ -29,14 +29,13 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
                 return new BillingProfileDTO();
             }
         }
 
 
-        public async Task UpdateBillingProfileAsync(BillingProfileDTO billingProfileDTO)
+        public async Task<bool> UpdateBillingProfileAsync(BillingProfileDTO billingProfileDTO)
         {
             var url = "BillingProfiles";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, billingProfileDTO);
@@ -44,15 +43,17 @@ namespace UI.Services
             try
             {
                 var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+
+                return true;
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return false;
             }
         }
 
-        public async Task DeactivateBillingProfileAsync(string billingProfileId)
+        public async Task<bool> DeactivateBillingProfileAsync(string billingProfileId)
         {
             var url = $"BillingProfiles/{billingProfileId}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Delete, url);
@@ -60,11 +61,12 @@ namespace UI.Services
             try
             {
                 var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+                return true;
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return false;
             }
         }
     }

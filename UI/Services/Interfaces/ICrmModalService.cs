@@ -7,6 +7,8 @@ namespace UI.Services
 {
     public interface ICrmModalService
     {
+        void ShowCustomerFriendlyMessage();
+
         void ShowErrorMessage(string message);
 
         Task<ModalResult> ShowErrorMessageAsync(string message);

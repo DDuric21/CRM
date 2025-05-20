@@ -121,6 +121,12 @@ else
         base.OnInitializedAsync();
 
         userGridFilterData = await userService.GetUserFilterBaseValues();
+
+        if (userGridFilterData.IsNullOrEmpty())
+        {
+            return;
+        }
+
         selectedUserRoles = userGridFilterData.UserRoles
             .Select(x => new SelectedUserRole { UserRole = new UserRoleDTO { RoleName = x }})
             .ToList();

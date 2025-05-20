@@ -50,6 +50,12 @@
         try
         {
             var loginResult = await authenticationService.Login(userDTO.UserName, userDTO.Password);
+            if (loginResult.IsNullOrEmpty()
+                || loginResult.ErrorMessages.Any())
+            {
+                ShowWarningText("Something went wrong. Please try again!");
+                return;
+            }
 
             if (loginResult.IsAuthenticated)
             {
@@ -66,8 +72,10 @@
         {
             ShowWarningText("Something went wrong. Please try again!");
         }
-
-        showLoading = false;
+        finally
+        {
+            showLoading = false;
+        }
     }
 
     private void RemoveWarningText()

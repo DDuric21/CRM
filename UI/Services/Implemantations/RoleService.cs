@@ -5,14 +5,14 @@ namespace UI.Services
     public class RoleService : IRoleService
     {
         private readonly ICommunicationService _communicationService;
-        private readonly ICrmModalService _modalService;
+        private readonly ILoggingService _loggingService;
 
         public RoleService(
             ICommunicationService communicationService,
-            ICrmModalService modalService)
+            ILoggingService loggingService)
         {
             _communicationService = communicationService;
-            _modalService = modalService;
+            _loggingService = loggingService;
         }
 
         public async Task<IEnumerable<UserRoleDTO>> GetApplicableRolesAsync()
@@ -28,10 +28,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return Array.Empty<UserRoleDTO>();
             }
         }
     }

@@ -7,14 +7,14 @@ namespace UI.Services
     public class CustomerService : ICustomerService
     {
         private readonly ICommunicationService _communicationService;
-        private readonly ICrmModalService _modalService;
+        private readonly ILoggingService _loggingService;
 
         public CustomerService(
             ICommunicationService communicationService,
-            ICrmModalService modalService)
+            ILoggingService loggingService)
         {
             _communicationService = communicationService;
-            _modalService = modalService;
+            _loggingService = loggingService;
         }
 
         public async Task<IAsyncEnumerable<CustomerDTO>> GetCustomersAsync(CustomerFilterRQ customerFilter)
@@ -30,9 +30,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return AsyncEnumerable.Empty<CustomerDTO>();
             }
         }
 
@@ -49,10 +48,9 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                //add logging
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new CustomerDTO();
             }
-
-            return null;
         }
 
         public async Task<long> CreateNewCustomerAsync(CustomerDTO customerDTO)
@@ -67,13 +65,12 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return 0;
             }
-
-            return 0;
         }
 
-        public async Task DeleteCustomer(long customerID)
+        public async Task<bool> DeleteCustomer(long customerID)
         {
             var url = "Customers/{customerID}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Delete, url);
@@ -81,15 +78,16 @@ namespace UI.Services
             try
             {
                 var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+                return true;
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return false;
             }
         }
 
-        public async Task UpdateCustomer(CustomerDTO customerDTO)
+        public async Task<bool> UpdateCustomer(CustomerDTO customerDTO)
         {
             var url = "Customers";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, customerDTO);
@@ -97,11 +95,12 @@ namespace UI.Services
             try
             {
                 var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+                return true;
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return false;
             }
         }
 
@@ -118,10 +117,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                //add logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return AsyncEnumerable.Empty<AssetDTO>();
             }
         }
 
@@ -138,10 +135,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                //add logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new AssetDTO();
             }
         }
 
@@ -158,10 +153,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                //add logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return AsyncEnumerable.Empty<OrderDTO>();
             }
         }
 
@@ -178,10 +171,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                //add logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return AsyncEnumerable.Empty<InteractionDTO>();
             }
         }
 
@@ -198,10 +189,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                //add logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new CustomerGridFilterDataRS();
             }
         }
     }

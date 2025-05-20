@@ -9,5 +9,7 @@
         Task<T> SendRequestAsync<T>(HttpRequestMessage request);
 
         Task<T> SendAuthenticationRequestAsync<T>(HttpRequestMessage request);
+
+        Task SendErrorLogToServerUsingJsAsync(Exception exception, string url = null);
     }
 }

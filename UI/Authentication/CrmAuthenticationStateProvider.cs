@@ -13,14 +13,17 @@ namespace UI.Authentication
         private const string USER_SESSION = "UserSession";
         private readonly ISessionStorageService _sessionStorage;
         private readonly IAuthenticationService _authenticationService;
+        private readonly ILoggingService _loggingService;
         private ClaimsPrincipal _anonymus = new ClaimsPrincipal(new ClaimsIdentity());
 
         public CrmAuthenticationStateProvider(
             ISessionStorageService sessionStorage,
-            IAuthenticationService authenticationService)
+            IAuthenticationService authenticationService,
+            ILoggingService loggingService)
         {
             _sessionStorage = sessionStorage;
             _authenticationService = authenticationService;
+            _loggingService = loggingService;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -49,9 +52,9 @@ namespace UI.Authentication
             }
             catch (Exception ex)
             {
+                _loggingService.SendErrorLogToServerAsync(ex);
                 return await Task.FromResult(new AuthenticationState(_anonymus));
             }
-
         }
 
         public async Task UpdateAuthenticationState(string token = null)

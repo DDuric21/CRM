@@ -6,7 +6,7 @@ namespace UI.Services
     {
         Task<bool> SubmitOrderAsync(OrderDTO orderDTO);
 
-        Task CreateOrderAsync(OrderDTO orderDTO, bool withOptions = false);
+        Task<bool> CreateOrderAsync(OrderDTO orderDTO, bool withOptions = false);
 
         Task<OrderDTO> GetOrderDataAsync(Guid id);
     }

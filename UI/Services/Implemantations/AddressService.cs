@@ -6,17 +6,17 @@ namespace UI.Services
     public class AddressService : IAddressService
     {
         private readonly ICommunicationService _communicationService;
-        private readonly ICrmModalService _modalService;
+        private readonly ILoggingService _loggingService;
 
         public AddressService(
             ICommunicationService communicationService,
-            ICrmModalService modalService)
+            ILoggingService loggingService)
         {
             _communicationService = communicationService;
-            _modalService = modalService;
+            _loggingService = loggingService;
         }
 
-        public async Task UpdateAddressesAsync(List<AddressDTO> addresses)
+        public async Task<bool> UpdateAddressesAsync(List<AddressDTO> addresses)
         {
             var url = "Addresses";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, addresses);
@@ -24,11 +24,13 @@ namespace UI.Services
             try
             {
                 var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+
+                return true;
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return false;
             }
         }
 
@@ -45,8 +47,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
                 return new AddressDTO();
             }
         }
@@ -63,8 +64,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
                 return 0;
             }
         }

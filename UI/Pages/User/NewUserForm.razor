@@ -3,49 +3,50 @@
 @inject IAuthenticationService authenticationService
 @inject IRoleService roleService
 @inject NavigationManager navigationManager
+@inject ICrmModalService modal
 
 <h3>Register new user</h3>
 
 <EditForm Model="@userDTO" OnSubmit="@CreateNewUserAsync">
-  <div class="form-row">
-    <div class="form-group col-md-6">
-      <label for="inputFirstName">First Name</label>
-      <input class="form-control" id="inputFirstName" placeholder="First Name" @bind-value="userDTO.FirstName">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="inputFirstName">First Name</label>
+            <input class="form-control" id="inputFirstName" placeholder="First Name" @bind-value="userDTO.FirstName">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputLastName">Last Name</label>
+            <input class="form-control" id="inputLastName" placeholder="Last Name" @bind-value="userDTO.LastName">
+        </div>
     </div>
     <div class="form-group col-md-6">
-      <label for="inputLastName">Last Name</label>
-      <input class="form-control" id="inputLastName" placeholder="Last Name" @bind-value="userDTO.LastName">
+        <label for="inputEmail">Email</label>
+        <input type="email" class="form-control" id="inputEmail" placeholder="user@email.com" @bind-value="userDTO.UserEmail">
     </div>
-  </div>
-  <div class="form-group col-md-6">
-    <label for="inputEmail">Email</label>
-    <input type="email" class="form-control" id="inputEmail" placeholder="user@email.com" @bind-value="userDTO.UserEmail">
-  </div>
-  <div class="form-group col-md-6">
-    <label for="inputPassword">Password</label>
-    <input type="password" class="form-control" id="inputPassword" placeholder="Password" @bind-value="userDTO.Password">
-  </div>
-  <!-- This serves for roles -->
-  <div class="form-group">
-    User Roles:
-    @if (selectedUserRoles.IsNullOrEmpty())
-    {
-        <Loader></Loader>
-    }
-    else
-    {
-        <br>
-        @foreach (var role in selectedUserRoles)
+    <div class="form-group col-md-6">
+        <label for="inputPassword">Password</label>
+        <input type="password" class="form-control" id="inputPassword" placeholder="Password" @bind-value="userDTO.Password">
+    </div>
+    <!-- This serves for roles -->
+    <div class="form-group">
+        User Roles:
+        @if (selectedUserRoles.IsNullOrEmpty())
         {
-            <div class="form-check form-switch ms-3">
-                <InputCheckbox class="form-check-input" @bind-Value="role.IsSelected" />
-                <label class="form-check-label">@role.UserRole.RoleName</label>               
-            </div>
+            <Loader></Loader>
         }
-        <br>
-    }
-  </div>
-  <button type="submit" class="btn btn-primary">Register</button>
+        else
+        {
+            <br>
+            @foreach (var role in selectedUserRoles)
+            {
+                <div class="form-check form-switch ms-3">
+                    <InputCheckbox class="form-check-input" @bind-Value="role.IsSelected" />
+                    <label class="form-check-label">@role.UserRole.RoleName</label>               
+                </div>
+            }
+            <br>
+        }
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
 </EditForm>
 
 
@@ -68,10 +69,13 @@
         MapRolesToUserDTO();
         var user = await authenticationService.RegisterNewUserAsync(userDTO);
 
-        if (user != null)
+        if (user.IsNullOrEmpty())
         {
-            navigationManager.NavigateTo($"/User/UserSettings?username={user.UserName}");
+            modal.ShowCustomerFriendlyMessage();
+            return;
         }
+
+        navigationManager.NavigateTo($"/User/UserSettings?username={user.UserName}");
     }
 
     private void MapRolesToUserDTO()

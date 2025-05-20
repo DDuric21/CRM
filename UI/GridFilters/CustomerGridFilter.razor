@@ -55,7 +55,7 @@ else
                 }
             </ul>
         </div>
-        
+
         <div class="col-2 p-2">
             <label>First Name:</label>
             <input class="form-control" @bind="customerFilter.FirstName" placeholder="Enter first name" />
@@ -82,7 +82,7 @@ else
 }
 
 
-@code {    
+@code {
     [Parameter] 
     public EventCallback<CustomerFilterRQ> OnFilterExecute { get; set; }
 
@@ -90,7 +90,7 @@ else
     private CustomerGridFilterDataRS customerGridFilterData { get; set; }
     private IEnumerable<SelectedStatus> selectedCustomerStatuses = new List<SelectedStatus>();
     private IEnumerable<SelectedCustomerType> selectedCustomerTypes = new List<SelectedCustomerType>();
-    
+
     private string statusesButtonText => selectedCustomerStatuses
         .Where(x => x.IsSelected)
         .Select(x => x.Status)
@@ -121,7 +121,12 @@ else
     protected override async Task OnInitializedAsync()
     {
         customerGridFilterData = await customerService.GetCustomerFilterBaseValues();
-        
+
+        if (customerGridFilterData.IsNullOrEmpty())
+        {
+            return;
+        }
+
         selectedCustomerStatuses = customerGridFilterData.CustomerStatuses
             .Select(x => new SelectedStatus { Status = x })
             .ToList();

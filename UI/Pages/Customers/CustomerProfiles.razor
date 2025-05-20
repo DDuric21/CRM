@@ -76,6 +76,11 @@
         };
 
         var newBillingProfile = await billingProfileService.CreateNewBillingProfileAsync(CustomerDTO.Id);
+        if (newBillingProfile.IsNullOrEmpty())
+        {
+            modalService.ShowCustomerFriendlyMessage();
+            return;
+        }
         editableID.CustomId = newBillingProfile.BillingProfileId;
         newBillingProfile.BillingAddress = new AddressDTO();
         customerBillingProfiles.Add(editableID, newBillingProfile);
@@ -86,7 +91,11 @@
 
     private async Task DeactivateBillingProfile(string billingProfileId)
     {
-        await billingProfileService.DeactivateBillingProfileAsync(billingProfileId);
+        if (!await billingProfileService.DeactivateBillingProfileAsync(billingProfileId))
+        {
+            modalService.ShowCustomerFriendlyMessage();
+            return;
+        }
 
         var customerBillingProfile = customerBillingProfiles.First(x => x.Key.CustomId == billingProfileId);
         customerBillingProfile.Value.BilingProfileStatus = ItemState.Inactive;
@@ -111,8 +120,12 @@
             billingProfileDTO.BillingAddress = CustomerDTO.Addresses.First(x => x.Id == billingProfileDTO.BillingAddress.Id);
         }
 
-        await billingProfileService.UpdateBillingProfileAsync(billingProfileDTO);
-                
+        if (!await billingProfileService.UpdateBillingProfileAsync(billingProfileDTO))
+        {
+            modalService.ShowCustomerFriendlyMessage();
+            return;
+        }
+
         var profileForEdit = customerBillingProfiles.Keys
             .First(x => x.CustomId == billingProfileDTO.BillingProfileId);
         profileForEdit.IsEditable = false;

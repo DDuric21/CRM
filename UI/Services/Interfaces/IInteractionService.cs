@@ -6,6 +6,6 @@ namespace UI.Services
     {
         Task<long> SaveNewInteractionAsync(InteractionDTO customerDTO);
 
-        Task UpdateInteractionAsync(InteractionDTO interactionDTO);
+        Task<bool> UpdateInteractionAsync(InteractionDTO interactionDTO);
     }
 }

@@ -22,6 +22,9 @@
 
     protected async Task SaveChanges()
     {
-        await customerService.UpdateCustomer(CustomerDTO);
+        if (!await customerService.UpdateCustomer(CustomerDTO))
+        {
+            modal.ShowCustomerFriendlyMessage();
+        }
     }
 }

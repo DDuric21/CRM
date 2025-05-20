@@ -46,23 +46,10 @@ else
     private List<UserDTO> users = new List<UserDTO>();
 
     private async Task GetUsersAsync(UserFilterRQ userFilter)
-    {
-        users = null;
-        try
-        {            
-            var asyncUsers = await userService.GetUsersAsync(userFilter);
+    {           
+        var asyncUsers = await userService.GetUsersAsync(userFilter);
 
-            users = new List<UserDTO>();
-            await foreach(var user in asyncUsers)
-            {
-                users.Add(user);
-            }
-        }
-        catch (Exception ex)
-        {
-            users = new List<UserDTO>();
-            modal.ShowErrorMessage(ex.Message);
-        }
+        users = await asyncUsers.ToListAsync();
     }
 
     protected async void DeactivateUser(string username)
@@ -80,7 +67,11 @@ else
                 NewUserStatus = ItemState.Inactive
             };
 
-        await userService.ChangeUserStatus(request);
+        if (!await userService.ChangeUserStatus(request))
+        {
+            modal.ShowCustomerFriendlyMessage();
+            return;
+        }
 
         var deactivatedUser = users.First(x => x.UserName == username);
         deactivatedUser.UserStatus = ItemState.Inactive;
@@ -103,7 +94,11 @@ else
                 NewUserStatus = ItemState.Active
             };
 
-        await userService.ChangeUserStatus(request);
+        if (!await userService.ChangeUserStatus(request))
+        {
+            modal.ShowCustomerFriendlyMessage();
+            return;
+        }
 
         var activatedUser = users.First(x => x.UserName == username);
         activatedUser.UserStatus = ItemState.Active;

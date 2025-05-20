@@ -22,17 +22,6 @@ namespace Models.Helpers
             return list == null || !list.Any();
         }
 
-        public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source, CancellationToken cancellationToken = default)
-        {
-            var list = new List<T>();
-            await foreach (var item in source.WithCancellation(cancellationToken).ConfigureAwait(false))
-            {
-                list.Add(item);
-            }
-
-            return list;
-        }
-
         public static DateTime ParseClaimExpiryToDatetime(string claimExpiry)
         {
             DateTime expiryDate = DateTime.UnixEpoch;

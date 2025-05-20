@@ -6,14 +6,14 @@ namespace UI.Services
     public class AssetService : IAssetService
     {
         private readonly ICommunicationService _communicationService;
-        private readonly ICrmModalService _modalService;
+        private readonly ILoggingService _loggingService;
 
         public AssetService(
             ICommunicationService communicationService,
-            ICrmModalService modalService)
+            ILoggingService loggingService)
         {
             _communicationService = communicationService;
-            _modalService = modalService;
+            _loggingService = loggingService;
         }
 
         public async Task<IAsyncEnumerable<AssetDTO>> GetAssetsAsync(bool withOptions = false)
@@ -29,10 +29,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                //add logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return AsyncEnumerable.Empty<AssetDTO>();
             }
         }
 
@@ -47,10 +45,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                //add logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new List<OptionDTO>();
             }
         }
 
@@ -68,10 +64,8 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                //add logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new Dictionary<ItemState, int>();
             }
         }
     }

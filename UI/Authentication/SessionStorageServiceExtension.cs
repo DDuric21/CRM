@@ -16,12 +16,19 @@ namespace UI.Authentication
 
         public static async Task<T> ReadEncryptedItemAsync<T>(this ISessionStorageService sessionStorageService, string key)
         {
-            var base64Json = await sessionStorageService.GetItemAsync<string>(key);
-            var itemJsonBytes = Convert.FromBase64String(base64Json);
-            var itemJson = Encoding.UTF8.GetString(itemJsonBytes);
-            var item = JsonSerializer.Deserialize<T>(itemJson);
+            try
+            {
+                var base64Json = await sessionStorageService.GetItemAsync<string>(key);
+                var itemJsonBytes = Convert.FromBase64String(base64Json);
+                var itemJson = Encoding.UTF8.GetString(itemJsonBytes);
+                var item = JsonSerializer.Deserialize<T>(itemJson);
 
-            return item;
+                return item;
+            }
+            catch
+            {
+                return default(T);
+            }
         }
     }
 }

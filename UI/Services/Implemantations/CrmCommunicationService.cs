@@ -1,21 +1,27 @@
-﻿using Models.Authentication;
+﻿using Microsoft.JSInterop;
+using Models.Authentication;
+using Models.Helpers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using UI.Authentication;
 
 namespace UI.Services
 {
-    public class CrmCommunicationService : ICommunicationService
+    public class CrmCommunicationService : ICommunicationService, IAsyncDisposable
     {
         private readonly AppConfig _apiConfig;
         private readonly HttpClient _httpClient;
+        private readonly IJSRuntime _jsRuntime;
+        private IJSObjectReference? _module;
 
         public CrmCommunicationService(
             AppConfig apiConfig,
-            HttpClient httpClient)
+            HttpClient httpClient,
+            IJSRuntime jsRuntime)
         {
             _apiConfig = apiConfig;
             _httpClient = httpClient;
+            _jsRuntime = jsRuntime;
         }
 
         public async Task<HttpRequestMessage> CreateRequestAsync<T>(HttpMethod httpMethod, string target, T requestBody, bool addAuthorization = true)
@@ -136,7 +142,35 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                //add logging
+                SendErrorLogToServerUsingJsAsync(ex);
+            }
+        }
+
+        public async Task SendErrorLogToServerUsingJsAsync(Exception exception, string url = null)
+        {
+            if (_module == null)
+            {
+                _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+                   "import", "./js/modules.js");
+            }
+
+            var path = url;
+            var stackTrace = ExceptionHelper.FlattenExceptionMessages(exception);
+
+            await _module.InvokeVoidAsync(
+                "logExceptionToServer",
+                _apiConfig.SecureBackendUrl,
+                exception.Message,
+                stackTrace,
+                path,
+                "Fatal");
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_module is not null)
+            {
+                await _module.DisposeAsync();
             }
         }
     }

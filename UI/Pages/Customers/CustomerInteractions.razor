@@ -29,24 +29,17 @@
     private SortedDictionary<EditableID, InteractionDTO> customerInteractionss = new SortedDictionary<EditableID, InteractionDTO>(new InteractionKeySorter());
 
     protected override async Task OnInitializedAsync()
-    {
-        try
-        {            
-            var customerInteractions = await customerService.GetCustomerInteractionsAsync(CustomerDTO.Id);
+    {        
+        var customerInteractions = await customerService.GetCustomerInteractionsAsync(CustomerDTO.Id);
 
-            await foreach(var interaction in customerInteractions)
-            {
-                var editableID = new EditableID
-                {
-                    Id = interaction.Id,
-                    DateCreated = interaction.DateTime
-                };
-                customerInteractionss.Add(editableID, interaction);
-            }
-        }
-        catch (Exception ex)
+        await foreach(var interaction in customerInteractions)
         {
-            modal.ShowErrorMessage(ex.Message);
+            var editableID = new EditableID
+            {
+                Id = interaction.Id,
+                DateCreated = interaction.DateTime
+            };
+            customerInteractionss.Add(editableID, interaction);
         }
     }
 
@@ -76,7 +69,13 @@
         if (interactionDTO.Id == 0
             && interactionDTO.Type != 0)
         {
-            interactionDTO.Id = await interactionService.SaveNewInteractionAsync(interactionDTO);
+            var newInteractionID = await interactionService.SaveNewInteractionAsync(interactionDTO);
+
+            if (newInteractionID == 0)
+            {
+                modal.ShowCustomerFriendlyMessage();
+                return;
+            }
 
             var savedInteractionKey = customerInteractionss.Keys.First(x => x.Id == 0);
             customerInteractionss[savedInteractionKey] = interactionDTO;
@@ -91,7 +90,12 @@
 
         if (!interactionDTO.Equals(editedInteraction))
         {
-            await interactionService.UpdateInteractionAsync(interactionDTO);
+            var isSuccessfull = await interactionService.UpdateInteractionAsync(interactionDTO);
+            if (!isSuccessfull)
+            {
+                modal.ShowCustomerFriendlyMessage();
+                return;
+            }
         }
 
         customerInteractionss.Keys.First(x => x.Id == interactionDTO.Id).IsEditable = false;

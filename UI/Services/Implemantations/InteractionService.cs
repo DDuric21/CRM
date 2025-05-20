@@ -6,14 +6,14 @@ namespace UI.Services
     public class InteractionService : IInteractionService
     {
         private readonly ICommunicationService _communicationService;
-        private readonly ICrmModalService _modalService;
+        private readonly ILoggingService _loggingService;
 
         public InteractionService(
             ICommunicationService communicationService,
-            ICrmModalService modalService)
+            ILoggingService loggingService)
         {
             _communicationService = communicationService;
-            _modalService = modalService;
+            _loggingService = loggingService;
         }
 
         public async Task<long> SaveNewInteractionAsync(InteractionDTO interactionDTO)
@@ -29,13 +29,12 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
                 return 0;
             }
         }
 
-        public async Task UpdateInteractionAsync(InteractionDTO interactionDTO)
+        public async Task<bool> UpdateInteractionAsync(InteractionDTO interactionDTO)
         {
             var url = "Interactions";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, interactionDTO);
@@ -43,11 +42,12 @@ namespace UI.Services
             try
             {
                 var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+                return true;
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return false;
             }
         }
     }

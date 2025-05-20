@@ -50,8 +50,7 @@ else
         }
         catch (Exception ex)
         {
-            // add logging
-            modal.ShowErrorMessage(ex.Message);
+            modal.ShowCustomerFriendlyMessage();
         }
     }
 

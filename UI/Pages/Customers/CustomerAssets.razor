@@ -51,7 +51,7 @@
         }
         catch (Exception ex)
         {
-            modal.ShowErrorMessage(ex.Message);
+            modal.ShowCustomerFriendlyMessage();
         }
     }
 
@@ -63,7 +63,12 @@
             OrderID = orderID,
             CustomerDTO = this.CustomerDTO
         };
-        orderService.CreateOrderAsync(order);
+
+        if (!await orderService.CreateOrderAsync(order))
+        {
+            modal.ShowCustomerFriendlyMessage();
+            return;
+        }
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
         navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={(int)OrderAction.Create}:0");
     }
@@ -84,7 +89,11 @@
             AssetDTO = asset
         };
         var loadAssetOptions = true;
-        orderService.CreateOrderAsync(order, loadAssetOptions);
+        if (!await orderService.CreateOrderAsync(order, loadAssetOptions))
+        {
+            modal.ShowCustomerFriendlyMessage();
+            return;
+        }
 
         var actionIndicator = $"{(int)action}:{customerAssetID}";
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);

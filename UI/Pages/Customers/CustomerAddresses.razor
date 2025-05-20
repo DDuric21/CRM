@@ -39,7 +39,10 @@
 
     private async Task UpdateAddresses()
     {
-        await addressesService.UpdateAddressesAsync(Addresses);
+        if (!await addressesService.UpdateAddressesAsync(Addresses))
+        {
+            modal.ShowCustomerFriendlyMessage();
+        }
     }
 
     private async Task CreateNewAddress()
@@ -58,7 +61,6 @@
 
     private async void DeleteAddress(long addressId)
     {
-
         var result = await modal.ShowDialog("Are you sure?", ModalDialogType.Delete);
 
         if (result.Cancelled)
@@ -73,6 +75,10 @@
             var deletedAddress = Addresses.FirstOrDefault(x => x.Id == addressId);
             Addresses.Remove(deletedAddress);
             StateHasChanged();
+        }
+        else
+        {
+            modal.ShowCustomerFriendlyMessage();
         }
     }
 }

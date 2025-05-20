@@ -7,14 +7,14 @@ namespace UI.Services
     public class OrderService : IOrderService
     {
         private readonly ICommunicationService _communicationService;
-        private readonly ICrmModalService _modalService;
+        private readonly ILoggingService _loggingService;
 
         public OrderService(
             ICommunicationService communicationService,
-            ICrmModalService modalService)
+            ILoggingService loggingService)
         {
             _communicationService = communicationService;
-            _modalService = modalService;
+            _loggingService = loggingService;
         }
 
         public async Task<bool> SubmitOrderAsync(OrderDTO orderDTO)
@@ -30,8 +30,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
                 return false;
             }
         }
@@ -49,14 +48,12 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
-
-                return null;
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new OrderDTO();
             }
         }
 
-        public async Task CreateOrderAsync(OrderDTO orderDTO, bool withOptions = false)
+        public async Task<bool> CreateOrderAsync(OrderDTO orderDTO, bool withOptions = false)
         {
             var createOrderRQ = new CreateOrderRQ
             {
@@ -70,11 +67,12 @@ namespace UI.Services
             try
             {
                 var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+                return true;
             }
             catch (Exception ex)
             {
-                // logging
-                _modalService.ShowErrorMessage(ex.Message);
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return false;
             }
         }
     }

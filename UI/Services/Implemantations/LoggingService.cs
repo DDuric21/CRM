@@ -1,4 +1,5 @@
 ﻿using Models.DTO;
+using Models.Helpers;
 using Models.Responses;
 
 namespace UI.Services
@@ -26,8 +27,23 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
+                // extract corelationID for logging
+                Console.WriteLine("Failed to log exception to server.");
                 return false;
             }
+        }
+
+        public async Task<bool> SendErrorLogToServerAsync(Exception exception, string errorMessage = null, string stackTrace = null)
+        {
+            var logDetails = new LogDetails
+            {
+                Message = errorMessage ?? exception.Message,
+                StackTrace = stackTrace ?? ExceptionHelper.FlattenExceptionMessages(exception),
+                LogLevel = LogLevel.Error.ToString(),
+                Url = exception.TargetSite?.DeclaringType?.FullName ?? "Unknown",
+            };
+
+            return await SendErrorLogToServerAsync(logDetails);
         }
     }
 }

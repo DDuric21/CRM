@@ -12,10 +12,17 @@ namespace UI.Services
         private const string ErrorTitle = "Error";
         private const string WarningTitle = "Warning";
         private const string InfoTitle = "Info";
+        private const string CustomerFriendlyMessage = "Something went wrong please contact support!";
 
         public CrmModalService(IModalService modalService)
         {
             _modalService = modalService;
+        }
+
+        public void ShowCustomerFriendlyMessage()
+        {
+            // Show correlation ID to customer would be great
+            ShowErrorMessage(CustomerFriendlyMessage);
         }
 
         public void ShowErrorMessage(string message)
