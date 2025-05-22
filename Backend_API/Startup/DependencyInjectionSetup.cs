@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Models.Authentication;
+using Models.Authentication.DataStructures;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -30,7 +31,7 @@ namespace Backend_API.Startup
                 {
                     In = ParameterLocation.Header,
                     Description = "Enter 'Bearer {token}'",
-                    Name = "Authorization",
+                    Name = HttpHeaderNames.Authorization,
                     Type = SecuritySchemeType.Http,
                     Scheme = "Bearer"
                 });

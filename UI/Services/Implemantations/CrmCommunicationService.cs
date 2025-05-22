@@ -99,12 +99,15 @@ namespace UI.Services
 
         private async Task AddBasicHeaders(HttpRequestMessage request, bool addAuthorization = false)
         {
-            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add(HttpHeaderNames.Accept, "application/json");
+
+            // this would be best to set at the begging of the action e.g. button clicked
+            request.Headers.Add(HttpHeaderNames.CorrelationID, Guid.NewGuid().ToString());
 
             if (addAuthorization)
             {
                 var jwt = await GetAuthorizationToken();
-                request.Headers.Add("Authorization", $"Bearer {jwt}");
+                request.Headers.Add(HttpHeaderNames.Authorization, $"Bearer {jwt}");
             }
         }
 
