@@ -16,7 +16,7 @@ else
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (ChartData != null)
+        if (!ChartData.IsNullOrEmpty())
         {
             await RenderPieChart();
         }
