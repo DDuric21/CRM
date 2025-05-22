@@ -1,5 +1,5 @@
-﻿using Models.DTO;
-using Models.Requests;
+﻿using Models.Requests;
+using Models.Responses;
 
 namespace UI.Services
 {
@@ -16,21 +16,21 @@ namespace UI.Services
             _loggingService = loggingService;
         }
 
-        public async Task<IEnumerable<NewsDTO>> GetNewsAsync(IEnumerable<RetrieveNewsRQ> newsFilter)
+        public async Task<RetrieveNewsRS> GetNewsAsync(IEnumerable<RetrieveNewsRQ> newsFilter)
         {
             var url = "News";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, newsFilter);
 
             try
             {
-                var response = await _communicationService.SendRequestAsync<IEnumerable<NewsDTO>>(request);
+                var response = await _communicationService.SendRequestAsyncNew<RetrieveNewsRS>(request);
 
                 return response;
             }
             catch (Exception ex)
             {
                 _loggingService.SendErrorLogToServerAsync(ex);
-                return Array.Empty<NewsDTO>();
+                return new RetrieveNewsRS { ErrorMessage = ex.Message };
             }
         }
     }

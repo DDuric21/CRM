@@ -1,6 +1,8 @@
 ﻿using Microsoft.JSInterop;
 using Models.Authentication;
+using Models.Authentication.DataStructures;
 using Models.Helpers;
+using Models.Responses;
 using System.Net.Http.Json;
 using System.Text.Json;
 using UI.Authentication;
@@ -45,6 +47,52 @@ namespace UI.Services
             await AddBasicHeaders(request, true);
 
             return request;
+        }
+
+        public async Task<T> SendRequestAsyncNew<T>(HttpRequestMessage request) where T : ResponseBase
+        {
+            var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string errorMessage = $"HTTP {response.StatusCode}";
+
+                try
+                {
+                    var problem = JsonSerializer.Deserialize<ProblemDetails>(responseContent, options);
+                    if (!string.IsNullOrWhiteSpace(problem?.Detail))
+                    {
+                        errorMessage = problem.Detail;
+
+                    }
+                    else if (!string.IsNullOrWhiteSpace(problem?.Title))
+                    {
+                        errorMessage = problem.Title;
+                    }
+                }
+                catch
+                {
+                    if (!string.IsNullOrWhiteSpace(responseContent))
+                    {
+                        errorMessage = responseContent;
+                    }
+                }
+
+                throw new Exception(errorMessage);
+            }
+
+            var deserialisedResult = JsonSerializer.Deserialize<T>(responseContent, options: options);
+
+            if (deserialisedResult == null || !deserialisedResult.IsSuccess)
+            {
+                throw new Exception(deserialisedResult?.ErrorMessage ?? "An unknown error occurred.");
+            }
+
+            return deserialisedResult;
         }
 
         public async Task<T> SendRequestAsync<T>(HttpRequestMessage request)

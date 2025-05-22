@@ -13,14 +13,31 @@ namespace Backend_API.Data.Mappings
         public AutoMapperProfile()
         {
             // ENTITY ➜ DTO
+            CreateMap<News, NewsDTO>()
+                .ForPath(dest => dest.NewsType, opt => opt.MapFrom(src => (NewsType)src.NewsTypeID));
+
+            CreateMap<Interaction, InteractionDTO>()
+                .ForPath(dest => dest.Type, opt => opt.MapFrom(src => (InteractionType)src.TypeID));
+
+            CreateMap<IdentityRole, UserRoleDTO>()
+                .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Name));
+
+            CreateMap<User, UserDTO>()
+                .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.Email))
+                .ForPath(dest => dest.UserStatus, opt => opt.MapFrom(src => (ItemState)src.UserStatusID));
 
             CreateMap<Address, AddressDTO>();
+
             CreateMap<Option, OptionDTO>();
+
             CreateMap<CustomerAssetOptions, OptionDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OptionID))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Option.Name))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Option.Price));
+
             CreateMap<Asset, AssetDTO>();
+
             CreateMap<BillingProfile, BillingProfileDTO>()
                 .ForMember(dest => dest.BilingProfileStatus, opt => opt.MapFrom(src => (ItemState)src.BillingProfileStatusID))
                 .ForMember(dest => dest.BillingProfileId, opt => opt.MapFrom(src => src.BillingProfileId))
@@ -53,6 +70,7 @@ namespace Backend_API.Data.Mappings
 
             // DTO ➜ ENTITY
             CreateMap<AddressDTO, Address>();
+
             CreateMap<AssetDTO, Asset>()
                 .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.Options));
 
@@ -98,17 +116,13 @@ namespace Backend_API.Data.Mappings
                 .ForPath(dest => dest.CustomerAssets.CustomerID, opt => opt.MapFrom(src => src.CustomerDTO.Id))
                 .ForMember(dest => dest.Customer, opt => opt.Ignore());
 
-            CreateMap<Interaction, InteractionDTO>()
-                .ForPath(dest => dest.Type, opt => opt.MapFrom(src => (InteractionType)src.TypeID));
             CreateMap<InteractionDTO, Interaction>()
                 .ForPath(dest => dest.TypeID, opt => opt.MapFrom(src => (int)src.Type));
 
-            CreateMap<User, UserDTO>()
-                .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.Email))
-                .ForPath(dest => dest.UserStatus, opt => opt.MapFrom(src => (ItemState)src.UserStatusID));
             CreateMap<UserDTO, User>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.UserEmail))
                 .ForPath(dest => dest.UserStatusID, opt => opt.MapFrom(src => (int)src.UserStatus));
+
             CreateMap<UserData, UserDTO>()
                 .ForPath(
                     dest => dest.UserRoles, 
@@ -125,9 +139,7 @@ namespace Backend_API.Data.Mappings
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
                 .ForPath(dest => dest.UserStatus, opt => opt.MapFrom(src => (ItemState)src.User.UserStatusID));
-            CreateMap<IdentityRole, UserRoleDTO>()
-                .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Name)); 
+
             CreateMap<UserDTO, UserData>()
                 .ForPath(
                     dest => dest.UserRoles, 
@@ -142,8 +154,6 @@ namespace Backend_API.Data.Mappings
                 .ForPath(dest => dest.User.LastName, opt => opt.MapFrom(src => src.LastName))
                 .ForPath(dest => dest.User.UserName, opt => opt.MapFrom(src => src.UserName))
                 .ForPath(dest => dest.User.UserStatusID, opt => opt.MapFrom(src => (int)src.UserStatus));
-            CreateMap<News, NewsDTO>()
-                .ForPath(dest => dest.NewsType, opt => opt.MapFrom(src => (NewsType)src.NewsTypeID));
         }
     }
 }

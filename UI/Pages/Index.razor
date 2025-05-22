@@ -22,9 +22,9 @@
 </div>
 
 @code {
-    private Dictionary<ItemState, int> pieChartData;
-    private List<NewsDTO> globalNews;
-    private List<NewsDTO> companyNews;
+    private Dictionary<ItemState, int> pieChartData = new Dictionary<ItemState, int>();
+    private List<NewsDTO> globalNews = new List<NewsDTO>();
+    private List<NewsDTO> companyNews = new List<NewsDTO>();
 
     protected async override Task OnInitializedAsync()
     {
@@ -41,23 +41,43 @@
             assetService.GetAssetsChartDataAsync()      
         );
 
-        companyNews = results.Item1
-            .Where(x => x.NewsType == NewsType.CompanyInfo)
-            .ToList();
-
-        globalNews = results.Item1
-            .Where(x => x.NewsType == NewsType.GeneralInfo)
-            .ToList();
-
-        pieChartData = results.Item2;
+        await SetNewsDataAsync(results.Item1);
+        await SetAssetChartDataAsync(results.Item2);
     }
-
 
     private async Task<(T1, T2)> GetCombinedTasks<T1, T2>(Task<T1> task1, Task<T2> task2)
     {
         await Task.WhenAll(task1, task2);
 
         return (await task1, await task2);
+    }
+
+    private async Task SetNewsDataAsync(RetrieveNewsRS retrievedNews)
+    {
+        if (!string.IsNullOrEmpty(retrievedNews.ErrorMessage))
+        {
+            await modalService.ShowErrorMessageAsync(retrievedNews.ErrorMessage);
+            return;
+        }
+
+        companyNews = retrievedNews.News
+            .Where(x => x.NewsType == NewsType.CompanyInfo)
+            .ToList();
+
+        globalNews = retrievedNews.News
+            .Where(x => x.NewsType == NewsType.GeneralInfo)
+            .ToList();
+    }
+
+    private async Task SetAssetChartDataAsync(Dictionary<ItemState, int> assetChartData)
+    {
+        if (assetChartData.IsNullOrEmpty())
+        {
+            await modalService.ShowErrorMessageAsync("");
+            return;
+        }
+
+        pieChartData = assetChartData;
     }
     
 }
