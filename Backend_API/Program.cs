@@ -10,12 +10,12 @@ DependencyInjectionSetup.RegisterServices(builder);
 
 var app = builder.Build();
 
-app.UseGlobalExceptionHandler();
-
 var httpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
 DynamicLogger.Configure(httpContextAccessor);
 
 ApplicationConfigurationSetup.ExecuteMigrations(app);
 ApplicationConfigurationSetup.InitializeConfiguration(app);
+
+app.UseGlobalExceptionHandler();
 
 app.Run();
