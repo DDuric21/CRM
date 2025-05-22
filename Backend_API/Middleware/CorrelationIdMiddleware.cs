@@ -1,4 +1,6 @@
-﻿namespace Backend_API.Middleware
+﻿using Models.Authentication.DataStructures;
+
+namespace Backend_API.Middleware
 {
     public class CorrelationIdMiddleware
     {
@@ -18,17 +20,17 @@
 
         private static void SetCorrelationID(HttpContext context)
         {
-            var correlationId = context.Request.Headers.ContainsKey("X-Correlation-ID")
-                ? context.Request.Headers["X-Correlation-ID"].ToString()
+            var correlationId = context.Request.Headers.ContainsKey(HttpHeaderNames.CorrelationID)
+                ? context.Request.Headers[HttpHeaderNames.CorrelationID].ToString()
                 : Guid.NewGuid().ToString();
 
-            context.Items["CorrelationId"] = correlationId;
+            context.Items[HttpHeaderNames.CorrelationID] = correlationId;
 
             context.Response.OnStarting(() =>
             {
-                if (!context.Response.Headers.ContainsKey("X-Correlation-ID"))
+                if (!context.Response.Headers.ContainsKey(HttpHeaderNames.CorrelationID))
                 {
-                    context.Response.Headers["X-Correlation-ID"] = correlationId;
+                    context.Response.Headers[HttpHeaderNames.CorrelationID] = correlationId;
                 }
                 return Task.CompletedTask;
             });

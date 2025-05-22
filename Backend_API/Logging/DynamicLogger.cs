@@ -1,4 +1,5 @@
-﻿using Serilog.Context;
+﻿using Models.Authentication.DataStructures;
+using Serilog.Context;
 using Serilog.Events;
 using System.Runtime.CompilerServices;
 
@@ -76,7 +77,7 @@ namespace Backend_API.Logging
 
         private static string CreateLogMessage(string message)
         {
-            var correlationId = _httpContextAccessor?.HttpContext?.Items["CorrelationId"]?.ToString() ?? "N/A";
+            var correlationId = _httpContextAccessor?.HttpContext?.Items[HttpHeaderNames.CorrelationID]?.ToString() ?? "N/A";
             var logMessage = $"[{correlationId}] - {message}";
 
             return logMessage;

@@ -1,6 +1,7 @@
 ﻿using Backend_API.Logging;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Models.Authentication.DataStructures;
 using System.Text;
 
 namespace Backend_API.Handlers
@@ -44,7 +45,7 @@ namespace Backend_API.Handlers
                     var problem = new ProblemDetails
                     {
                         Title = "An unexpected error occurred.",
-                        Detail = "Please contact support.",
+                        Detail = $"Please contact support. (GUID: {context.Request.Headers[HttpHeaderNames.CorrelationID]})",
                         Status = StatusCodes.Status500InternalServerError,
                         Instance = context.Request.Path
                     };
