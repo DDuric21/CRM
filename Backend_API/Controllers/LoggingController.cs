@@ -1,4 +1,5 @@
-﻿using Backend_API.Logging;
+﻿using Backend_API.Helpers;
+using Backend_API.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Helpers;
@@ -16,12 +17,12 @@ namespace Backend_API.Controllers
         {
             if (logDetails.IsNullOrEmpty())
             {
-                return BadRequest("Log details cannot be null or empty.");
+                return HttpContext.BadRequest("Log details cannot be null or empty.");
             }
 
             if (!Enum.TryParse<LogEventLevel>(logDetails.LogLevel, true, out var logLevel))
             {
-                return BadRequest("Invalid log level specified.");
+                return HttpContext.BadRequest("Invalid log level specified.");
             }
 
             try
@@ -33,12 +34,12 @@ namespace Backend_API.Controllers
 
                 DynamicLogger.LogUIError(logLevel, logMessage.ToString());
 
-                return Ok(new ResponseBase());
+                return Ok(new ResponseBase { IsSuccess = true });
             }
             catch (Exception ex)
             {
                 DynamicLogger.LogException(ex, "An error occurred while logging the exception.");
-                return StatusCode(500, "Internal server error");
+                return Problem(ex.Message);
             }
         }       
     }
