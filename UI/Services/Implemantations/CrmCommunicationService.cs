@@ -49,50 +49,43 @@ namespace UI.Services
             return request;
         }
 
-        public async Task<T> SendRequestAsyncNew<T>(HttpRequestMessage request) where T : ResponseBase
+        public async Task<T> SendRequestAsyncNew<T>(HttpRequestMessage request)
         {
             var httpClient = new HttpClient();
             var response = await httpClient.SendAsync(request);
 
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var responseContent = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
             {
-                string errorMessage = $"HTTP {response.StatusCode}";
-
-                try
-                {
-                    var problem = JsonSerializer.Deserialize<ProblemDetails>(responseContent, options);
-                    if (!string.IsNullOrWhiteSpace(problem?.Detail))
-                    {
-                        errorMessage = problem.Detail;
-
-                    }
-                    else if (!string.IsNullOrWhiteSpace(problem?.Title))
-                    {
-                        errorMessage = problem.Title;
-                    }
-                }
-                catch
-                {
-                    if (!string.IsNullOrWhiteSpace(responseContent))
-                    {
-                        errorMessage = responseContent;
-                    }
-                }
+                string errorMessage = await ExtractErrorMessageAsync(options, response);
 
                 throw new Exception(errorMessage);
             }
 
-            var deserialisedResult = JsonSerializer.Deserialize<T>(responseContent, options: options);
-
-            if (deserialisedResult == null || !deserialisedResult.IsSuccess)
-            {
-                throw new Exception(deserialisedResult?.ErrorMessage ?? "An unknown error occurred.");
-            }
+            var deserialisedResult = await DeserialiseResponseAsync<T>(options, response);
 
             return deserialisedResult;
+        }
+
+        public async Task SendErrorLogToServerUsingJsAsync(Exception exception, string url = null)
+        {
+            if (_module == null)
+            {
+                _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+                   "import", "./js/modules.js");
+            }
+
+            var path = url;
+            var stackTrace = ExceptionHelper.FlattenExceptionMessages(exception);
+
+            await _module.InvokeVoidAsync(
+                "logExceptionToServer",
+                _apiConfig.SecureBackendUrl,
+                exception.Message,
+                stackTrace,
+                path,
+                "Fatal");
         }
 
         public async Task<T> SendRequestAsync<T>(HttpRequestMessage request)
@@ -143,6 +136,14 @@ namespace UI.Services
             }
 
             return deserialisedResult;
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_module is not null)
+            {
+                await _module.DisposeAsync();
+            }
         }
 
         private async Task AddBasicHeaders(HttpRequestMessage request, bool addAuthorization = false)
@@ -197,32 +198,80 @@ namespace UI.Services
             }
         }
 
-        public async Task SendErrorLogToServerUsingJsAsync(Exception exception, string url = null)
+        private async Task<string> ExtractErrorMessageAsync(JsonSerializerOptions options, HttpResponseMessage response)
         {
-            if (_module == null)
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (!_apiConfig.IsDevelopment())
             {
-                _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                   "import", "./js/modules.js");
+                return GetProductionErrorMessage(response);
             }
 
-            var path = url;
-            var stackTrace = ExceptionHelper.FlattenExceptionMessages(exception);
+            try
+            {
+                var problem = JsonSerializer.Deserialize<ProblemDetails>(responseContent, options);
+                if (!string.IsNullOrWhiteSpace(problem?.Detail))
+                {
+                    return problem.Detail;
 
-            await _module.InvokeVoidAsync(
-                "logExceptionToServer",
-                _apiConfig.SecureBackendUrl,
-                exception.Message,
-                stackTrace,
-                path,
-                "Fatal");
+                }
+                else if (!string.IsNullOrWhiteSpace(problem?.Title))
+                {
+                    return problem.Title;
+                }
+            }
+            catch
+            {
+                if (!string.IsNullOrWhiteSpace(responseContent))
+                {
+                    return responseContent;
+                }
+            }
+
+            return $"HTTP {response.StatusCode}";
         }
 
-        public async ValueTask DisposeAsync()
+        private async Task<T> DeserialiseResponseAsync<T>(JsonSerializerOptions options, HttpResponseMessage response)
         {
-            if (_module is not null)
+            T deserialisedResult = default;
+            try
             {
-                await _module.DisposeAsync();
+                var responseContent = await response.Content.ReadAsStreamAsync();
+                deserialisedResult = await JsonSerializer.DeserializeAsync<T>(responseContent, options: options);
             }
+            catch (Exception ex)
+            {
+                await SendErrorLogToServerUsingJsAsync(ex, response.RequestMessage?.RequestUri?.ToString());
+
+                if (_apiConfig.IsDevelopment())
+                {
+                    throw;
+                }
+
+                throw new Exception(GetProductionErrorMessage(response));
+            }
+
+            if (deserialisedResult == null)
+            {
+                await SendErrorLogToServerUsingJsAsync(new Exception("Deserialised result is null."), response.RequestMessage?.RequestUri?.ToString());
+                if (_apiConfig.IsDevelopment())
+                {
+                    throw new Exception("Deserialised result is null.");
+                }
+
+                throw new Exception(GetProductionErrorMessage(response));
+            }
+
+            return deserialisedResult;
+        }
+
+        private string GetProductionErrorMessage(HttpResponseMessage response)
+        {
+            var headerExists = response.Headers.TryGetValues(HttpHeaderNames.CorrelationID, out var correlationId);
+
+            return headerExists
+                ? $"An error occurred. Please contact support with the following correlation ID: {correlationId.FirstOrDefault()}"
+                : "An error occurred. Please contact support.";
         }
     }
 }
