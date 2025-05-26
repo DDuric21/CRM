@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
+using Backend_API.Logging;
 using Models.DTO;
 
 namespace Backend_API.Services
@@ -18,28 +19,34 @@ namespace Backend_API.Services
             _mapper = mapper;
         }
 
-        public async Task CreateInteractionAsync(Interaction interaction)
+        public async Task<long> CreateInteractionAsync(InteractionDTO interactionDTO)
         {
-            await _repository.Interactions.InsertAsync(interaction);
+            try
+            {
+                var interaction = _mapper.Map<Interaction>(interactionDTO);
+                await _repository.Interactions.InsertAsync(interaction);
+
+                return interaction.Id;
+            }
+            catch (Exception ex)
+            {
+                DynamicLogger.LogException(ex, ex.Message);
+                throw;
+            }
         }
 
-        public async Task<int> UpdateInteractionAsync(Interaction interaction)
+        public async Task<int> UpdateInteractionAsync(InteractionDTO interaction)
         {
-            return await _repository.Interactions.UpdateAsync(interaction);
-        }
-
-        public InteractionDTO MapToDTO(Interaction interaction)
-        {
-            var interactionDTO = _mapper.Map<InteractionDTO>(interaction);
-
-            return interactionDTO;
-        }
-
-        public Interaction MapDtoToInteraction(InteractionDTO interactionDTO)
-        {
-            var interaction = _mapper.Map<Interaction>(interactionDTO);
-
-            return interaction;
+            try
+            {
+                var interactionEntity = _mapper.Map<Interaction>(interaction);
+                return await _repository.Interactions.UpdateAsync(interactionEntity);
+            }
+            catch (Exception ex)
+            {
+                DynamicLogger.LogException(ex, ex.Message);
+                throw;
+            }
         }
     }
 }

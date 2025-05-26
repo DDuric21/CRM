@@ -62,27 +62,13 @@
             || interactionDTO.DateTime == DateTime.MinValue)
         {
             modal.ShowErrorMessage("Not all mandatory fields populated!");
-
             return;
         }
 
         if (interactionDTO.Id == 0
             && interactionDTO.Type != 0)
         {
-            var newInteractionID = await interactionService.SaveNewInteractionAsync(interactionDTO);
-
-            if (newInteractionID == 0)
-            {
-                modal.ShowCustomerFriendlyMessage();
-                return;
-            }
-
-            var savedInteractionKey = customerInteractionss.Keys.First(x => x.Id == 0);
-            customerInteractionss[savedInteractionKey] = interactionDTO;
-            savedInteractionKey.IsEditable = false;
-            savedInteractionKey.DateCreated = interactionDTO.DateTime;
-            savedInteractionKey.Id = interactionDTO.Id;
-
+            await CreateNewInteractionAsync(interactionDTO);
             return;
         }
 
@@ -90,10 +76,10 @@
 
         if (!interactionDTO.Equals(editedInteraction))
         {
-            var isSuccessfull = await interactionService.UpdateInteractionAsync(interactionDTO);
-            if (!isSuccessfull)
+            var result = await interactionService.UpdateInteractionAsync(interactionDTO);
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
             {
-                modal.ShowCustomerFriendlyMessage();
+                modal.ShowErrorMessage(result.ErrorMessage);
                 return;
             }
         }
@@ -107,5 +93,22 @@
         interactionForEdit.IsEditable = true;
 
         StateHasChanged();
+    }
+
+    private async Task CreateNewInteractionAsync(InteractionDTO interactionDTO)
+    {
+        var result = await interactionService.SaveNewInteractionAsync(interactionDTO);
+
+        if (!result.IsSuccess)
+        {
+            modal.ShowErrorMessage(result.ErrorMessage);
+            return;
+        }
+
+        var savedInteractionKey = customerInteractionss.Keys.First(x => x.Id == 0);
+        customerInteractionss[savedInteractionKey] = interactionDTO;
+        savedInteractionKey.IsEditable = false;
+        savedInteractionKey.DateCreated = interactionDTO.DateTime;
+        savedInteractionKey.Id = result.Data.InteractionId;
     }
 }

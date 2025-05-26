@@ -1,11 +1,13 @@
 ﻿using Models.DTO;
+using Models.Responses;
+using UI.Helpers;
 
 namespace UI.Services
 {
     public interface IInteractionService
     {
-        Task<long> SaveNewInteractionAsync(InteractionDTO customerDTO);
+        Task<ActionResult<CreateInteractionRS>> SaveNewInteractionAsync(InteractionDTO customerDTO);
 
-        Task<bool> UpdateInteractionAsync(InteractionDTO interactionDTO);
+        Task<ResponseBase> UpdateInteractionAsync(InteractionDTO interactionDTO);
     }
 }

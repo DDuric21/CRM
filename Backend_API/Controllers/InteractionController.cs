@@ -1,4 +1,4 @@
-﻿using Backend_API.Logging;
+﻿using Backend_API.Helpers;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
@@ -23,54 +23,35 @@ namespace Backend_API.Controllers
         {
             if (interactionDTO.IsNullOrEmpty())
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
+            var interactonID = await _interactionService.CreateInteractionAsync(interactionDTO);
+
+            if (interactonID == 0)
             {
-                var interaction = _interactionService.MapDtoToInteraction(interactionDTO);
-                await _interactionService.CreateInteractionAsync(interaction);
-
-                if (interaction.Id == 0)
-                {
-                    return Problem("Interaction not created!");
-                }
-
-                return Ok(interaction.Id);
+                return Problem("Interaction not created!");
             }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(new CreateInteractionRS(interactonID));
         }
-
 
         [HttpPut]
         public async Task<IActionResult> UpdateInteraction([FromBody] InteractionDTO interactionDTO)
         {
             if (interactionDTO.IsNullOrEmpty())
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
+            var result = await _interactionService.UpdateInteractionAsync(interactionDTO);
+
+            if (result <= 0)
             {
-                var interaction = _interactionService.MapDtoToInteraction(interactionDTO);
-                var result = await _interactionService.UpdateInteractionAsync(interaction);
-
-                if (result <= 0)
-                {
-                    return Problem("No interaction updated");
-                }
-
-                return Ok(new ResponseBase());
+                return Problem("No interaction updated");
             }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(new ResponseBase { IsSuccess = true });
         }
     }
 }

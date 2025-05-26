@@ -5,10 +5,8 @@ namespace Backend_API.Services
 {
     public interface IInteractionService
     {
-        InteractionDTO MapToDTO(Interaction interaction);
-        Interaction MapDtoToInteraction(InteractionDTO interactionDTO);
+        Task<long> CreateInteractionAsync(InteractionDTO interaction);
 
-        Task CreateInteractionAsync(Interaction interaction);
-        Task<int> UpdateInteractionAsync(Interaction interaction);
+        Task<int> UpdateInteractionAsync(InteractionDTO interaction);
     }
 }
