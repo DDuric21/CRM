@@ -28,10 +28,7 @@ namespace UI.Services
             }
             catch (Exception ex)
             {
-                var guid = request.Headers
-                    .GetValues(HttpHeaderNames.CorrelationID)?
-                    .FirstOrDefault();
-                Console.WriteLine($"Failed to log exception to server. GUID: {guid}");
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }
