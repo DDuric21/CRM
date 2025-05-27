@@ -241,12 +241,8 @@ namespace UI.Services
             T deserialisedResult = default;
             try
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                if ()
-                {
-
-                }
-                deserialisedResult = JsonSerializer.Deserialize<T>(responseContent, options: options);
+                var responseContent = await response.Content.ReadAsStreamAsync();
+                deserialisedResult = await JsonSerializer.DeserializeAsync<T>(responseContent, options: options);
             }
             catch (Exception ex)
             {
