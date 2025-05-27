@@ -1,6 +1,6 @@
 ﻿namespace Models.Responses
 {
-    public class ResponseBase
+    public class ResponseBase : IApiResponse
     {
         public bool IsSuccess { get; set; }
 

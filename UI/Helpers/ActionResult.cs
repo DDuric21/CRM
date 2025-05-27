@@ -1,8 +1,8 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Models.Responses;
 
 namespace UI.Helpers
 {
-    public class ActionResult<T> where T : class
+    public class ActionResult<T> : IApiResponse where T : class
     {
         public bool IsSuccess { get; set; }
 

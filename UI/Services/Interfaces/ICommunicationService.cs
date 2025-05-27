@@ -8,7 +8,7 @@ namespace UI.Services
 
         Task<HttpRequestMessage> CreateRequestAsync<T>(HttpMethod httpMethod, string url, T requestBody, bool addHeaders = true);
 
-        Task<T> SendRequestAsyncNew<T>(HttpRequestMessage request);
+        Task<T> SendRequestAsyncNew<T>(HttpRequestMessage request) where T : IApiResponse, new();
 
         Task<T> SendRequestAsync<T>(HttpRequestMessage request); 
         

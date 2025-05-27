@@ -49,7 +49,7 @@ namespace UI.Services
             return request;
         }
 
-        public async Task<T> SendRequestAsyncNew<T>(HttpRequestMessage request)
+        public async Task<T> SendRequestAsyncNew<T>(HttpRequestMessage request) where T : IApiResponse, new()
         {
             var httpClient = new HttpClient();
             var response = await httpClient.SendAsync(request);
@@ -61,6 +61,11 @@ namespace UI.Services
                 string errorMessage = await ExtractErrorMessageAsync(options, response);
 
                 throw new Exception(errorMessage);
+            }
+
+            if (response.Content.Headers.ContentLength == 0)
+            {
+                return new T { IsSuccess = true };
             }
 
             var deserialisedResult = await DeserialiseResponseAsync<T>(options, response);
@@ -236,8 +241,12 @@ namespace UI.Services
             T deserialisedResult = default;
             try
             {
-                var responseContent = await response.Content.ReadAsStreamAsync();
-                deserialisedResult = await JsonSerializer.DeserializeAsync<T>(responseContent, options: options);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if ()
+                {
+
+                }
+                deserialisedResult = JsonSerializer.Deserialize<T>(responseContent, options: options);
             }
             catch (Exception ex)
             {
