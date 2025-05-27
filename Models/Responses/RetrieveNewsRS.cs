@@ -4,9 +4,10 @@ namespace Models.Responses
 {
     public class RetrieveNewsRS : ResponseBase
     {
-        public RetrieveNewsRS(bool isSuccess, IEnumerable<NewsDTO> news)
+        public RetrieveNewsRS(bool isSuccess, IEnumerable<NewsDTO> news = null, string errorMessage = null)
         {
             IsSuccess = isSuccess;
+            ErrorMessage = errorMessage;
             News = news;
         }
 

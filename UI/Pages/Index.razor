@@ -54,7 +54,7 @@
 
     private async Task SetNewsDataAsync(RetrieveNewsRS retrievedNews)
     {
-        if (!string.IsNullOrEmpty(retrievedNews.ErrorMessage))
+        if (!retrievedNews.IsSuccess)
         {
             await modalService.ShowErrorMessageAsync(retrievedNews.ErrorMessage);
             return;
