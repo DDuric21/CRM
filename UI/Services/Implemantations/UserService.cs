@@ -2,6 +2,8 @@
 using Models.Enums;
 using Models.Requests;
 using Models.Responses;
+using UI.Data;
+using UI.Helpers;
 
 namespace UI.Services
 {
@@ -90,8 +92,10 @@ namespace UI.Services
             }
         }
 
-        public async Task<bool> UpdateUserDataAsync(UserDTO userDTO)
+        public async Task<ActionResult<object>> UpdateUserDataAsync(UserDTO userDTO, IEnumerable<SelectedUserRole> selectedUserRoles)
         {
+            userDTO.UserRoles = DetermineUpdatedRoles(userDTO.UserRoles, selectedUserRoles);
+
             var url = "Users/Update";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, userDTO);
 
@@ -100,13 +104,20 @@ namespace UI.Services
             try
             {
                 isSuccessful = await _communicationService.SendRequestAsync<bool>(request);
+                if (isSuccessful)
+                {
+                    return new ActionResult<object>(true);
+                }
+                else
+                {
+                    return new ActionResult<object>("Failed to update user data.");
+                }
             }
             catch (Exception ex)
             {
                 _loggingService.SendErrorLogToServerAsync(ex);
+                return new ActionResult<object>(ex.Message);
             }
-
-            return isSuccessful;
         }
 
         public async Task<UserGridFilterDataRS> GetUserFilterBaseValues()
@@ -125,6 +136,28 @@ namespace UI.Services
                 _loggingService.SendErrorLogToServerAsync(ex);
                 return new UserGridFilterDataRS();
             }
+        }
+
+        private List<UserRoleDTO> DetermineUpdatedRoles(List<UserRoleDTO> userRoles, IEnumerable<SelectedUserRole> selectedUserRoles)
+        {
+            var originalRoles = userRoles
+                .Select(x => x.RoleName)
+                .ToList();
+
+            var newRoles = selectedUserRoles
+                .Where(x => x.IsSelected && !originalRoles.Contains(x.UserRole.RoleName))
+                .Select(x => x.UserRole.RoleName)
+                .ToList();
+
+            var removeRoles = originalRoles
+                .Where(x => !selectedUserRoles.Any(y => y.IsSelected && y.UserRole.RoleName == x))
+                .ToList();
+
+            var roles = newRoles.Union(removeRoles)
+                .Select(x => new UserRoleDTO { RoleName = x })
+                .ToList();
+
+            return roles;
         }
     }
 }

@@ -28,7 +28,7 @@ else
             @foreach (var role in selectedUserRoles)
             {
                 <div class="form-check form-switch ms-3">
-                    <InputCheckbox class="form-check-input"  @bind-Value="role.IsSelected"  />
+                    <InputCheckbox class="form-check-input" @bind-Value="role.IsSelected"  />
                     <label class="form-check-label">@role.UserRole.RoleName</label>               
                 </div>
             }
@@ -105,18 +105,11 @@ else
 
     private async Task SubmitUserSettings()
     {
-        UserDTO.UserRoles = selectedUserRoles
-            .Where(x => x.IsSelected)
-            .Select(x => 
-                new UserRoleDTO
-                {
-                    RoleName = x.UserRole.RoleName
-                })
-            .ToList();
+        var updateResult = await userService.UpdateUserDataAsync(UserDTO, selectedUserRoles);
 
-        if (!await userService.UpdateUserDataAsync(UserDTO))
+        if (!updateResult.IsSuccess)
         {
-            modal.ShowCustomerFriendlyMessage();
+            modal.ShowErrorMessage(updateResult.ErrorMessage);
         }
     }
 }

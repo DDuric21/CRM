@@ -11,19 +11,15 @@ namespace Backend_API.Services
     {
         UserDTO MapUserToDTO(User user);
 
-        UserDTO MapUserDataToDTO(UserData userData);
+        Task<UserDTO> GetUserDataAsync(string username);
 
-        Task<UserData> GetUserDataAsync(string username);
+        Task<UserData> GetUserDataByNameAsync(string username);
 
         Task<User> CreateNewUserAsync(UserDTO userDTO);
 
-        Task<List<UserData>> GetUsersAsync(UserFilterRQ userFilter);
+        Task<List<UserDTO>> GetUsersAsync(UserFilterRQ userFilter);
 
-        List<UserDTO> MapUsersDataToDTOs(IEnumerable<UserData> users);
-
-        UserData MapDtoToUserData(UserDTO user);
-
-        Task<bool> UpdateUserDataAsync(UserData userData);
+        Task<bool> UpdateUserDataAsync(UserDTO userDTO);
 
         Task<IdentityResult> DeactivateUserAsync(string username);
 

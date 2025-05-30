@@ -8,16 +8,16 @@ namespace UI.Helpers
 
         public string? ErrorMessage { get; set; }
 
-        public T? Data { get; set; }
+        public T Data { get; set; }
 
-        public ActionResult(bool isSuccess, string errorMessage, T? data = null)
+        public ActionResult(bool isSuccess, string errorMessage, T data = null)
         {
             IsSuccess = isSuccess;
             ErrorMessage = errorMessage;
             Data = data;
         }
 
-        public ActionResult(string errorMessage, T? data = null)
+        public ActionResult(string errorMessage, T data = null)
         {
             IsSuccess = false;
             ErrorMessage = errorMessage;

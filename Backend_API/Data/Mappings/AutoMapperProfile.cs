@@ -140,15 +140,9 @@ namespace Backend_API.Data.Mappings
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
                 .ForPath(dest => dest.UserStatus, opt => opt.MapFrom(src => (ItemState)src.User.UserStatusID));
 
+            // IdentityRole is complex object so manual mapping is required for UserRoles
             CreateMap<UserDTO, UserData>()
-                .ForPath(
-                    dest => dest.UserRoles, 
-                    opt => opt.MapFrom(
-                        src => src.UserRoles.ToDictionary(
-                            x => new IdentityRole(x.RoleName), 
-                            x => x.Permissions
-                                .Select(y => new Claim("permission", y))
-                                .ToList())))
+                .ForMember(dest => dest.UserRoles, opt => opt.Ignore())
                 .ForPath(dest => dest.User.Email, opt => opt.MapFrom(src => src.UserEmail))
                 .ForPath(dest => dest.User.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForPath(dest => dest.User.LastName, opt => opt.MapFrom(src => src.LastName))

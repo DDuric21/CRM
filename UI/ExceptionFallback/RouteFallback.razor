@@ -23,9 +23,9 @@
             LoggingService.SendErrorLogToServerAsync(logDetails);
         }
 
-        if (AppConfig.IsDevelopment())
+        if (!AppConfig.IsDevelopment())
         {
-            await ModalService.ShowErrorMessageAsync("An error occurred please try again");
+            ModalService.ShowCustomerFriendlyMessage();
         }
         else
         {

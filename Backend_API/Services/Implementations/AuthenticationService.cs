@@ -107,7 +107,7 @@ namespace Backend_API.Services
 
             try
             {
-                var userData = await _userService.GetUserDataAsync(userName);
+                var userData = await _userService.GetUserDataByNameAsync(userName);
 
                 var token = GenerateSecurityToken(userData);
                 var jwt = _jwtTokenHandler.WriteToken(token);

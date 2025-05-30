@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Backend_API.Data.DataClasses;
+using Backend_API.Data.DbContext;
 using Backend_API.Data.Models;
 using Backend_API.Logging;
 using Microsoft.AspNetCore.Identity;
@@ -18,36 +19,63 @@ namespace Backend_API.Services
         private readonly IMapper _mapper;
         private readonly CrmUserManager _userManager;
         private readonly CrmRoleManager _roleManager;
+        private readonly CrmDbContext _crmDbContext;
 
         public UserService(
             IMapper mapper,
             CrmUserManager userManager,
-            CrmRoleManager roleManager)
+            CrmRoleManager roleManager,
+            CrmDbContext crmDbContext)
         {
             _mapper = mapper;
             _userManager = userManager;
             _roleManager = roleManager;
+            _crmDbContext = crmDbContext;
         }
 
-        public async Task<UserData> GetUserDataAsync(string username)
+        public async Task<UserDTO> GetUserDataAsync(string username)
+        {
+            var userData = await GetUserDataByNameAsync(username);
+
+            try
+            {
+                var userDTO = _mapper.Map<UserDTO>(userData);
+
+                return userDTO;
+            }
+            catch (Exception ex)
+            {
+                DynamicLogger.LogException(ex, "Error mapping user data to DTO");
+                throw;
+            }
+        }
+
+        public async Task<UserData> GetUserDataByNameAsync(string username)
         {
             var user = await _userManager.FindByNameAsync(username);
 
             if (user is null)
             {
-                return null;
+                return new UserData();
             }
 
-            var rolesName = await _userManager.GetRolesAsync(user);
-            var roles = await _roleManager.GetClaimsAsync(rolesName);
-
-            var userData = new UserData
+            try
             {
-                User = user,
-                UserRoles = roles
-            };
+                var rolesName = await _userManager.GetRolesAsync(user);
 
-            return userData;
+                var userData = new UserData
+                {
+                    User = user,
+                    UserRoles = await _roleManager.GetClaimsAsync(rolesName)
+                };
+
+                return userData;
+            }
+            catch (Exception ex)
+            {
+                DynamicLogger.LogException(ex, "User Claims not retrieved correctly");
+                throw;
+            }
         }
 
         public async Task<User> CreateNewUserAsync(UserDTO userDTO)
@@ -80,100 +108,102 @@ namespace Backend_API.Services
             return user;
         }
 
-        public async Task<List<UserData>> GetUsersAsync(UserFilterRQ userFilter)
+        public async Task<List<UserDTO>> GetUsersAsync(UserFilterRQ userFilter)
         {
-            var users = _userManager.Users;
-
-            var filteredUsers = FilterUsers(users, userFilter);
-
-            var usersData = new List<UserData>();
-
-            foreach (var user in filteredUsers)
+            try
             {
-                var rolesName = await _userManager.GetRolesAsync(user);
+                var filteredUsers = FetchUsers(userFilter);
+                var usersData = await FetchUsersRolesAsync(userFilter, filteredUsers);
 
-                var roles = rolesName.ToDictionary(x => new IdentityRole(x), x => Enumerable.Empty<Claim>());
+                var usersDTOs = _mapper.Map<List<UserDTO>>(usersData);
 
-                if (userFilter.UserRoles.IsNullOrEmpty() || userFilter.UserRoles.Intersect(rolesName).Any())
-                {
-                    usersData.Add(new UserData { User = user, UserRoles = roles });
-                }
+                return usersDTOs;
             }
-
-            return usersData;
+            catch (Exception ex)
+            {
+                DynamicLogger.LogException(ex, "Error fetching users");
+                throw;
+            }
         }
 
-        private IEnumerable<User> FilterUsers(IQueryable<User> users, UserFilterRQ userFilter)
+        public async Task<bool> UpdateUserDataAsync(UserDTO userDTO)
         {
-            if (!userFilter.UserStatuses.IsNullOrEmpty())
+            var userData = MapToUserData(userDTO);
+            if (userData.IsNullOrEmpty())
             {
-                users = users.Where(x => userFilter.UserStatuses.Contains((ItemState)x.UserStatusID));
+                DynamicLogger.LogError("User data is invalid or missing username");
+                return false;
             }
 
-            if (userFilter.FirstName != null)
-            {
-                users = users.Where(x => x.FirstName.StartsWith(userFilter.FirstName));
-            }
-
-            if (userFilter.LastName != null)
-            {
-                users = users.Where(x => x.LastName.StartsWith(userFilter.LastName));
-            }
-
-            if (userFilter.CreatedDateStart != null)
-            {
-                users = users.Where(x => x.DateCreated >= userFilter.CreatedDateStart.Value);
-            }
-
-            if (userFilter.CreatedDateEnd != null)
-            {
-                users = users.Where(x => x.DateCreated <= userFilter.CreatedDateEnd.Value);
-            }
-
-            return users.ToList();
-        }
-
-        public async Task<bool> UpdateUserDataAsync(UserData userData)
-        {
             var user = await _userManager.FindByNameAsync(userData.User.UserName);
             if (user is null)
             {
                 return false;
             }
 
-            var oldRoles = await _userManager.GetRolesAsync(user);
-            var rolesToAdd = userData.UserRoles.Keys
-                .Where(x => !oldRoles.Contains(x.Name))
-                .Select(x => x.Name);
+            SetUserDataForUpdate(userData.User, user);
+            var updateUserData = await CreateUpdateUserData(userData, user);
+            var isSuccess = await UpdateUserDataSafeAsync(updateUserData);
 
-            var rolesToRemove = oldRoles
-                .Where(x => !rolesToAdd.Contains(x));
+            return isSuccess;
+        }
 
-            MapUserDataForUpdate(userData.User, user);
-
-            // this need to be done in a transaction
+        private UserData MapToUserData(UserDTO userDTO)
+        {
             try
             {
-                var updateResult = await _userManager.UpdateAsync(user);
+                var userData = _mapper.Map<UserData>(userDTO);
+                userData.UserRoles = userDTO.UserRoles
+                    .ToDictionary(
+                        x => new IdentityRole(x.RoleName),
+                        x => Enumerable.Empty<Claim>());
 
-                var removingResult = rolesToRemove.IsNullOrEmpty()
+                return userData;
+            }
+            catch (Exception ex)
+            {
+                DynamicLogger.LogException(ex, $"Error mapping {nameof(UserDTO)} to {nameof(UserData)}");
+                throw;
+            }
+        }
+
+        private async Task<bool> UpdateUserDataSafeAsync(UpdateUserData updateUserData)
+        {
+            var isSuccessful = false;
+            await using var transaction = await _crmDbContext.Database.BeginTransactionAsync();
+            try
+            {
+                var updateResult = await _userManager.UpdateAsync(updateUserData.User);
+
+                var removingResult = updateUserData.RolesToRemove.IsNullOrEmpty()
                     ? IdentityResult.Success
-                    : await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+                    : await _userManager.RemoveFromRolesAsync(updateUserData.User, updateUserData.RolesToRemove);
 
-                var addingResult = rolesToAdd.IsNullOrEmpty()
+                var addingResult = updateUserData.RolesToAdd.IsNullOrEmpty()
                     ? IdentityResult.Success
-                    : await _userManager.AddToRolesAsync(user, rolesToAdd);
+                    : await _userManager.AddToRolesAsync(updateUserData.User, updateUserData.RolesToAdd);
 
-                var isSuccessful = updateResult.Succeeded 
-                    && removingResult.Succeeded 
+                isSuccessful = updateResult.Succeeded
+                    && removingResult.Succeeded
                     && addingResult.Succeeded;
 
                 return isSuccessful;
             }
             catch (Exception ex)
             {
-                DynamicLogger.LogException(ex, ex.Message);
+                DynamicLogger.LogException(ex, "Failed updating user data");
                 throw;
+            }
+            finally
+            {
+                if (isSuccessful)
+                {
+                    await transaction.CommitAsync();
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                }
             }
         }
 
@@ -227,47 +257,107 @@ namespace Backend_API.Services
             return userFilterBaseValues;
         }
 
-        #region mappings
         public UserDTO MapUserToDTO(User user)
         {
             return _mapper.Map<UserDTO>(user);
         }
 
-        public UserDTO MapUserDataToDTO(UserData userData)
+        private async Task<List<UserData>> FetchUsersRolesAsync(UserFilterRQ userFilter, IEnumerable<User> filteredUsers)
         {
-            return _mapper.Map<UserDTO>(userData);
-        }
+            var usersData = new List<UserData>();
 
-        public List<UserDTO> MapUsersDataToDTOs(IEnumerable<UserData> users)
-        {
-            var mapedUsers = new List<UserDTO>();
-            foreach (var user in users)
+            foreach (var user in filteredUsers)
             {
-                mapedUsers.Add(MapUserDataToDTO(user));
+                var rolesName = await _userManager.GetRolesAsync(user);
+
+                var roles = rolesName.ToDictionary(x => new IdentityRole(x), x => Enumerable.Empty<Claim>());
+
+                if (userFilter.UserRoles.IsNullOrEmpty() || userFilter.UserRoles.Intersect(rolesName).Any())
+                {
+                    usersData.Add(new UserData { User = user, UserRoles = roles });
+                }
             }
 
-            return mapedUsers;
+            return usersData;
         }
 
-        public UserData MapDtoToUserData(UserDTO userDTO)
+        private IEnumerable<User> FetchUsers(UserFilterRQ userFilter)
         {
-            if (userDTO.IsNullOrEmpty())
+            var users = _userManager.Users;
+            var filteredUsers = FilterUsers(users, userFilter);
+
+            return filteredUsers;
+        }
+
+        private IEnumerable<User> FilterUsers(IQueryable<User> users, UserFilterRQ userFilter)
+        {
+            if (!userFilter.UserStatuses.IsNullOrEmpty())
             {
-                return new UserData();
+                users = users.Where(x => userFilter.UserStatuses.Contains((ItemState)x.UserStatusID));
             }
 
-            var userData = _mapper.Map<UserData>(userDTO);
+            if (userFilter.FirstName != null)
+            {
+                users = users.Where(x => x.FirstName.StartsWith(userFilter.FirstName));
+            }
 
-            return userData;
+            if (userFilter.LastName != null)
+            {
+                users = users.Where(x => x.LastName.StartsWith(userFilter.LastName));
+            }
+
+            if (userFilter.CreatedDateStart != null)
+            {
+                users = users.Where(x => x.DateCreated >= userFilter.CreatedDateStart.Value);
+            }
+
+            if (userFilter.CreatedDateEnd != null)
+            {
+                users = users.Where(x => x.DateCreated <= userFilter.CreatedDateEnd.Value);
+            }
+
+            return users.ToList();
         }
 
-        private void MapUserDataForUpdate(User newUserData, User existingUserData)
+        private void SetUserDataForUpdate(User newUserData, User existingUserData)
         {
             existingUserData.FirstName = newUserData.FirstName;
             existingUserData.LastName = newUserData.LastName;
             existingUserData.Email = newUserData.Email;
             existingUserData.UserName = newUserData.UserName;
         }
-        #endregion
+
+        private async Task<UpdateUserData> CreateUpdateUserData(UserData userData, User user)
+        {
+            var rolesToEdit = userData.UserRoles.Keys
+                .Select(x => x.Name)
+                .ToList();
+
+            var oldRoles = await _userManager.GetRolesAsync(user);
+
+            var rolesToAdd = rolesToEdit
+                .Where(x => !oldRoles.Contains(x))
+                .ToList();
+
+            var rolesToRemove = oldRoles
+                .Where(x => rolesToEdit.Contains(x))
+                .ToList();
+
+            var updateUserData = new UpdateUserData
+            {
+                User = user,
+                RolesToAdd = rolesToAdd,
+                RolesToRemove = rolesToRemove
+            };
+
+            return updateUserData;
+        }
+
+        private class UpdateUserData
+        {
+            internal User User { get; set; }
+            internal IEnumerable<string> RolesToAdd { get; set; }
+            internal IEnumerable<string> RolesToRemove { get; set; }
+        }
     }
 }
