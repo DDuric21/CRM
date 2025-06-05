@@ -22,5 +22,7 @@ namespace UI.Services
         Task<ModalResult> Show<TComponent>() where TComponent : IComponent;
 
         Task<ModalResult> Show<TComponent>(ModalParameters parameters) where TComponent : IComponent;
+
+        Task<ModalResult> Show<TComponent>(ModalParameters parameters, ModalOptions options) where TComponent : IComponent;
     }
 }

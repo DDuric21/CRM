@@ -1,0 +1,54 @@
+﻿@page "/UserManagment/UserRoles/NewRoleForm"
+
+@inject IRoleService roleService
+@inject ICrmModalService modal
+@inject NavigationManager NavigationManager
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Create New Role</h5>
+                </div>
+
+                    <div class="card-body">
+                        <EditForm Model="@roleDTO" OnValidSubmit="@CreateNewRoleAsync">
+                            <div class="mb-3">
+                                <label class="form-label">Role Name</label>
+                                <InputText class="form-control" @bind-Value="roleDTO.RoleName" required />
+                            </div>
+
+                            <Permissions RoleName="@roleDTO.RoleName" @ref="permissions" />
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary">Create Role</button>
+                            </div>
+                        </EditForm>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RoleDTO roleDTO = new RoleDTO();
+
+    private Permissions permissions = new();
+
+    private async Task CreateNewRoleAsync()
+    {
+        roleDTO.Permissions = permissions.RolePermissions
+            .ToDictionary(x => x.Name, x => x.Value);
+
+        var result = await roleService.CreateRoleAsync(roleDTO);
+
+        if (!result.IsSuccess)
+        {
+            modal.ShowErrorMessage(result.ErrorMessage);
+            return;
+        }
+
+        NavigationManager.NavigateTo("/UserManagment/UserRoles/Roles");        
+    }
+}

@@ -20,7 +20,6 @@ namespace Backend_API.Data.Mappings
                 .ForPath(dest => dest.Type, opt => opt.MapFrom(src => (InteractionType)src.TypeID));
 
             CreateMap<IdentityRole, UserRoleDTO>()
-                .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Name));
 
             CreateMap<User, UserDTO>()
@@ -123,6 +122,8 @@ namespace Backend_API.Data.Mappings
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.UserEmail))
                 .ForPath(dest => dest.UserStatusID, opt => opt.MapFrom(src => (int)src.UserStatus));
 
+
+            // other
             CreateMap<UserData, UserDTO>()
                 .ForPath(
                     dest => dest.UserRoles, 

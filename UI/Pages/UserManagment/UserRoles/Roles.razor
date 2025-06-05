@@ -1,0 +1,84 @@
+﻿@page "/UserManagment/UserRoles/Roles"
+
+@inject IRoleService roleService
+@inject ICrmModalService modal
+@inject NavigationManager NavigationManager
+
+<h3>User Roles</h3>
+<button id="btnAddUserRole" class="btn btn-primary" @onclick="Redirect">Add</button>
+
+@if (roles is null)
+{
+    <Loader />
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in roles)
+            {
+                <tr role="button" @ondblclick="() => OpenRoleEdit(role)">
+                    <td>@role</td>
+                    <td>
+                        <button class="btn btn-outline-secondary" @onclick="() => OpenRoleEdit(role)"><em class="oi oi-pencil"></em> Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteUserRoleAsync(role)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<string> roles = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await roleService.GetApplicableRolesAsync();
+        
+        roles = result.Select(x => x.RoleName).ToList();
+    }
+
+    private void Redirect()
+    {
+        NavigationManager.NavigateTo("/UserManagment/UserRoles/NewRoleForm");
+    }
+
+    private async Task OpenRoleEdit(string role)
+    {
+        var parameters = new ModalParameters()
+            .Add("RoleName", role);
+        var options = new ModalOptions
+        {
+            Size = ModalSize.Custom,
+            SizeCustomClass = "custom-wide-modal"
+        };
+
+        await modal.Show<RoleEdit>(parameters, options);
+    }
+
+    private async Task DeleteUserRoleAsync(string role)
+    {
+        var confirmation = await modal.ShowDialog($"This will delete user role: {role}, do you want to proceed?", ModalDialogType.Delete);
+
+        if (confirmation.Cancelled)
+        {
+            return;
+        }
+
+        var result = await roleService.DeleteRoleAsync(role);
+        if (!result.IsSuccess)
+        {
+            modal.ShowErrorMessage(result.ErrorMessage);
+            return;
+        }
+        roles = roles.Where(x => x != role);
+
+        StateHasChanged();
+    }
+}

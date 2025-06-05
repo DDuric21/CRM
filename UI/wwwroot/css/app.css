@@ -114,3 +114,8 @@ th, td {
     text-align: left;
 }
 
+.blazored-modal.custom-wide-modal {
+    width: 50vw;
+    max-width: none;    
+}
+

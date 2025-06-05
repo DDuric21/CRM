@@ -171,5 +171,20 @@ namespace Backend_API.Data.Repositories
                 return _news;
             }
         }
+
+        public IGenericRepository<RolePermission> _rolePermissions;
+
+        public IGenericRepository<RolePermission> RolePermissions
+        {
+            get
+            {
+                if (_rolePermissions == null)
+                {
+                    _rolePermissions = new GenericRepository<RolePermission>(_context);
+                }
+
+                return _rolePermissions;
+            }
+        }
     }
 }
