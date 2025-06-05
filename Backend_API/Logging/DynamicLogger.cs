@@ -9,6 +9,7 @@ namespace Backend_API.Logging
     {
         private static IHttpContextAccessor? _httpContextAccessor;
         private const string ExceptionLogFolder = "Exceptions";
+        private const string InformationLogFolder = "Audit";
         private const string ErrorLogFolder = "Errors";
         private const string WarningLogFolder = "HME";
         private const string CriticalErrorsLogFolder = "CRE";
@@ -17,6 +18,11 @@ namespace Backend_API.Logging
         public static void Configure(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
+        }
+
+        public static void LogInfo(string message, [CallerMemberName] string source = "")
+        {
+            LogTo(InformationLogFolder, message, source, LogEventLevel.Information);
         }
 
         public static void Log(string folder, string message, [CallerMemberName] string source = "")
