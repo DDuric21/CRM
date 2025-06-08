@@ -1,57 +1,33 @@
 using Blazored.LocalStorage;
 using Blazored.Modal;
 using Blazored.SessionStorage;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Models.Authentication;
 using UI;
-using UI.Authentication;
-using UI.Authentication.HttpHandlers;
-using UI.Services;
+using UI.Startup;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var httpClient = new HttpClient
-{
-    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress),
+var initializer = new Initializer();
 
-};
+initializer.SetupCustomServices(builder);
 
-var stream = await httpClient.GetStreamAsync("appCustomSettings.json");
-builder.Configuration.AddJsonStream(stream);
-var config = builder.Configuration.GetSection("profiles:iisBackend").Get<AppConfig>();
+var configuration = await initializer.SetupConfigurationAsync(builder);
+builder.Services.AddSingleton(configuration);
 
-builder.Services.AddScoped(sp => new HttpClient(new CookieHandler()) { BaseAddress = new Uri(config.SecureBackendUrl) });
+initializer.SetupHttpClient(builder, configuration);
 
-builder.Services.AddSingleton(config);
-
-builder.Services.AddBlazoredSessionStorage();
-builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IAddressService, AddressService>();
-builder.Services.AddScoped<IAssetService, AssetService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IInteractionService, InteractionService>();
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<ICommunicationService, CrmCommunicationService>();
-builder.Services.AddScoped<IBillingProfileService, BillingProfileService>();
-builder.Services.AddScoped<INewsService, NewsService>();
-builder.Services.AddScoped<ILoggingService, LoggingService>();
-builder.Services.AddScoped<ICrmModalService, CrmModalService>();
-builder.Services.AddScoped<AuthenticationStateProvider, CrmAuthenticationStateProvider>();
-builder.Services.AddScoped<ICookie, Cookie>();
-
-builder.Services.AddAuthorizationCore(options =>
-{
-    options.AddPolicy(CrmPolicyNames.EditUser, policy =>
-        policy.RequireClaim(CrmClaimTypes.Permission, CrmPermissionNames.EditUser));
-});
+initializer.SetupAuthorization(builder);
 
 builder.Services.AddBlazoredModal();
+builder.Services.AddBlazoredSessionStorage();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-await builder.Build().RunAsync();
+var app = builder.Build();
+
+await initializer.SetupCultureAsync(app);
+
+await app.RunAsync();

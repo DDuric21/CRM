@@ -4,6 +4,8 @@
 @inject IUserService userService
 @inject IRoleService roleService
 @inject ICrmModalService modal
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
 @attribute [Authorize(Policy = CrmPolicyNames.EditUser)]
 
 <PageTitle>User Settings</PageTitle>
@@ -38,12 +40,12 @@ else
     </EditForm>
 
     <br>
-    <div>
-        <span>Language</span>
-        <select>
-            @foreach(var language in supportedLanguages)
+    <div class="culture-switcher">
+        <label for="cultureSelect">Language:</label>
+        <select id="cultureSelect" @bind="selectedCulture">
+            @foreach (var culture in supportedLanguages)
             {
-                <option value="@language">@language</option>
+                <option value="@culture.Name">@culture.DisplayName</option>
             }
         </select>
     </div>
@@ -57,30 +59,19 @@ else
     [CascadingParameter] 
     protected Task<AuthenticationState> authenticationState { get; set; }
 
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "username")]
+    public string Username { get; set; }
+
     public UserDTO UserDTO { get; set; }
 
     private IEnumerable<SelectedUserRole> selectedUserRoles { get; set; }
     private IEnumerable<UserRoleDTO> possibleUserRoles { get; set; }
 
-    [Parameter]
-    [SupplyParameterFromQuery(Name = "username")]
-    public string Username { get; set; }
+    private string selectedCulture;
+    private string currentCulture = CultureInfo.DefaultThreadCurrentUICulture.Name;
 
-    private HashSet<string> supportedLanguages;
-
-    protected async override Task OnInitializedAsync()
-    {
-        base.OnInitialized();
-
-        possibleUserRoles = await roleService.GetApplicableRolesAsync();
-
-        supportedLanguages = new HashSet<string>
-        {
-            "english",
-            "german",
-            "croatian"
-        };
-    }
+    private HashSet<CultureInfo> supportedLanguages;
 
     protected override async Task OnParametersSetAsync()
     {        
@@ -103,6 +94,19 @@ else
         StateHasChanged();
     }
 
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        possibleUserRoles = await roleService.GetApplicableRolesAsync();
+
+        supportedLanguages = new()
+        {
+            new CultureInfo("en-US"),
+            new CultureInfo("hr-HR"),
+        };
+    }
+
     private async Task SubmitUserSettings()
     {
         var updateResult = await userService.UpdateUserDataAsync(UserDTO, selectedUserRoles);
@@ -110,6 +114,17 @@ else
         if (!updateResult.IsSuccess)
         {
             modal.ShowErrorMessage(updateResult.ErrorMessage);
+        }
+
+        await ChangeCultureAsync();
+    }
+
+    private async Task ChangeCultureAsync()
+    {
+        if (selectedCulture != currentCulture)
+        {
+            await LocalStorage.SetItemAsync("crmApplicationCulture", selectedCulture);
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
         }
     }
 }

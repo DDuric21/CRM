@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -22,12 +23,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.15" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.16" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Localization\Resources.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
+    <ProjectReference Include="..\Resources\Resources.csproj" />
   </ItemGroup>
 
   <ItemGroup>
