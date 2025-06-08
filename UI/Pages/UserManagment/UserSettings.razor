@@ -1,5 +1,4 @@
-﻿@page "/User/UserSettings"
-@using System.Security.Claims
+﻿@page "/UserManagment/UserSettings"
 
 @inject IUserService userService
 @inject IRoleService roleService
@@ -74,9 +73,9 @@ else
     private HashSet<CultureInfo> supportedLanguages;
 
     protected override async Task OnParametersSetAsync()
-    {        
+    {
         if (string.IsNullOrWhiteSpace(Username))
-        {            
+        {
             var user = (await authenticationState).User;
             Username = user.Identity.Name;
         }
