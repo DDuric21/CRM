@@ -29,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Localization\Resources.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
 
