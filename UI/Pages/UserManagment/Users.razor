@@ -8,22 +8,27 @@
 <br />
 <h3>@Translation.Users</h3>
 <button id="btnAddUser" class="btn btn-primary" @onclick="Redirect">@Translation.Add</button>
-@if (users is null)
-{
-    <Loader/>
-}
-else
-{
-    <table class="table table-hover">
-        <thead>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>@Translation.Name</th>
+            <th>@Translation.Username</th>
+            <th>Email</th>
+            <th>@Translation.Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (users is null)
+        {
             <tr>
-                <th>@Translation.Name</th>
-                <th>@Translation.Username</th>
-                <th>Email</th>
-                <th>@Translation.Role</th>
+                <td colspan="3" class="text-center py-5">
+                    <Loader />
+                </td>
             </tr>
-        </thead>
-        <tbody>
+        }
+        else
+        {
             @foreach (var user in users)
             {
                 <tr role="button" @ondblclick="() => RedirectToUser(user.UserName)">
@@ -38,15 +43,16 @@ else
                     </td>
                 </tr>
             }
-        </tbody>
-    </table>
-}
+        }
+    </tbody>
+</table>
 
 @code {
     private List<UserDTO> users = new List<UserDTO>();
 
     private async Task GetUsersAsync(UserFilterRQ userFilter)
-    {           
+    {
+        users = null;
         var asyncUsers = await userService.GetUsersAsync(userFilter);
 
         users = await asyncUsers.ToListAsync();
@@ -110,12 +116,12 @@ else
 
     protected void RedirectToUser(string username)
     {
-        navigationManager.NavigateTo($"/User/UserSettings?username={username}");
+        navigationManager.NavigateTo($"/UserManagment/UserSettings?username={username}");
     }
 
     protected void Redirect()
     {
-        navigationManager.NavigateTo("/User/NewUserForm");
+        navigationManager.NavigateTo("/UserManagment/NewUserForm");
     }
 
 }
