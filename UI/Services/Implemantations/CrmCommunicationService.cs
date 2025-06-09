@@ -120,6 +120,11 @@ namespace UI.Services
 
             if (!response.IsSuccessStatusCode)
             {
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    throw new UnauthorizedAccessException();
+                }
+
                 var errorMessage = string.Format("Server returned an error with status: {0} \r\n {1}", response.StatusCode, response.Content);
                 throw new Exception(errorMessage);
             }
@@ -196,6 +201,10 @@ namespace UI.Services
                 {
                     JasonWebToken.Value = response;
                 }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

@@ -3,6 +3,7 @@
 @inject ICrmModalService ModalService
 @inject AppConfig AppConfig
 @inject ILoggingService LoggingService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @code {
     [Parameter] 
@@ -29,9 +30,17 @@
         }
         else
         {
-            await ModalService.ShowErrorMessageAsync(Exception.Message);
+            await ModalService.ShowErrorMessageAsync(Exception?.Message);
         }
 
-        Navigation.NavigateTo("/index", forceLoad: true);
+        if (Exception is UnauthorizedAccessException)
+        {
+            var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)AuthenticationStateProvider;
+            await crmAuthenticationStateProvider.Logout();
+        }
+        else
+        {
+            Navigation.NavigateTo("/index", forceLoad: true);            
+        }
     }
 }
