@@ -4,10 +4,10 @@
 
 <table>
     <thead>
-        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => CreateNewAddress()" >New +</button>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => CreateNewAddress()" >@Translation.New +</button>
         <tr>
-            <th>Primary</th>
-            <th>Address</th>
+            <th>@Translation.Primary</th>
+            <th>@Translation.Address</th>
         </tr>
     </thead>
     <tbody>
@@ -16,12 +16,12 @@
             <tr>
                 <td><input type="radio" id="legalAddress" checked="@addressDTO.IsLegal" name="legalRadio" @onchange="() => ChangeLegal(addressDTO.Id)"/></td>
                 <td><label id="address" for="legalAddress">@addressDTO.FullAddress</label></td>
-                <td><button class="btn btn-danger" @onclick="() => DeleteAddress(addressDTO.Id)"><em class="oi oi-trash"></em> Delete</button></td>
+                <td><button class="btn btn-danger" @onclick="() => DeleteAddress(addressDTO.Id)"><em class="oi oi-trash"></em> @Translation.Delete</button></td>
             </tr>
         }
     </tbody>
     <tfoot>
-        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => UpdateAddresses()" >Save Changes</button>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => UpdateAddresses()">@Translation.SaveChanges</button>
     </tfoot>
 </table>
 
@@ -61,7 +61,7 @@
 
     private async void DeleteAddress(long addressId)
     {
-        var result = await modal.ShowDialog("Are you sure?", ModalDialogType.Delete);
+        var result = await modal.ShowDialog(Translation.Confirmation, ModalDialogType.Delete);
 
         if (result.Cancelled)
         {

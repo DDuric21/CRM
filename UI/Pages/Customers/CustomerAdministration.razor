@@ -13,8 +13,8 @@
 else
 {
     <CascadingValue Value="@customerDTO">
-        <Customer IsAdmin="true"></Customer>        
-        <button class="btn btn-primary" @onclick="() => NavigateToCustomerBase()">Return</button>
+        <Customer IsAdmin="true"></Customer>
+        <button class="btn btn-primary" @onclick="() => NavigateToCustomerBase()">@Translation.Return</button>
     <br />
     <CustomerAdminNav DisplayComponent="ShowComponent"></CustomerAdminNav>
     @switch (@componentName)
@@ -26,7 +26,7 @@ else
             <CustomerProfiles BillingProfiles="@customerDTO.BillingProfiles"></CustomerProfiles>
             break;
         default:
-            <h3>No component selected</h3>
+            <h3>@Translation.NoComponentSelected</h3>
             break;
     }
     </CascadingValue>

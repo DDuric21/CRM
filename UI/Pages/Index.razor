@@ -5,17 +5,17 @@
 @inject IAssetService assetService
 
 
-<h1>Welcome to CRM app!</h1>
+<h1>@Translation.WelcomeToCRMApp</h1>
 
 <div class="d-flex align-items-center mw-75 mh-75 gap-3">
     <div class="w-50 h-100">
-        <NewsFeed Title="What's new?" NewsData="@globalNews" />
+        <NewsFeed Title="@Translation.NewsFeedTitle1" NewsData="@globalNews" />
         <hr style="margin-left: -1%; width: 44vw"/>
-        <NewsFeed Title="Company information" NewsData="@companyNews" />
+        <NewsFeed Title="@Translation.NewsFeedTitle2" NewsData="@companyNews" />
     </div>
     <div class="d-flex justify-content-center align-items-center w-100" style="height: 50vh;">
         <div class="w-75">
-            <h4 align="center">Customers assets</h4>
+            <h4 align="center">@Translation.CustomersAssets</h4>
             <DataPieChart ChartData="@pieChartData" />
         </div>
     </div>

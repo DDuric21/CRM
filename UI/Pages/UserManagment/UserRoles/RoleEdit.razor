@@ -2,7 +2,7 @@
 @inject IRoleService roleService
 @inject ICrmModalService modal
 
-<h3 class="mb-4">Permissions for role: <span class="text-primary">@RoleName</span></h3>
+<h3 class="mb-4">@Translation.PermissionsForRole: <span class="text-primary">@RoleName</span></h3>
 
 
 <div class="container mt-5">
@@ -10,14 +10,14 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Role Permissions - @RoleName</h5>
+                    <h5 class="mb-0">@Translation.RolePermissions - @RoleName</h5>
                 </div>
                 <div class="card-body">
                     <EditForm Model="rolePermissions" OnValidSubmit="UpdatePermissionsAsync">
                         <Permissions RoleName="@RoleName" @ref="permissions" />
 
                         <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">@Translation.SaveChanges</button>
                         </div>
                     </EditForm>
                 </div>

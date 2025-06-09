@@ -4,7 +4,7 @@
 
 <table>
     <thead>
-        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => CreateNewBillingProfile()" >New +</button>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => CreateNewBillingProfile()" >@Translation.New +</button>
     </thead>
     <tbody>
         @foreach (var customerBillingProfile in customerBillingProfiles)
@@ -19,21 +19,24 @@
                 {
                     <td style="padding-left: 10px">
                         <button 
-                        hidden="@customerBillingProfile.Key.IsEditable" 
-                        class="btn btn-outline-secondary" 
-                        @onclick="() => EditBillingProfile(customerBillingProfile.Key.CustomId)"><em class="oi oi-pencil"></em> Edit
+                            hidden="@customerBillingProfile.Key.IsEditable" 
+                            class="btn btn-outline-secondary" 
+                            @onclick="() => EditBillingProfile(customerBillingProfile.Key.CustomId)">
+                            <em class="oi oi-pencil"></em> @Translation.Edit
                         </button>
                         <button 
-                        hidden="@(!customerBillingProfile.Key.IsEditable)"
-                        class="btn btn-primary" 
-                        @onclick="() => SaveBillingProfile(customerBillingProfile.Value)">Save
+                            hidden="@(!customerBillingProfile.Key.IsEditable)"
+                            class="btn btn-primary" 
+                            @onclick="() => SaveBillingProfile(customerBillingProfile.Value)">
+                            @Translation.Save
                         </button>
                     </td>
                     <td style="padding-left: 10px">
                         <button 
-                        hidden="@(customerBillingProfile.Key.IsEditable)"
-                        class="btn btn-danger" 
-                        @onclick="() => DeactivateBillingProfile(customerBillingProfile.Key.CustomId)">Deactivate
+                            hidden="@(customerBillingProfile.Key.IsEditable)"
+                            class="btn btn-danger"
+                            @onclick="() => DeactivateBillingProfile(customerBillingProfile.Key.CustomId)">
+                            @Translation.Deactivate
                         </button>
                     </td>                    
                 }

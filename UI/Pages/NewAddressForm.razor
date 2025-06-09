@@ -3,12 +3,12 @@
 @inject ICrmModalService modalService
 
 <div class="modal-body">
-    <input type="text" placeholder="Full address" @bind-value="addressDTO.FullAddress" /><br>
+    <input type="text" placeholder="@Translation.FullAddress" @bind-value="addressDTO.FullAddress" /><br>
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Cancel" >Cancel</button>
-    <button type="button" class="btn btn-primary" @onclick="Close" >Create</button>
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Cancel" >@Translation.Cancel</button>
+    <button type="button" class="btn btn-primary" @onclick="Close">@Translation.Create</button>
 </div>
 
 @code {
@@ -24,7 +24,7 @@
     protected override async Task OnInitializedAsync()
     {        
         addressDTO.CustomerId = CustomerId;
-        modalInstance.Title = "Create New Address";
+        modalInstance.Title = Translation.CreateNewAddress;
     }
 
     private async Task<AddressDTO> CreateNewAddress()
@@ -42,7 +42,7 @@
 
         if (result.IsNullOrEmpty())
         {
-            modalService.ShowErrorMessage("Address is not created!");
+            modalService.ShowErrorMessage(Translation.AddressNotCreated);
             Cancel();
         }
 

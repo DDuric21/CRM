@@ -7,8 +7,8 @@
 <CustomerGridFilter OnFilterExecute="GetFilteredCustomersAsync"/>
 
 <br />
-<h3>Customers</h3>
-<button id="btnAddCustomer" class="btn btn-primary" @onclick="Redirect">Add</button>
+<h3>@Translation.Customers</h3>
+<button id="btnAddCustomer" class="btn btn-primary" @onclick="Redirect">@Translation.Add</button>
 
 @if (customers is null)
 {
@@ -19,9 +19,9 @@ else
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Birthday</th>
-                <th>Address</th>
+                <th>@Translation.Name</th>
+                <th>@Translation.Birthday</th>
+                <th>@Translation.Address</th>
             </tr>
         </thead>
         <tbody>
@@ -32,8 +32,8 @@ else
                     <td>@customer.Birthday.ToLocalTime().ToString("dd-MM-yyyy")</td>
                     <td>@GetLegalAddress(customer.Addresses)</td>
                     <td>
-                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToCustomer(customer.Id)"><em class="oi oi-pencil"></em> Edit</button>
-                        <button class="btn btn-danger" @onclick="() => DeleteCustomer(customer.Id)">Mask</button>
+                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToCustomer(customer.Id)"><em class="oi oi-pencil"></em> @Translation.Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteCustomer(customer.Id)">@Translation.Mask</button>
                     </td>
                 </tr>
             }
@@ -61,7 +61,7 @@ else
 
     protected async void DeleteCustomer(long id)
     {
-        var result = await modal.ShowDialog("This will remove all customer data, do you want to proceed?", ModalDialogType.Delete);
+        var result = await modal.ShowDialog(Translation.RemoveCustomerDataConfirmation, ModalDialogType.Delete);
 
         if (result.Cancelled)
         {

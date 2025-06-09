@@ -12,7 +12,7 @@
 </style>
 
 <div class="app-exception-fallback"><!--When icon for app is decided add here icon or some picture-->
-    <h1 class="text-danger">Something went wrong</h1>
+    <h1 class="text-danger">@Translation.SomethingWentWrong</h1>
 
     @if (AppConfig.IsDevelopment())
     {
@@ -20,10 +20,10 @@
     }
     else
     {
-        <p>We're sorry, please contact support and reload application.</p>
+        <p>@Translation.FallbackUserInfo</p>
     }
 
-    <button class="btn btn-primary mt-3" @onclick="ReloadApp">Reload</button>
+    <button class="btn btn-primary mt-3" @onclick="ReloadApp">@Translation.Reload</button>
 
 </div>
 

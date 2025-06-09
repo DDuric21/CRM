@@ -7,10 +7,10 @@
 
 <table>
     <thead>
-        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewAsset()" >New +</button>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewAsset()">@Translation.New +</button>
         <tr>
-            <th>Name</th>
-            <th>Price</th>
+            <th>@Translation.Name</th>
+            <th>@Translation.Price</th>
         </tr>
     </thead>
     <tbody>
@@ -22,8 +22,8 @@
                 <td><label id="@assetDTO.Id" >@assetDTO.AssetStatus.ToString()</label></td>
                 @if (assetDTO.AssetStatus != ItemState.Inactive)
                 {
-                    <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)"><span class="oi oi-pencil"></span> Edit</button></td>
-                    <td><button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)" >Deactivate</button></td>                    
+                    <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)"><span class="oi oi-pencil"></span> @Translation.Edit</button></td>
+                    <td><button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)">@Translation.Deactivate</button></td>
                 }
             </tr>
         }

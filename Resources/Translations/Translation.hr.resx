@@ -117,8 +117,62 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Activate" xml:space="preserve">
+    <value>Aktiviraj</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Dodaj</value>
+  </data>
+  <data name="CreateRole" xml:space="preserve">
+    <value>Kreiraj ulogu</value>
+  </data>
+  <data name="CustomerFriendlyMessage" xml:space="preserve">
+    <value>Došlo je do pogreške, molimo kontaktirajte podršku!</value>
+  </data>
+  <data name="Customers" xml:space="preserve">
+    <value>Kupci</value>
+  </data>
+  <data name="Deactivate" xml:space="preserve">
+    <value>Deaktiviraj</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Obriši</value>
+  </data>
+  <data name="DeactivateUserConfirmation" xml:space="preserve">
+    <value>Ovim ćete deaktivirati korisnika {0}, želite li nastaviti?</value>
+  </data>
+  <data name="DeleteUserRoleConfirmation" xml:space="preserve">
+    <value>Ovim će se izbrisati korisničku ulogu: {0}, želite li nastaviti?</value>
+  </data>
+  <data name="Deny" xml:space="preserve">
+    <value>Uskrati</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Uredi</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Greška</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Ime</value>
+  </data>
   <data name="GeneralErrorText" xml:space="preserve">
     <value>Nešto je pošlo po zlu. Pokušajte ponovno!</value>
+  </data>
+  <data name="Grant" xml:space="preserve">
+    <value>Dozvoli</value>
+  </data>
+  <data name="HomeNav" xml:space="preserve">
+    <value>Početna</value>
+  </data>
+  <data name="InfoTitle" xml:space="preserve">
+    <value>Informacija</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Jezik</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Prezime</value>
   </data>
   <data name="Login" xml:space="preserve">
     <value>Prijava</value>
@@ -126,16 +180,241 @@
   <data name="LoginInfo" xml:space="preserve">
     <value>Molimo unesite svoje podatke za prijavu.</value>
   </data>
-  <data name="PasswordPlaceholder" xml:space="preserve">
+  <data name="Logout" xml:space="preserve">
+    <value>Odjava</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Naziv</value>
+  </data>
+  <data name="Password" xml:space="preserve">
     <value>Lozinka</value>
   </data>
-  <data name="UsernamePlaceholder" xml:space="preserve">
+  <data name="Permission" xml:space="preserve">
+    <value>Dopuštenje</value>
+  </data>
+  <data name="PermissionsForRole" xml:space="preserve">
+    <value>Dopuštenja za ulogu</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Registriraj</value>
+  </data>
+  <data name="RegisterNewUser" xml:space="preserve">
+    <value>Registrirajte novog korisnika</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Uloga</value>
+  </data>
+  <data name="RoleName" xml:space="preserve">
+    <value>Naziv uloge</value>
+  </data>
+  <data name="RolePermissions" xml:space="preserve">
+    <value>Dopuštenja za ulogu</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Pohrani</value>
+  </data>
+  <data name="SaveChanges" xml:space="preserve">
+    <value>Pohrani promjene</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Postavke</value>
+  </data>
+  <data name="TimeZone" xml:space="preserve">
+    <value>Vremenska zona</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>Upravljanje korisnicima</value>
+  </data>
+  <data name="Username" xml:space="preserve">
     <value>Korisničko ime</value>
+  </data>
+  <data name="UserRoles" xml:space="preserve">
+    <value>Korisničke uloge</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Korisnici</value>
   </data>
   <data name="UserSettings" xml:space="preserve">
     <value>Postavke korisnika</value>
   </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Upozorenje</value>
+  </data>
   <data name="WrongCredentials" xml:space="preserve">
     <value>Molimo unesite ispravne podatke za prijavu!</value>
+  </data>
+  <data name="ActivateUserConfirmation" xml:space="preserve">
+    <value>Ovo će aktivirati korisnika {0}, želite li nastaviti?</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Cijena</value>
+  </data>
+  <data name="SelectedOptionNotValid" xml:space="preserve">
+    <value>Odabrana opcija nije valjana!</value>
+  </data>
+  <data name="SelectedBPNotValid" xml:space="preserve">
+    <value>Odabrani profil za naplatu nije važeći!</value>
+  </data>
+  <data name="BillingProfileID" xml:space="preserve">
+    <value>ID profila za naplatu</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Adresa</value>
+  </data>
+  <data name="WelcomeToCRMApp" xml:space="preserve">
+    <value>Dobrodošli u CRM aplikaciju!</value>
+  </data>
+  <data name="NewsFeedTitle1" xml:space="preserve">
+    <value>Što je novo?</value>
+  </data>
+  <data name="NewsFeedTitle2" xml:space="preserve">
+    <value>Informacije o tvrtki</value>
+  </data>
+  <data name="CustomersAssets" xml:space="preserve">
+    <value>Imovina kupaca</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Tip</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Opis</value>
+  </data>
+  <data name="FullAddress" xml:space="preserve">
+    <value>Puna adresa</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Otkazati</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Stvori</value>
+  </data>
+  <data name="CreateNewAddress" xml:space="preserve">
+    <value>Stvori novu adresu</value>
+  </data>
+  <data name="AddressNotCreated" xml:space="preserve">
+    <value>Adresa nije kreirana!</value>
+  </data>
+  <data name="SubmitOrder" xml:space="preserve">
+    <value>Predaj narudžbu</value>
+  </data>
+  <data name="OrderSuccessfullySubmitted" xml:space="preserve">
+    <value>Narudžba je uspješno poslana</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>Nešto nije u redu</value>
+  </data>
+  <data name="FallbackUserInfo" xml:space="preserve">
+    <value>Žao nam je, molimo kontaktirajte podršku i ponovno učitajte aplikaciju.</value>
+  </data>
+  <data name="Reload" xml:space="preserve">
+    <value>Ponovno učitaj</value>
+  </data>
+  <data name="GridFilter" xml:space="preserve">
+    <value>Tablični filtar</value>
+  </data>
+  <data name="PersonalID" xml:space="preserve">
+    <value>Osobna identifikacija</value>
+  </data>
+  <data name="EnterFirstName" xml:space="preserve">
+    <value>Unesite ime</value>
+  </data>
+  <data name="EnterLastName" xml:space="preserve">
+    <value>Unesite prezime</value>
+  </data>
+  <data name="EnterPersonalID" xml:space="preserve">
+    <value>Unesite osobni ID</value>
+  </data>
+  <data name="BornBetween" xml:space="preserve">
+    <value>Rođen između</value>
+  </data>
+  <data name="SelectStatus" xml:space="preserve">
+    <value>Odaberite Status</value>
+  </data>
+  <data name="SelectCustomerType" xml:space="preserve">
+    <value>Odaberite vrstu kupca</value>
+  </data>
+  <data name="CreatedBetween" xml:space="preserve">
+    <value>Kreiran između</value>
+  </data>
+  <data name="SelectRoles" xml:space="preserve">
+    <value>Odaberite Uloge</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>Novi</value>
+  </data>
+  <data name="Primary" xml:space="preserve">
+    <value>Glavna</value>
+  </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>Jeste li sigurni?</value>
+  </data>
+  <data name="Return" xml:space="preserve">
+    <value>Povratak</value>
+  </data>
+  <data name="NoComponentSelected" xml:space="preserve">
+    <value>Nije odabrana nijedna komponenta</value>
+  </data>
+  <data name="Addresses" xml:space="preserve">
+    <value>Adrese</value>
+  </data>
+  <data name="Profiles" xml:space="preserve">
+    <value>Profili</value>
+  </data>
+  <data name="MandatoryFieldsNotPopulated" xml:space="preserve">
+    <value>Nisu sva obavezna polja popunjena!</value>
+  </data>
+  <data name="Interactions" xml:space="preserve">
+    <value>Interakcije</value>
+  </data>
+  <data name="Assets" xml:space="preserve">
+    <value>Imovina</value>
+  </data>
+  <data name="Orders" xml:space="preserve">
+    <value>Narudžbe</value>
+  </data>
+  <data name="OrderID" xml:space="preserve">
+    <value>ID Narudžbe</value>
+  </data>
+  <data name="AssetName" xml:space="preserve">
+    <value>Naziv Imovine</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Stvoreno</value>
+  </data>
+  <data name="Submited" xml:space="preserve">
+    <value>Poslano</value>
+  </data>
+  <data name="Birthday" xml:space="preserve">
+    <value>Datum rođenja</value>
+  </data>
+  <data name="Mask" xml:space="preserve">
+    <value>Maskiraj</value>
+  </data>
+  <data name="RemoveCustomerDataConfirmation" xml:space="preserve">
+    <value>Ovim će se ukloniti svi podaci o korisnicima, želite li nastaviti?</value>
+  </data>
+  <data name="NewCustomerForm" xml:space="preserve">
+    <value>Obrazac za novog kupca</value>
+  </data>
+  <data name="CreateNewCustomer" xml:space="preserve">
+    <value>Stvorite novog kupca</value>
+  </data>
+  <data name="NewResidentialCustomer" xml:space="preserve">
+    <value>Nova rezidencijalna stranka</value>
+  </data>
+  <data name="CustomerNotCreated" xml:space="preserve">
+    <value>Kupac nije kreiran!</value>
+  </data>
+  <data name="BusinessTypesCurrentlyNotSupported" xml:space="preserve">
+    <value>Poslovni korisnici trenutno nisu podržani</value>
+  </data>
+  <data name="ChooseCustomerType" xml:space="preserve">
+    <value>Molimo odaberite vrstu klijenta</value>
+  </data>
+  <data name="NothingAtThisAddress" xml:space="preserve">
+    <value>Žao nam je, nema ničega na ovoj adresi.</value>
   </data>
 </root>

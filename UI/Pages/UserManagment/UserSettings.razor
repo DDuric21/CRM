@@ -7,15 +7,15 @@
 @inject NavigationManager Navigation
 @attribute [Authorize(Policy = CrmPolicyNames.EditUser)]
 
-<PageTitle>User Settings</PageTitle>
+<PageTitle>@Translation.UserSettings</PageTitle>
 
 @if (UserDTO.IsNullOrEmpty())
 {
-    <Loader></Loader>
+    <Loader/>
 }
 else
 {
-    <h3>User Settings</h3>
+    <h3>@Translation.UserSettings</h3>
     <EditForm Model="@UserDTO" OnSubmit="@SubmitUserSettings">
         <div>
             <InputText @bind-Value="@UserDTO.FirstName" />
@@ -24,7 +24,7 @@ else
             <InputText @bind-Value="@UserDTO.UserEmail" />
         </div>
         <div>
-            User Roles:
+            @Translation.UserRoles:
             <br>
             @foreach (var role in selectedUserRoles)
             {
@@ -35,12 +35,12 @@ else
             }
         </div> 
         <br>
-        <button type="submit" name="submitUserSettings" class="btn btn-primary">Save</button>
+        <button type="submit" name="submitUserSettings" class="btn btn-primary">@Translation.Save</button>
     </EditForm>
 
     <br>
     <div class="culture-switcher">
-        <label for="cultureSelect">Language:</label>
+        <label for="cultureSelect">@Translation.Language:</label>
         <select id="cultureSelect" @bind="selectedCulture">
             @foreach (var culture in supportedLanguages)
             {
@@ -50,7 +50,7 @@ else
     </div>
 
     <div>
-        <span>Time zone</span>
+        <span>@Translation.TimeZone</span>
     </div>
 }
 

@@ -20,7 +20,7 @@ else
             <input type="text" @bind-value="customerDTO.FirstName" />
             <input type="text" @bind-value="customerDTO.LastName" />
             <input type="text" @bind-value="customerDTO.Birthday" />
-            <button type="submit" name="submit" class="btn btn-primary" @onclick="SubmitOrder" >SubmitOrder</button>
+            <button type="submit" name="submit" class="btn btn-primary" @onclick="SubmitOrder" >@Translation.SubmitOrder</button>
         </div>
 
         <CascadingValue Value="@orderDTO">
@@ -100,7 +100,7 @@ else
 
         if (response)
         {
-            await modalService.ShowDialog("Order successfully submitted", ModalDialogType.OK);
+            await modalService.ShowDialog(Translation.OrderSuccessfullySubmitted, ModalDialogType.OK);
             navigationManager.NavigateTo($"/Customers/{customerDTO.Id}");
         }
         else

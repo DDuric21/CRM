@@ -6,8 +6,8 @@
 
 <UserGridFilter OnFilterExecute="GetUsersAsync"/>
 <br />
-<h3>Users</h3>
-<button id="btnAddUser" class="btn btn-primary" @onclick="Redirect">Add</button>
+<h3>@Translation.Users</h3>
+<button id="btnAddUser" class="btn btn-primary" @onclick="Redirect">@Translation.Add</button>
 @if (users is null)
 {
     <Loader/>
@@ -17,10 +17,10 @@ else
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Username</th>
+                <th>@Translation.Name</th>
+                <th>@Translation.Username</th>
                 <th>Email</th>
-                <th>Role</th>
+                <th>@Translation.Role</th>
             </tr>
         </thead>
         <tbody>
@@ -32,9 +32,9 @@ else
                     <td>@user.UserEmail</td>
                     <td>@string.Join(" / ", user.UserRoles.Select(x => x.RoleName))</td>
                     <td>
-                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToUser(user.UserName)"><em class="oi oi-pencil"></em> Edit</button>
-                        <button class="btn btn-primary" hidden="@(user.UserStatus == ItemState.Active)" @onclick="() => ActivateUser(user.UserName)">Activate</button>
-                        <button class="btn btn-danger" hidden="@(user.UserStatus == ItemState.Inactive)" @onclick="() => DeactivateUser(user.UserName)">Deactivate</button>
+                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToUser(user.UserName)"><em class="oi oi-pencil"></em> @Translation.Edit</button>
+                        <button class="btn btn-primary" hidden="@(user.UserStatus == ItemState.Active)" @onclick="() => ActivateUser(user.UserName)">@Translation.Activate</button>
+                        <button class="btn btn-danger" hidden="@(user.UserStatus == ItemState.Inactive)" @onclick="() => DeactivateUser(user.UserName)">@Translation.Deactivate</button>
                     </td>
                 </tr>
             }
@@ -54,7 +54,8 @@ else
 
     protected async void DeactivateUser(string username)
     {
-        var result = await modal.ShowDialog($"This will deactivate user {username}, do you want to proceed?", ModalDialogType.Delete);
+        var confirmationMessage = string.Format(Translation.DeactivateUserConfirmation, username);
+        var result = await modal.ShowDialog(confirmationMessage, ModalDialogType.Delete);
 
         if (result.Cancelled)
         {
@@ -81,7 +82,8 @@ else
 
     protected async void ActivateUser(string username)
     {
-        var result = await modal.ShowDialog($"This will activate user {username}, do you want to proceed?", ModalDialogType.OK);
+        var confirmationMessage = string.Format(Translation.ActivateUserConfirmation, username);
+        var result = await modal.ShowDialog(confirmationMessage, ModalDialogType.OK);
 
         if (result.Cancelled)
         {

@@ -3,7 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject IConfiguration configuration
 
-<PageTitle>CRM_UI</PageTitle>
+<PageTitle>CRM</PageTitle>
 <AuthorizeView>
     <div class="page">
         <div class="sidebar">
@@ -12,7 +12,9 @@
 
         <main>
             <div class="top-row px-4">    
-                <a class="btn btn-outline-secondary" href="/UserManagment/UserSettings?username=@username"><span class="oi oi-cog"></span> Settings</a>
+                <a class="btn btn-outline-secondary" href="/UserManagment/UserSettings?username=@username">
+                    <span class="oi oi-cog"></span> @Translation.Settings
+                </a>
             </div>
 
             <article class="content px-4">

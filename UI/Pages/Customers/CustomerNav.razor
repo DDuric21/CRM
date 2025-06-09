@@ -1,14 +1,14 @@
 ﻿
 <nav class="navbar navbar-dark bg-primary" >
   <div class="container-fluid">
-      <div class="nav-item px-3">          
-        <a class="navbar-brand" role="button" @onclick="() => DisplayComponentHandler(nameof(CustomerInteractions))">Interactions</a>
+      <div class="nav-item px-3">
+            <a class="navbar-brand" role="button" @onclick="() => DisplayComponentHandler(nameof(CustomerInteractions))">@Translation.Interactions</a>
       </div>   
-      <div class="nav-item px-3" >          
-        <a class="navbar-brand" role="button" @onclick="() => DisplayComponentHandler(nameof(CustomerAssets))" >Assets</a>
+      <div class="nav-item px-3" >
+            <a class="navbar-brand" role="button" @onclick="() => DisplayComponentHandler(nameof(CustomerAssets))">@Translation.Assets</a>
       </div>           
-      <div class="nav-item px-3">          
-        <a class="navbar-brand" role="button" @onclick="() => DisplayComponentHandler(nameof(CustomerOrders))" >Orders</a>
+      <div class="nav-item px-3">
+            <a class="navbar-brand" role="button" @onclick="() => DisplayComponentHandler(nameof(CustomerOrders))">@Translation.Orders</a>
       </div>
   </div>
 </nav>

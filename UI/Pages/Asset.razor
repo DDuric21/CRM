@@ -40,8 +40,8 @@
 <table>
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Price</th>
+            <th>@Translation.Name</th>
+            <th>@Translation.Price</th>
         </tr>
     </thead>
     <tbody>        
@@ -57,13 +57,13 @@
         }
         else
         {
-            <button type="submit" name="submit" class="btn btn-primary" @onclick="AddOption">Add +</button>
+            <button type="submit" name="submit" class="btn btn-primary" @onclick="AddOption">@Translation.Add +</button>
             @foreach (var optionDTO in AssetDTO.Options)
             {
                 <tr>
                     <td><label id="asset" >@optionDTO.Name</label></td>
                     <td><label id="asset" >@optionDTO.Price</label></td>
-                    <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))"><em class="oi oi-trash"></em>Delete</button></td>
+                    <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))"><em class="oi oi-trash"></em>@Translation.Delete</button></td>
                 </tr>
             }
             @foreach (var assetOption in selectedOptions)
@@ -73,8 +73,8 @@
                     {            
                         <option value="@option.Id">@option.Name</option>
                     }
-                </select>    
-                <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))" ><em class="oi oi-trash"></em> Delete</button>
+                </select>
+                <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))"><em class="oi oi-trash"></em> @Translation.Delete</button>
             }
         }
     </tbody>
@@ -183,7 +183,7 @@
     {
         if (!ValidateEventArgID(e, out long id))
         {
-            modalService.ShowErrorMessage("Selected option is not valid!");
+            modalService.ShowErrorMessage(Translation.SelectedOptionNotValid);
             return;
         }   
 
@@ -213,7 +213,7 @@
     {
         if (!ValidateEventArgID(e, out string id))
         {
-            modalService.ShowErrorMessage("Selected billing profile is not valid!");
+            modalService.ShowErrorMessage(Translation.SelectedBPNotValid);
             return;
         }
 

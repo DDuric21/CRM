@@ -1,6 +1,7 @@
 ﻿using Blazored.Modal;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
+using Resources.Translations;
 using UI.Enums;
 using UI.Pages.Modals;
 
@@ -9,10 +10,9 @@ namespace UI.Services
     public class CrmModalService : ICrmModalService
     {
         private readonly IModalService _modalService;
-        private const string ErrorTitle = "Error";
-        private const string WarningTitle = "Warning";
-        private const string InfoTitle = "Info";
-        private const string CustomerFriendlyMessage = "Something went wrong please contact support!";
+        private string ErrorTitle = Translation.Error;
+        private string WarningTitle = Translation.Warning;
+        private string InfoTitle = Translation.InfoTitle;
 
         public CrmModalService(IModalService modalService)
         {
@@ -22,7 +22,7 @@ namespace UI.Services
         public void ShowCustomerFriendlyMessage()
         {
             // Show correlation ID to customer would be great
-            ShowErrorMessage(CustomerFriendlyMessage);
+            ShowErrorMessage(Translation.CustomerFriendlyMessage);
         }
 
         public void ShowErrorMessage(string message)

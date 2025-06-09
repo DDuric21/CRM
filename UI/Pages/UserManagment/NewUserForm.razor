@@ -5,17 +5,17 @@
 @inject NavigationManager navigationManager
 @inject ICrmModalService modal
 
-<h3>Register new user</h3>
+<h3>@Translation.RegisterNewUser</h3>
 
 <EditForm Model="@userDTO" OnSubmit="@CreateNewUserAsync">
     <div class="form-row">
         <div class="form-group col-md-6">
-            <label for="inputFirstName">First Name</label>
-            <input class="form-control" id="inputFirstName" placeholder="First Name" @bind-value="userDTO.FirstName">
+            <label for="inputFirstName">@Translation.FirstName</label>
+            <input class="form-control" id="inputFirstName" placeholder="@Translation.FirstName" @bind-value="userDTO.FirstName">
         </div>
         <div class="form-group col-md-6">
-            <label for="inputLastName">Last Name</label>
-            <input class="form-control" id="inputLastName" placeholder="Last Name" @bind-value="userDTO.LastName">
+            <label for="inputLastName">@Translation.LastName</label>
+            <input class="form-control" id="inputLastName" placeholder="@Translation.LastName" @bind-value="userDTO.LastName">
         </div>
     </div>
     <div class="form-group col-md-6">
@@ -23,12 +23,12 @@
         <input type="email" class="form-control" id="inputEmail" placeholder="user@email.com" @bind-value="userDTO.UserEmail">
     </div>
     <div class="form-group col-md-6">
-        <label for="inputPassword">Password</label>
-        <input type="password" class="form-control" id="inputPassword" placeholder="Password" @bind-value="userDTO.Password">
+        <label for="inputPassword">@Translation.Password</label>
+        <input type="password" class="form-control" id="inputPassword" placeholder="@Translation.Password" @bind-value="userDTO.Password">
     </div>
     <!-- This serves for roles -->
     <div class="form-group">
-        User Roles:
+        @Translation.UserRoles:
         @if (selectedUserRoles.IsNullOrEmpty())
         {
             <Loader></Loader>
@@ -46,7 +46,7 @@
             <br>
         }
     </div>
-    <button type="submit" class="btn btn-primary">Register</button>
+    <button type="submit" class="btn btn-primary">@Translation.Register</button>
 </EditForm>
 
 

@@ -24,8 +24,8 @@
             </div>
         </div>
         <EditForm class="login-form" Model="@userDTO" OnSubmit="@SubmitLogin">
-            <input placeholder="@Translation.UsernamePlaceholder" name="username" @bind-value="userDTO.UserName" oninput="@RemoveWarningText" />
-            <input type="password" placeholder="@Translation.PasswordPlaceholder" name="password" @bind-value="userDTO.Password" oninput="@RemoveWarningText" />
+            <input placeholder="@Translation.Username" name="username" @bind-value="userDTO.UserName" oninput="@RemoveWarningText" />
+            <input type="password" placeholder="@Translation.Password" name="password" @bind-value="userDTO.Password" oninput="@RemoveWarningText" />
             <button type="submit" name="submit" class="submitButton">
                 <span class="spinner-border spinner-border-sm" role="status" hidden="@(!showLoading)"></span>
                 <span>@Translation.Login.ToUpper()</span>                

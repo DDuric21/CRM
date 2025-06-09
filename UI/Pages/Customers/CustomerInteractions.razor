@@ -6,7 +6,7 @@
 
 <table>
     <thead>
-        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewInteraction()" >New +</button>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewInteraction()">@Translation.New +</button>
     </thead>
     <tbody>
         @foreach (var customerInteraction in customerInteractionss)
@@ -14,8 +14,8 @@
             <tr>
                 <Interaction InteractionDTO="customerInteraction.Value" IsEditable="customerInteraction.Key.IsEditable" SaveInteraction="SaveInteraction"></Interaction>
                 <td>
-                    <button hidden="@customerInteraction.Key.IsEditable" type="button" class="btn btn-outline-secondary" @onclick="() => EditInteraction(customerInteraction.Key.Id)" ><em class="oi oi-pencil"></em> Edit</button>
-                    <button hidden="@(!customerInteraction.Key.IsEditable)" type="button" class="btn btn-outline-primary" @onclick="() => SaveInteraction(customerInteraction.Value)" >Save</button>
+                    <button hidden="@customerInteraction.Key.IsEditable" type="button" class="btn btn-outline-secondary" @onclick="() => EditInteraction(customerInteraction.Key.Id)"><em class="oi oi-pencil"></em> @Translation.Edit</button>
+                    <button hidden="@(!customerInteraction.Key.IsEditable)" type="button" class="btn btn-outline-primary" @onclick="() => SaveInteraction(customerInteraction.Value)">@Translation.Save</button>
                 </td>
             </tr>
         }
@@ -61,7 +61,7 @@
         if (interactionDTO.Type == 0
             || interactionDTO.DateTime == DateTime.MinValue)
         {
-            modal.ShowErrorMessage("Not all mandatory fields populated!");
+            modal.ShowErrorMessage(Translation.MandatoryFieldsNotPopulated);
             return;
         }
 

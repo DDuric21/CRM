@@ -15,14 +15,14 @@
                     <div class="card-body">
                         <EditForm Model="@roleDTO" OnValidSubmit="@CreateNewRoleAsync">
                             <div class="mb-3">
-                                <label class="form-label">Role Name</label>
+                                <label class="form-label">@Translation.RoleName</label>
                                 <InputText class="form-control" @bind-Value="roleDTO.RoleName" required />
                             </div>
 
                             <Permissions RoleName="@roleDTO.RoleName" @ref="permissions" />
 
                             <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-primary">Create Role</button>
+                                <button type="submit" class="btn btn-primary">@Translation.CreateRole</button>
                             </div>
                         </EditForm>
                     </div>

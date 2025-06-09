@@ -12,7 +12,7 @@ else
 {    
     <CascadingValue Value="@customerDTO">
         <Customer></Customer>
-        <button class="btn btn-primary" @onclick="() => NavigateToCustomerAdministration()">Edit</button>
+        <button class="btn btn-primary" @onclick="() => NavigateToCustomerAdministration()">@Translation.Edit</button>
         <CustomerNav DisplayComponent="ShowComponent"></CustomerNav>
         @switch (componentName)
         {
@@ -26,7 +26,7 @@ else
                 <CustomerOrders></CustomerOrders>
                 break;
             default:
-                <h3>No component selected</h3>
+                <h3>@Translation.NoComponentSelected</h3>
                 break;
         }
         </CascadingValue>
