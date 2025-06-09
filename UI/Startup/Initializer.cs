@@ -1,11 +1,11 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.JSInterop;
 using Models.Authentication;
 using Resources.Translations;
 using System.Globalization;
 using UI.Authentication;
+using UI.Authentication.HttpHandlers;
 using UI.Services;
 
 namespace UI.Startup
@@ -33,9 +33,9 @@ namespace UI.Startup
 
         public void SetupHttpClient(WebAssemblyHostBuilder builder, AppConfig config)
         {
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(config.SecureBackendUrl),
+            var httpClient = new HttpClient(new CookieHandler()) 
+            { 
+                BaseAddress = new Uri(config.SecureBackendUrl) 
             };
 
             builder.Services.AddScoped(sp => httpClient);
