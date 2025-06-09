@@ -417,4 +417,13 @@
   <data name="NothingAtThisAddress" xml:space="preserve">
     <value>Sorry, there's nothing at this address.</value>
   </data>
+  <data name="BillingProfile" xml:space="preserve">
+    <value>Billing Profile</value>
+  </data>
+  <data name="AssetType" xml:space="preserve">
+    <value>Asset Type</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
 </root>

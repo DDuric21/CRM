@@ -133,6 +133,24 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Asset Type.
+        /// </summary>
+        public static string AssetType {
+            get {
+                return ResourceManager.GetString("AssetType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Billing Profile.
+        /// </summary>
+        public static string BillingProfile {
+            get {
+                return ResourceManager.GetString("BillingProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Billing Profile ID.
         /// </summary>
         public static string BillingProfileID {

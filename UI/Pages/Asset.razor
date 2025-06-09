@@ -1,10 +1,14 @@
 ﻿@inject IAssetService assetService
 @inject ICrmModalService modalService
 
-<div class="align-items-stretch">
+<br />
+
+<div class="row g-2 align-items-stretch">
+    <div class="col-2">
+    <!--Asset-->
+    <label>@Translation.AssetType</label>
     @if (ActionID == (int)OrderAction.Create)
     {
-        <!--Asset-->
         <select id="selectedAsset" class="form-select" @onchange="AssetSelected">
             @foreach (var asset in selectableAssets)
             {
@@ -22,59 +26,75 @@
     else
     {
         <fieldset disabled="@true">
-            <input type="text" @bind-value="AssetDTO.Name" /><br>
+            <select id="selectedAsset" class="form-select">
+                <option selected value="@AssetDTO.Id">@AssetDTO.Name</option>
+            </select>
         </fieldset>
     }
-    <!--BillingProfile-->
-    <fieldset disabled="@(ActionID == (int)OrderAction.Delete)">
-        <select id="selectedBillingProfile" class="form-select" @onchange="BillingProfileChanged" >
-            @foreach (var profile in selectableBillingProfiles)
-            {
-                <option value="@profile.BillingProfileId">@profile.BillingProfileId</option>
-            }
-        </select>
-    </fieldset>
+    </div>
 </div>
 
+<br />
+
+<!--BillingProfile-->
+<div class="row g-2 align-items-stretch">
+    <div class="col-2">
+        <label>@Translation.BillingProfile</label>
+        <fieldset disabled="@(ActionID == (int)OrderAction.Delete)">
+            <select id="selectedBillingProfile" class="form-select" @onchange="BillingProfileChanged" >
+                @foreach (var profile in selectableBillingProfiles)
+                {
+                    <option value="@profile.BillingProfileId">@profile.BillingProfileId</option>
+                }
+            </select>
+        </fieldset>
+    </div>
+</div>
+
+<br />
+
 <!--Asset options-->
-<table>
+<button type="submit" name="submit" hidden="@(ActionID == (int)OrderAction.Delete)" class="btn btn-primary" @onclick="AddOption">@Translation.Add +</button>
+<table class="table table-hover">
     <thead>
         <tr>
             <th>@Translation.Name</th>
             <th>@Translation.Price</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>        
-        @if (ActionID == (int)OrderAction.Delete)
+        @foreach (var optionDTO in AssetDTO.Options)
         {
-            @foreach (var optionDTO in AssetDTO.Options)
-            {
-                <tr>
-                    <td><label id="asset" >@optionDTO.Name</label></td>
-                    <td><label id="asset" >@optionDTO.Price</label></td>
-                </tr>
-            }
+            <tr>
+                <td><label id="asset">@optionDTO.Name</label></td>
+                <td><label id="asset">@optionDTO.Price</label></td>
+                <td><label id="asset" class="text-danger">TBD</label></td>
+                <td hidden="@(ActionID == (int)OrderAction.Delete)">
+                    <button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">
+                        <em class="oi oi-trash"></em> @Translation.Deactivate</button>
+                </td>
+            </tr>
         }
-        else
+        @if (ActionID != (int)OrderAction.Delete)
         {
-            <button type="submit" name="submit" class="btn btn-primary" @onclick="AddOption">@Translation.Add +</button>
-            @foreach (var optionDTO in AssetDTO.Options)
-            {
-                <tr>
-                    <td><label id="asset" >@optionDTO.Name</label></td>
-                    <td><label id="asset" >@optionDTO.Price</label></td>
-                    <td><button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))"><em class="oi oi-trash"></em>@Translation.Delete</button></td>
-                </tr>
-            }
             @foreach (var assetOption in selectedOptions)
             {
-                <select class="form-select" id="selectedOption" @onchange="OptionSelected" >
-                    @foreach (var option in selectableOptions)
-                    {            
-                        <option value="@option.Id">@option.Name</option>
-                    }
-                </select>
-                <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))"><em class="oi oi-trash"></em> @Translation.Delete</button>
+                <tr>
+                    <td>
+                        <select class="form-select" id="selectedOption" @onchange="OptionSelected">
+                            @foreach (var option in selectableOptions)
+                            {
+                                <option value="@option.Id">@option.Name</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))">
+                            <em class="oi oi-trash"></em> @Translation.Cancel
+                        </button>                            
+                    </td>
+                </tr>
             }
         }
     </tbody>

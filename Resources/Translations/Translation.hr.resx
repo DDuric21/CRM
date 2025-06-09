@@ -417,4 +417,13 @@
   <data name="NothingAtThisAddress" xml:space="preserve">
     <value>Žao nam je, nema ničega na ovoj adresi.</value>
   </data>
+  <data name="BillingProfile" xml:space="preserve">
+    <value>Profil Naplate</value>
+  </data>
+  <data name="AssetType" xml:space="preserve">
+    <value>Vrsta Imovine</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Lozinka je obavezna</value>
+  </data>
 </root>
