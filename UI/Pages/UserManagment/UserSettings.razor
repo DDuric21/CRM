@@ -44,7 +44,7 @@ else
         <select id="cultureSelect" @bind="selectedCulture">
             @foreach (var culture in supportedLanguages)
             {
-                <option value="@culture.Name">@culture.DisplayName</option>
+                <option value="@culture.Key.Name">@culture.Value</option>
             }
         </select>
     </div>
@@ -70,7 +70,7 @@ else
     private string selectedCulture;
     private string currentCulture = CultureInfo.DefaultThreadCurrentUICulture.Name;
 
-    private HashSet<CultureInfo> supportedLanguages;
+    private Dictionary<CultureInfo, string> supportedLanguages;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -101,9 +101,13 @@ else
 
         supportedLanguages = new()
         {
-            new CultureInfo("en-US"),
-            new CultureInfo("hr-HR"),
+            [new CultureInfo("en-US")] = "English-US",
+            [new CultureInfo("hr-HR")] = "Hrvatski-HR"
         };
+
+        selectedCulture = supportedLanguages.Keys
+            .First(x => x.Name == currentCulture)
+            .Name;
     }
 
     private async Task SubmitUserSettings()
