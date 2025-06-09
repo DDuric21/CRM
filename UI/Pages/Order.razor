@@ -16,10 +16,12 @@ else
         <h1>@(customerDTO.FirstName + " " + customerDTO.LastName)</h1>
         <br />
 
-        <div class="align-items-stretch">
-            <input type="text" @bind-value="customerDTO.FirstName" />
-            <input type="text" @bind-value="customerDTO.LastName" />
-            <input type="text" @bind-value="customerDTO.Birthday" />
+        <div class="d-flex align-items-stretch gap-3">
+            <fieldset disabled="@true">
+                <input type="text" @bind-value="customerDTO.FirstName" />
+                <input type="text" @bind-value="customerDTO.LastName" />
+                <input type="text" value='@customerDTO.Birthday.ToString("dd-MM-yyyy")' />
+            </fieldset>
             <button type="submit" name="submit" class="btn btn-primary" @onclick="SubmitOrder" >@Translation.SubmitOrder</button>
         </div>
 
