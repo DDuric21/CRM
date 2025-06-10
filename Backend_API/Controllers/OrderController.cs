@@ -1,4 +1,5 @@
-﻿using Backend_API.Logging;
+﻿using Backend_API.Helpers;
+using Backend_API.Logging;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
@@ -52,25 +53,17 @@ namespace Backend_API.Controllers
             if (request.IsNullOrEmpty()
                 && request.OrderDTO.IsNullOrEmpty())
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
+            var result = await _orderService.CreateNewOrderAsync(request);
+
+            if (!result.IsSuccess)
             {
-                var isCreated = await _orderService.CreateNewOrderAsync(request);
-
-                if (!isCreated)
-                {
-                    return Problem("No order created!");
-                }
-
-                return Ok(new ResponseBase());
+                return Problem(result.ErrorMessage ?? "No order created!");
             }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(result);
         }
 
         [HttpPost]

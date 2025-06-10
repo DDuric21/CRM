@@ -1,4 +1,5 @@
 ﻿using Models.DTO;
+using Models.Responses;
 
 namespace UI.Services
 {
@@ -6,7 +7,7 @@ namespace UI.Services
     {
         Task<bool> SubmitOrderAsync(OrderDTO orderDTO);
 
-        Task<bool> CreateOrderAsync(OrderDTO orderDTO, bool withOptions = false);
+        Task<ResponseBase> CreateOrderAsync(OrderDTO orderDTO, bool withOptions = false);
 
         Task<OrderDTO> GetOrderDataAsync(Guid id);
     }

@@ -67,11 +67,13 @@
             CustomerDTO = this.CustomerDTO
         };
 
-        if (!await orderService.CreateOrderAsync(order))
+        var result = await orderService.CreateOrderAsync(order);
+        if (!result.IsSuccess)
         {
-            modal.ShowCustomerFriendlyMessage();
+            await modal.ShowErrorMessageAsync(result.ErrorMessage);
             return;
         }
+
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
         navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={(int)OrderAction.Create}:0");
     }
@@ -91,12 +93,13 @@
             Action = action,
             AssetDTO = asset
         };
-        var loadAssetOptions = true;
-        if (!await orderService.CreateOrderAsync(order, loadAssetOptions))
+
+        var result = await orderService.CreateOrderAsync(order, withOptions: true);
+        if (!result.IsSuccess)
         {
-            modal.ShowCustomerFriendlyMessage();
+            await modal.ShowErrorMessageAsync(result.ErrorMessage);
             return;
-        }
+        } 
 
         var actionIndicator = $"{(int)action}:{customerAssetID}";
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);

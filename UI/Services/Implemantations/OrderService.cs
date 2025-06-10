@@ -8,6 +8,7 @@ namespace UI.Services
     {
         private readonly ICommunicationService _communicationService;
         private readonly ILoggingService _loggingService;
+        private const string ApiUrl = "Order";
 
         public OrderService(
             ICommunicationService communicationService,
@@ -19,7 +20,7 @@ namespace UI.Services
 
         public async Task<bool> SubmitOrderAsync(OrderDTO orderDTO)
         {
-            var url = $"Order/{orderDTO.OrderID}";
+            var url = $"{ApiUrl}/{orderDTO.OrderID}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, orderDTO);
 
             try
@@ -37,7 +38,7 @@ namespace UI.Services
 
         public async Task<OrderDTO> GetOrderDataAsync(Guid id)
         {
-            var url = $"Order/{id}";
+            var url = $"{ApiUrl}/{id}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
@@ -53,7 +54,7 @@ namespace UI.Services
             }
         }
 
-        public async Task<bool> CreateOrderAsync(OrderDTO orderDTO, bool withOptions = false)
+        public async Task<ResponseBase> CreateOrderAsync(OrderDTO orderDTO, bool withOptions = false)
         {
             var createOrderRQ = new CreateOrderRQ
             {
@@ -61,18 +62,17 @@ namespace UI.Services
                 WithOptions = withOptions
             };
 
-            var url = "Order";
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, createOrderRQ);
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, ApiUrl, createOrderRQ);
 
             try
             {
-                var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
-                return true;
+                var response = await _communicationService.SendRequestAsyncNew<ResponseBase>(request);
+                return response;
             }
             catch (Exception ex)
             {
                 _loggingService.SendErrorLogToServerAsync(ex);
-                return false;
+                return new ResponseBase(false, ex.Message);
             }
         }
     }

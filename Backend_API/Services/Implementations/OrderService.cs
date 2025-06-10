@@ -3,10 +3,12 @@ using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
 using Backend_API.Logging;
 using Microsoft.EntityFrameworkCore;
+using Models.Classes;
 using Models.DTO;
 using Models.Enums;
 using Models.Helpers;
 using Models.Requests;
+using Models.Responses;
 using Newtonsoft.Json;
 
 namespace Backend_API.Services
@@ -50,27 +52,28 @@ namespace Backend_API.Services
             return orderDTO;
         }
 
-        public async Task<bool> CreateNewOrderAsync(CreateOrderRQ createOrderRQ)
+        public async Task<ResponseBase> CreateNewOrderAsync(CreateOrderRQ createOrderRQ)
         {
             createOrderRQ.OrderDTO.OrderStatus = OrderStatus.Open;
+
+            var validationResult = await CheckIfOrderCanBeCreatedAsync(createOrderRQ.OrderDTO);
+            if (!validationResult.IsValid)
+            {
+                return new ResponseBase(false, validationResult.ErrorMessage);
+            }
+
             try
             {
                 var order = MapDtoToOrder(createOrderRQ.OrderDTO, createOrderRQ.WithOptions);
                 await CreateOrderAsync(order);
+
+                return new ResponseBase(true);
             }
             catch (Exception ex)
             {
                 DynamicLogger.LogException(ex, ex.Message);
-                return false;
+                return new ResponseBase(false, ex.Message);
             }
-
-            return true;
-        }
-
-        private async Task CreateOrderAsync(Order order)
-        {
-            order.CustomerAssets = null;
-            await _repository.Orders.InsertAsync(order);
         }
 
         public async Task<bool> SubmitOrderDataAsync(OrderDTO orderDTO)
@@ -226,6 +229,37 @@ namespace Backend_API.Services
             }
 
             return action;
+        }
+
+        private async Task<ValidationResult> CheckIfOrderCanBeCreatedAsync(OrderDTO orderDTO)
+        {
+            if (orderDTO.AssetDTO?.CustomerAssetID <= 0)
+            {
+                return new ValidationResult(true);
+            }
+
+            var existingOrder = await _repository.Orders
+                .Where(x => x.CustomerAssetsID == orderDTO.AssetDTO.CustomerAssetID
+                    && x.OrderStatusID == (int)OrderStatus.Open)
+                .FirstOrDefaultAsync();
+
+            if (existingOrder != null)
+            {
+                DynamicLogger.LogError($"Order {orderDTO.OrderID} can not be created as open orders still exist.");
+                return new ValidationResult
+                {
+                    IsValid = false,
+                    ErrorMessage = $"Open order for this asset already exists. ID: {existingOrder.OrderID}"
+                };
+            }
+
+            return new ValidationResult(true);
+        }
+
+        private async Task CreateOrderAsync(Order order)
+        {
+            order.CustomerAssets = null;
+            await _repository.Orders.InsertAsync(order);
         }
 
         #region Mappings
