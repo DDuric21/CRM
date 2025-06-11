@@ -1,0 +1,142 @@
+﻿@inject IOrderService OrderService
+@inject ICrmModalService modal
+
+@if (orderGridFilterData is null)
+{
+    <Loader></Loader>
+}
+else
+{
+    <div class="row bg-light bg-gradient p-4" style="border-radius:50px">
+
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <h4 class="m-0">@Translation.GridFilter</h4>
+            <div class="d-flex justify-content-center col-1">
+                <button type="submit" class="btn btn-primary" @onclick="() => ExecuteFilter()">@Translation.Filter</button>
+            </div>
+        </div>
+
+        <div class="col-2 p-2">
+            <label>@Translation.OrderID:</label>
+            <input class="form-control" @bind="orderFilter.OrderID" placeholder="@Translation.EnterOrderID" />
+        </div>
+
+        <div class="col-2 dropdown p-2">
+            <label>Status:</label>
+            <button class="form-select text-truncate" type="button" data-dropdown-id="statusDropdown" id="dropdownButton" data-bs-toggle="dropdown">
+                @assetTypesButtonText
+            </button>
+
+            <ul class="dropdown-menu" data-bs-auto-close="outside">
+                @foreach (var assetType in selectedAssetTypes)
+                {
+                    <li>
+                        <label class="dropdown-item">
+                            <input type="checkbox" class="form-check-input me-2" data-dropdown-id="statusDropdown" value="@assetType.AssetType.Key"
+                            @bind="assetType.IsSelected">
+                            @assetType.AssetType.Value
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-2 dropdown p-2">
+            <label>Status:</label>
+            <button class="form-select text-truncate" type="button" data-dropdown-id="statusDropdown" id="dropdownButton" data-bs-toggle="dropdown">
+                @statusesButtonText
+            </button>
+
+            <ul class="dropdown-menu" data-bs-auto-close="outside">
+                @foreach (var status in selectedOrderStatuses)
+                {
+                    <li>
+                        <label class="dropdown-item">
+                            <input type="checkbox" class="form-check-input me-2" data-dropdown-id="statusDropdown" value="@status.Status"
+                            @bind="status.IsSelected">
+                            @status.Status
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-4 p-2">
+            <label>@Translation.CreatedBetween:</label>
+            <div class="d-flex gap-2">
+                <input type="date" class="form-control" @bind="orderFilter.CreatedDateStart" />
+                <input type="date" class="form-control" @bind="orderFilter.CreatedDateEnd" />
+            </div>
+        </div>
+
+        <div class="col-4 p-2">
+            <label>@Translation.SubmittedBetween:</label>
+            <div class="d-flex gap-2">
+                <input type="date" class="form-control" @bind="orderFilter.SubmittedDateStart" />
+                <input type="date" class="form-control" @bind="orderFilter.SubmittedDateEnd" />
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<OrderFilterRQ> OnFilterExecute { get; set; }
+
+    private OrderFilterRQ orderFilter = new OrderFilterRQ();
+    private OrderGridFilterDataRS orderGridFilterData { get; set; }
+    private IEnumerable<SelectedOrderStatus> selectedOrderStatuses = new List<SelectedOrderStatus>();
+    private IEnumerable<SelectedAssetType> selectedAssetTypes = new List<SelectedAssetType> ();
+
+    private string statusesButtonText => selectedOrderStatuses
+        .Where(x => x.IsSelected)
+        .Select(x => x.Status)
+        .Any()
+        ? string.Join(", ", selectedOrderStatuses.Where(x => x.IsSelected).Select(x => x.Status))
+        : Translation.SelectStatus;
+
+    private string assetTypesButtonText => selectedAssetTypes
+        .Where(x => x.IsSelected)
+        .Select(x => x.AssetType.Value)
+        .Any()
+        ? string.Join(", ", selectedAssetTypes.Where(x => x.IsSelected).Select(x => x.AssetType.Value))
+        : Translation.SelectAssetType;
+
+    private async Task ExecuteFilter()
+    {
+        orderFilter.OrderStatuses = selectedOrderStatuses
+            .Where(x => x.IsSelected)
+            .Select(x => x.Status)
+            .ToList();
+
+        orderFilter.AssetTypes = selectedAssetTypes
+            .Where(x => x.IsSelected)
+            .Select(x => x.AssetType)
+            .ToDictionary();
+
+        await OnFilterExecute.InvokeAsync(orderFilter);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await OrderService.GetOrderFilterBaseValuesAsync();
+
+        if (!result.IsSuccess)
+        {
+            modal.ShowErrorMessage(result.ErrorMessage);
+            return;
+        }
+
+        orderGridFilterData = result.Data;
+
+        selectedOrderStatuses = orderGridFilterData.OrderStatuses
+            .Select(x => new SelectedOrderStatus { Status = x })
+            .ToList();
+
+        selectedAssetTypes = orderGridFilterData.AssetTypes
+            .Select(x => new SelectedAssetType { AssetType = x })
+            .ToList();
+
+        base.OnInitializedAsync();
+    }
+}

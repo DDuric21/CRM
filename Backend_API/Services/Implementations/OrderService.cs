@@ -126,6 +126,43 @@ namespace Backend_API.Services
             return new ResponseBase(true);
         }
 
+        public async Task<OrderGridFilterDataRS> GetOrderFilterBaseValuesAsync()
+        {
+            var orderStatuses = Enum.GetValues(typeof(OrderStatus))
+                .Cast<OrderStatus>()
+                .ToList();
+
+            var assets = await _assetService.GetAllAssetsAsync();
+            var assetTypes = assets.ToDictionary(x => x.Id, x => x.Name);
+
+            var response = new OrderGridFilterDataRS
+            {
+                OrderStatuses = orderStatuses,
+                AssetTypes = assetTypes,
+            };
+
+            return response;
+        }
+
+        public async Task<GetOrdersRS> GetOrdersAsync(OrderFilterRQ orderFilter)
+        {
+            var orders = _repository.Orders
+                .With(x => x.CreatedByUser)
+                .Include(x => x.CustomerAssets);
+
+            var filteredOrders = await FilterOrdersAsync(orders, orderFilter);
+
+            var orderDTOs = new List<OrderDTO>();
+            foreach (var order in filteredOrders)
+            {
+                var orderDTO = MapToDTO(order);
+
+                orderDTOs.Add(orderDTO);
+            }
+
+            return new GetOrdersRS { Orders = orderDTOs };
+        }
+
         private async Task<bool> SubmitOrderAsync(Order order)
         {
             if (order.DateSubmitted == DateTime.MinValue)
@@ -294,6 +331,46 @@ namespace Backend_API.Services
         {
             order.CustomerAssets = null;
             await _repository.Orders.InsertAsync(order);
+        }
+
+        private async Task<IEnumerable<Order>> FilterOrdersAsync(IQueryable<Order> orders, OrderFilterRQ orderFilter)
+        {
+            if (!string.IsNullOrEmpty(orderFilter.OrderID))
+            {
+                orders = orders.Where(x => x.OrderID.ToString() == orderFilter.OrderID);
+            }
+
+            if (!orderFilter.AssetTypes.IsNullOrEmpty())
+            {
+                orders = orders.Where(x => orderFilter.AssetTypes.Keys.Contains(x.CustomerAssets.Asset.Id));
+            }
+
+            if (!orderFilter.OrderStatuses.IsNullOrEmpty())
+            {
+                orders = orders.Where(x => orderFilter.OrderStatuses.Contains((OrderStatus)x.OrderStatusID));
+            }
+
+            if (orderFilter.CreatedDateStart.HasValue)
+            {
+                orders = orders.Where(x => x.DateCreated >= orderFilter.CreatedDateStart.Value);
+            }
+
+            if (orderFilter.CreatedDateEnd.HasValue)
+            {
+                orders = orders.Where(x => x.DateCreated <= orderFilter.CreatedDateEnd.Value);
+            }
+
+            if (orderFilter.SubmittedDateStart.HasValue)
+            {
+                orders = orders.Where(x => x.DateCreated >= orderFilter.SubmittedDateStart.Value);
+            }
+
+            if (orderFilter.SubmittedDateEnd.HasValue)
+            {
+                orders = orders.Where(x => x.DateCreated <= orderFilter.SubmittedDateEnd.Value);
+            }
+
+            return await orders.ToListAsync();
         }
 
         #region Mappings

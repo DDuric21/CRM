@@ -75,7 +75,7 @@
         }
 
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
-        navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={(int)OrderAction.Create}:0");
+        navigationManager.NavigateTo($"/Orders/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={(int)OrderAction.Create}:0");
     }
 
     private async void EditAsset(bool isDelete, long customerAssetID)
@@ -103,6 +103,6 @@
 
         var actionIndicator = $"{(int)action}:{customerAssetID}";
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
-        navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={actionIndicator}");        
+        navigationManager.NavigateTo($"/Orders/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={actionIndicator}");        
     }
 }

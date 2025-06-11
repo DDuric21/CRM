@@ -147,7 +147,7 @@ namespace UI.Services
 
             try
             {
-                var response = await _communicationService.SendRequestAsyncNew<GetCustomerOrdersRS>(request);
+                var response = await _communicationService.SendRequestAsyncNew<GetOrdersRS>(request);
 
                 return response.Orders;
             }

@@ -11,7 +11,7 @@ namespace Models.DTO
 
         public string? LastName { get; set; }
 
-        public string PersonalID{ get; set; }
+        public string PersonalID { get; set; }
 
         public List<AddressDTO> Addresses { get; set; }
 

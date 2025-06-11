@@ -118,5 +118,18 @@ namespace Backend_API.Services
 
             return result;
         }
+
+        public async Task<IEnumerable<AssetDTO>> GetAllAssetsAsync()
+        {
+            var assets = await _repository.Assets.GetAllAsync();
+            if (assets.IsNullOrEmpty())
+            {
+                return new List<AssetDTO>();
+            }
+
+            var assetDTOs = _mapper.Map<List<AssetDTO>>(assets);
+
+            return assetDTOs;
+        }
     }
 }

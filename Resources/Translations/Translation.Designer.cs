@@ -430,6 +430,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter order ID.
+        /// </summary>
+        public static string EnterOrderID {
+            get {
+                return ResourceManager.GetString("EnterOrderID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter Personal ID.
         /// </summary>
         public static string EnterPersonalID {
@@ -453,6 +462,15 @@ namespace Resources.Translations {
         public static string FallbackUserInfo {
             get {
                 return ResourceManager.GetString("FallbackUserInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter.
+        /// </summary>
+        public static string Filter {
+            get {
+                return ResourceManager.GetString("Filter", resourceCulture);
             }
         }
         
@@ -651,6 +669,15 @@ namespace Resources.Translations {
         public static string NoComponentSelected {
             get {
                 return ResourceManager.GetString("NoComponentSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No filter data found!.
+        /// </summary>
+        public static string NoFilterDataFound {
+            get {
+                return ResourceManager.GetString("NoFilterDataFound", resourceCulture);
             }
         }
         
@@ -880,6 +907,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select Asset Type.
+        /// </summary>
+        public static string SelectAssetType {
+            get {
+                return ResourceManager.GetString("SelectAssetType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select Customer Type.
         /// </summary>
         public static string SelectCustomerType {
@@ -957,6 +993,15 @@ namespace Resources.Translations {
         public static string SubmitOrder {
             get {
                 return ResourceManager.GetString("SubmitOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Submitted between.
+        /// </summary>
+        public static string SubmittedBetween {
+            get {
+                return ResourceManager.GetString("SubmittedBetween", resourceCulture);
             }
         }
         

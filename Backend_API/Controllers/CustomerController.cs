@@ -221,7 +221,7 @@ namespace Backend_API.Controllers
                 orderDTOs.Add(orderDTO);
             }
 
-            return Ok(new GetCustomerOrdersRS { Orders = orderDTOs });
+            return Ok(new GetOrdersRS { Orders = orderDTOs });
         }
 
         [HttpGet]

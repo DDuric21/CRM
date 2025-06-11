@@ -450,4 +450,19 @@
   <data name="AssetItmes" xml:space="preserve">
     <value>Stavke Imovine</value>
   </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filtriraj</value>
+  </data>
+  <data name="EnterOrderID" xml:space="preserve">
+    <value>Unesite id narudžbe</value>
+  </data>
+  <data name="SubmittedBetween" xml:space="preserve">
+    <value>Podneseno između</value>
+  </data>
+  <data name="NoFilterDataFound" xml:space="preserve">
+    <value>Nisu pronađeni podaci o filteru!</value>
+  </data>
+  <data name="SelectAssetType" xml:space="preserve">
+    <value>Odaberite vrstu usluge</value>
+  </data>
 </root>

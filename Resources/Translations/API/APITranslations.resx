@@ -123,6 +123,9 @@
   <data name="InvalidUsername" xml:space="preserve">
     <value>Username not valid</value>
   </data>
+  <data name="NoGridFilterDataFound" xml:space="preserve">
+    <value>No grid filter data found!</value>
+  </data>
   <data name="OpenOrderExists" xml:space="preserve">
     <value>Open order for this asset already exists. ID: {0}</value>
   </data>

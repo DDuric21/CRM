@@ -1,5 +1,7 @@
 ﻿using Models.DTO;
+using Models.Requests;
 using Models.Responses;
+using UI.Helpers;
 
 namespace UI.Services
 {
@@ -12,5 +14,9 @@ namespace UI.Services
         Task<OrderDTO> GetOrderDataAsync(Guid id);
 
         Task<ResponseBase> CancelOrderAsync(Guid id);
+
+        Task<ActionResult<OrderGridFilterDataRS>> GetOrderFilterBaseValuesAsync();
+
+        Task<ActionResult<GetOrdersRS>> GetOrdersAsync(OrderFilterRQ orderFilterRQ);
     }
 }

@@ -1,0 +1,78 @@
+﻿@page "/Orders/Orders"
+
+@inject NavigationManager navigationManager
+@inject IOrderService orderService
+@inject ICrmModalService modal
+
+<OrderGridFilter OnFilterExecute="GetFilteredOrdersAsync" />
+<br />
+<h3>@Translation.Orders</h3>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>@Translation.OrderID</th>
+            <th>@Translation.AssetName</th>
+            <th>Status</th>
+            <th>@Translation.Created</th>
+            <th>@Translation.Submited</th>
+            <th>@Translation.CreatedBy</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (orders is null)
+        {
+            <tr>
+                <td colspan="5" class="text-center py-5">
+                    <Loader />
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var order in orders)
+            {
+                <tr role="button" @ondblclick="() => RedirectToOrder(order.OrderID)">
+                    <td><label id="@order.OrderID">@order.OrderID</label></td>
+                    <td><label id="@order.OrderID">@order.AssetDTO.Name</label></td>
+                    <td><label id="@order.OrderID">@order.OrderStatus</label></td>
+                    <td><label id="@order.OrderID">@order.DateCreated.ToStringValue()</label></td>
+                    <td><label id="@order.OrderID">@order.DateSubmited.ToStringValue()</label></td>
+                    <td><label id="@order.OrderID">@order.CreatedByUsername</label></td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<OrderDTO> orders = new List<OrderDTO>();
+
+    private async Task GetFilteredOrdersAsync(OrderFilterRQ orderFilter)
+    {
+        orders = null;
+        try
+        {
+            var result = await orderService.GetOrdersAsync(orderFilter);
+
+            if (!result.IsSuccess)
+            {
+                orders = new List<OrderDTO>();
+                modal.ShowErrorMessage(result.ErrorMessage);
+                return;
+            }
+
+            orders = result.Data.Orders.ToList();
+        }
+        catch (Exception ex)
+        {
+            orders = new List<OrderDTO>();
+            modal.ShowErrorMessage(ex.Message);
+        }
+    }
+
+    private void RedirectToOrder(Guid id)
+    {
+        navigationManager.NavigateTo($"/Orders/Order?orderID={id}&readOrder=true");
+    }
+}

@@ -79,6 +79,15 @@ namespace Resources.Translations.API {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No grid filter data found!.
+        /// </summary>
+        public static string NoGridFilterDataFound {
+            get {
+                return ResourceManager.GetString("NoGridFilterDataFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open order for this asset already exists. ID: {0}.
         /// </summary>
         public static string OpenOrderExists {

@@ -103,5 +103,29 @@ namespace Backend_API.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet]
+        [Route("GridFilterData")]
+        public async Task<IActionResult> GetOrderFilterBaseValues()
+        {
+            var filterData = await _orderService.GetOrderFilterBaseValuesAsync();
+
+            if (filterData.IsNullOrEmpty())
+            {
+                return Problem(APITranslations.NoGridFilterDataFound);
+            }
+
+            return Ok(filterData);
+        }
+
+
+        [HttpPost]
+        [Route("GetOrders")]
+        public async Task<IActionResult> GetOrders([FromBody] OrderFilterRQ orderFilter)
+        {
+            var orders = await _orderService.GetOrdersAsync(orderFilter);
+
+            return Ok(orders);
+        }
     }
 }

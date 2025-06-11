@@ -123,6 +123,9 @@
   <data name="InvalidUsername" xml:space="preserve">
     <value>Korisničko ime nije važeće</value>
   </data>
+  <data name="NoGridFilterDataFound" xml:space="preserve">
+    <value>Nisu pronađeni podaci tabličnog filtera!</value>
+  </data>
   <data name="OpenOrderExists" xml:space="preserve">
     <value>Otvorena narudžba za ovu imovinu već postoji. ID: {0}</value>
   </data>

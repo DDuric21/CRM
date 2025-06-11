@@ -16,5 +16,9 @@ namespace Backend_API.Services
         Task<bool> SubmitOrderDataAsync(OrderDTO order);
 
         OrderDTO MapToDTO(Order order);
+
+        Task<OrderGridFilterDataRS> GetOrderFilterBaseValuesAsync();
+
+        Task<GetOrdersRS> GetOrdersAsync(OrderFilterRQ orderFilterRQ);
     }
 }
