@@ -16,5 +16,10 @@
         public const string EditAsset = "edit_asset";
         public const string DeleteAsset = "delete_asset";
         public const string CreateAsset = "create_asset";
+
+        public const string ReadOrder = "read_order";
+        public const string EditOrder = "edit_order";
+        public const string CancelOrder = "cancel_order";
+        public const string CreateOrder = "create_order";
     }
 }

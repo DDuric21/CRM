@@ -10,5 +10,7 @@ namespace UI.Services
         Task<ResponseBase> CreateOrderAsync(OrderDTO orderDTO, bool withOptions = false);
 
         Task<OrderDTO> GetOrderDataAsync(Guid id);
+
+        Task<ResponseBase> CancelOrderAsync(Guid id);
     }
 }

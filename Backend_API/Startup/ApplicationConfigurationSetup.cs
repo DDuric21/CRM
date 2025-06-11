@@ -1,8 +1,10 @@
 ﻿using Backend_API.Data.DbContext;
 using Backend_API.Data.SeedData;
 using Backend_API.Middleware;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Globalization;
 
 namespace Backend_API.Startup
 {
@@ -57,6 +59,26 @@ namespace Backend_API.Startup
                 .CreateLogger();
 
             builder.Host.UseSerilog();
+        }
+
+        internal static void ConfigureLocalization(WebApplicationBuilder builder)
+        {
+            builder.Services.AddLocalization(opts => opts.ResourcesPath = "Resources/Translations/API");
+
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en-US"),
+                new CultureInfo("hr-HR"),
+            };
+
+            builder.Services.Configure<RequestLocalizationOptions>(opts =>
+            {
+                opts.DefaultRequestCulture = new RequestCulture("en-US");
+                opts.SupportedCultures = supportedCultures;
+                opts.SupportedUICultures = supportedCultures;
+                // read from Accept-Language header:
+                opts.RequestCultureProviders = new[] { new AcceptLanguageHeaderRequestCultureProvider() };
+            });
         }
     }
 }

@@ -77,6 +77,7 @@ namespace UI.Services
         {
             return await _modalService.Show<TComponent>(parameters).Result;
         }
+
         public async Task<ModalResult> Show<TComponent>(ModalParameters parameters, ModalOptions options) where TComponent : IComponent
         {
             return await _modalService.Show<TComponent>(parameters, options).Result;

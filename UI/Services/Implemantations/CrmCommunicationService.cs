@@ -1,8 +1,11 @@
-﻿using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 using Models.Authentication;
 using Models.Authentication.DataStructures;
 using Models.Helpers;
+using Models.Requests;
 using Models.Responses;
+using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
 using UI.Authentication;
@@ -15,15 +18,18 @@ namespace UI.Services
         private readonly HttpClient _httpClient;
         private readonly IJSRuntime _jsRuntime;
         private IJSObjectReference? _module;
+        private readonly IServiceProvider _serviceProvider;
 
         public CrmCommunicationService(
             AppConfig apiConfig,
             HttpClient httpClient,
-            IJSRuntime jsRuntime)
+            IJSRuntime jsRuntime,
+            IServiceProvider serviceProvider)
         {
             _apiConfig = apiConfig;
             _httpClient = httpClient;
             _jsRuntime = jsRuntime;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<HttpRequestMessage> CreateRequestAsync<T>(HttpMethod httpMethod, string target, T requestBody, bool addAuthorization = true)
@@ -32,7 +38,12 @@ namespace UI.Services
             var request = new HttpRequestMessage(httpMethod, url);
 
             await AddBasicHeaders(request, addAuthorization);
-            
+
+            if (requestBody is RequestBase body)
+            {
+                await SetRequestUsernameAsync(body);
+            }
+
             var content = JsonContent.Create(requestBody);
             request.Content = content;
 
@@ -159,6 +170,7 @@ namespace UI.Services
         private async Task AddBasicHeaders(HttpRequestMessage request, bool addAuthorization = false)
         {
             request.Headers.Add(HttpHeaderNames.Accept, "application/json");
+            request.Headers.Add(HttpHeaderNames.AcceptLanguage, CultureInfo.CurrentCulture.Name);
 
             // this would be best to set at the begging of the action e.g. button clicked
             request.Headers.Add(HttpHeaderNames.CorrelationID, Guid.NewGuid().ToString());
@@ -168,6 +180,18 @@ namespace UI.Services
                 var jwt = await GetAuthorizationToken();
                 request.Headers.Add(HttpHeaderNames.Authorization, $"Bearer {jwt}");
             }
+        }
+
+        private async Task SetRequestUsernameAsync<T>(T requestBody) where T : RequestBase
+        {
+            var provider = _serviceProvider.GetRequiredService<AuthenticationStateProvider>();
+            var user = (await provider.GetAuthenticationStateAsync()).User;
+
+            var userName = user.Identity?.Name
+                        ?? user.FindFirst("preferred_username")?.Value
+                        ?? "";
+
+            requestBody.Username = userName;
         }
 
         private async Task<string> GetAuthorizationToken()

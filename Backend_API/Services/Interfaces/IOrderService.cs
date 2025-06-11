@@ -11,6 +11,8 @@ namespace Backend_API.Services
 
         Task<ResponseBase> CreateNewOrderAsync(CreateOrderRQ createOrderRQ);
 
+        Task<ResponseBase> CancelOrderAsync(CancelOrderRQ cancelOrderRQ);
+
         Task<bool> SubmitOrderDataAsync(OrderDTO order);
 
         OrderDTO MapToDTO(Order order);

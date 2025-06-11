@@ -3,6 +3,7 @@ using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
 using Backend_API.Logging;
 using Microsoft.EntityFrameworkCore;
+using Models.Authentication;
 using Models.Classes;
 using Models.DTO;
 using Models.Enums;
@@ -10,6 +11,7 @@ using Models.Helpers;
 using Models.Requests;
 using Models.Responses;
 using Newtonsoft.Json;
+using Resources.Translations.API;
 
 namespace Backend_API.Services
 {
@@ -18,15 +20,18 @@ namespace Backend_API.Services
         private readonly ICrmRepository _repository;
         private readonly IMapper _mapper;
         private readonly IAssetService _assetService;
+        private readonly IAuthenticationService _authenticationService;
 
         public OrderService(
             ICrmRepository repository,
             IMapper mapper,
-            IAssetService assetService)
+            IAssetService assetService,
+            IAuthenticationService authenticationService)
         {
             _repository = repository;
             _mapper = mapper;
             _assetService = assetService;
+            _authenticationService = authenticationService;
         }
 
         public OrderDTO GetOrderData(Guid id)
@@ -90,6 +95,35 @@ namespace Backend_API.Services
                 DynamicLogger.LogException(ex, ex.Message);
                 return false;
             } 
+        }
+
+        public async Task<ResponseBase> CancelOrderAsync(CancelOrderRQ cancelOrderRQ)
+        {
+            var validationResult = await _authenticationService.IsUserActionPermitted(cancelOrderRQ.Username, CrmPermissionNames.CancelOrder);
+            if (!validationResult.IsValid) 
+            {
+                var errorMessage = string.Format(APITranslations.UserNotPermitted, cancelOrderRQ.Username);
+                DynamicLogger.LogError(errorMessage);
+                return new ResponseBase(false, errorMessage);
+            }
+
+            var order = await _repository.Orders
+                .Where(x => x.OrderID == cancelOrderRQ.OrderId)
+                .FirstOrDefaultAsync();
+            if (order == null)
+            {
+                DynamicLogger.LogError($"No order found for ID: {cancelOrderRQ.OrderId}");
+                return new ResponseBase(false, APITranslations.OrderNotFound);
+            }
+
+            var result = await UpdateOrderStatusAsync(order, (int)OrderStatus.Cancelled);
+            if (result <= 0)
+            {
+                DynamicLogger.LogError($"Failed to update order status for ID: {cancelOrderRQ.OrderId}");
+                return new ResponseBase(false, APITranslations.OrderCancelationFailed);
+            }
+
+            return new ResponseBase(true);
         }
 
         private async Task<bool> SubmitOrderAsync(Order order)

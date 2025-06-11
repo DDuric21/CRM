@@ -6,6 +6,7 @@ using Models.DTO;
 using Models.Helpers;
 using Models.Requests;
 using Models.Responses;
+using Resources.Translations.API;
 
 namespace Backend_API.Controllers
 {
@@ -91,6 +92,24 @@ namespace Backend_API.Controllers
                 DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> CancelOrder([FromBody] CancelOrderRQ cancelOrderRQ)
+        {
+            if (cancelOrderRQ.IsNullOrEmpty())
+            {
+                return HttpContext.BadRequest();
+            }
+
+            var result = await _orderService.CancelOrderAsync(cancelOrderRQ);
+
+            if (!result.IsSuccess)
+            {
+                return Problem(result.ErrorMessage ?? APITranslations.OrderNotCanceled);
+            }
+
+            return Ok(result);
         }
     }
 }

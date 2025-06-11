@@ -7,5 +7,7 @@
         public const string Authorization = "Authorization";
 
         public const string Accept = "Accept";
+
+        public const string AcceptLanguage = "Accept-Language";
     }
 }

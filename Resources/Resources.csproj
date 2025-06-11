@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Update="Translations\API\APITranslations.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>APITranslations.resx</DependentUpon>
+    </Compile>
     <Compile Update="Translations\Translation.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -20,6 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Translations\API\APITranslations.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>APITranslations.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Translations\Translation.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Translation.Designer.cs</LastGenOutput>

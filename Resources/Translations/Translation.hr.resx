@@ -426,4 +426,7 @@
   <data name="PasswordRequired" xml:space="preserve">
     <value>Lozinka je obavezna</value>
   </data>
+  <data name="CancelOrderConfirmation" xml:space="preserve">
+    <value>Ova će narudžba biti otkazana. Želite li nastaviti?</value>
+  </data>
 </root>

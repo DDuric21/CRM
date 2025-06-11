@@ -196,6 +196,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This order will be canceled. Do you want to proceed?.
+        /// </summary>
+        public static string CancelOrderConfirmation {
+            get {
+                return ResourceManager.GetString("CancelOrderConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please choose the customer type.
         /// </summary>
         public static string ChooseCustomerType {
@@ -660,6 +669,15 @@ namespace Resources.Translations {
         public static string Password {
             get {
                 return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password is required.
+        /// </summary>
+        public static string PasswordRequired {
+            get {
+                return ResourceManager.GetString("PasswordRequired", resourceCulture);
             }
         }
         

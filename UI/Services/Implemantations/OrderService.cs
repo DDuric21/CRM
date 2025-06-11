@@ -75,5 +75,23 @@ namespace UI.Services
                 return new ResponseBase(false, ex.Message);
             }
         }
+
+        public async Task<ResponseBase> CancelOrderAsync(Guid id)
+        {
+            var cancelOrderRQ = new CancelOrderRQ { OrderId = id };
+
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, ApiUrl, cancelOrderRQ);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsyncNew<ResponseBase>(request);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new ResponseBase(false, ex.Message);
+            }
+        }
     }
 }

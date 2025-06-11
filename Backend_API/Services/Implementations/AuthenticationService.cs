@@ -6,8 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Models.Authentication;
+using Models.Classes;
 using Models.DTO;
 using Models.Helpers;
+using Resources.Translations.API;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -129,57 +131,6 @@ namespace Backend_API.Services
             return result;
         }
 
-        private async Task MarkRefreshTokenAsUsed(string refreshToken)
-        {
-            var token = await _repository.RefreshTokens
-                .Where(x => x.Token == refreshToken)
-                .FirstAsync();
-
-            token.IsUsed = true;
-
-            await _repository.RefreshTokens.PartialUpdateAsync(token, x => x.IsUsed);
-        }
-
-        private async Task<RefreshToken> HandleRefreshToken(UserData userData, SecurityToken token)
-        {
-            var refreshToken = await GetValidUserRefreshTokenAsync(userData);
-
-            if (refreshToken is null)
-            {
-                refreshToken = await GenerateRefreshTokenAsync(userData, token);
-            }
-            else
-            {
-                if (refreshToken.AccessTokenId != token.Id)
-                {
-                    refreshToken.AccessTokenId = token.Id;
-                    await _repository.RefreshTokens.PartialUpdateAsync(refreshToken, x => x.AccessTokenId);
-                }
-            }
-
-            return refreshToken;
-        }
-
-        private SecurityToken GenerateSecurityToken(UserData userData)
-        {
-            var key = Encoding.UTF8.GetBytes(_configuration.Secret);
-
-            var claims = GenerateJwtClaims(userData);
-
-            var tokenDescripter = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Issuer = _configuration.Issuer,
-                Audience = _configuration.Audience,
-                Expires = DateTime.UtcNow.Add(_configuration.ExpiryTimeFrame),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-            };
-
-            var token = _jwtTokenHandler.CreateToken(tokenDescripter);
-            
-            return token;
-        }
-
         public IEnumerable<string> ReadAccessTokenData(string accessToken, string claimName)
         {
             var token = _jwtTokenHandler.ReadJwtToken(accessToken);
@@ -233,6 +184,78 @@ namespace Backend_API.Services
             };
 
             responseCookies.Append("refreshToken", string.Empty, cookieOptions);
+        }
+
+        public async Task<ValidationResult> IsUserActionPermitted(string username, string actionPermission)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return new ValidationResult
+                {
+                    IsValid = false,
+                    ErrorMessage = APITranslations.InvalidUsername
+                };
+            }
+
+            var userData = await _userService.GetUserDataByNameAsync(username);
+
+            var isPermited = userData.UserRoles
+                .SelectMany(x => x.Value)
+                .Any(x => x.Type == CrmJwtClaimNames.Permission 
+                    && x.Value == actionPermission);
+
+            return new ValidationResult(isPermited);
+        }
+
+        private async Task MarkRefreshTokenAsUsed(string refreshToken)
+        {
+            var token = await _repository.RefreshTokens
+                .Where(x => x.Token == refreshToken)
+                .FirstAsync();
+
+            token.IsUsed = true;
+
+            await _repository.RefreshTokens.PartialUpdateAsync(token, x => x.IsUsed);
+        }
+
+        private async Task<RefreshToken> HandleRefreshToken(UserData userData, SecurityToken token)
+        {
+            var refreshToken = await GetValidUserRefreshTokenAsync(userData);
+
+            if (refreshToken is null)
+            {
+                refreshToken = await GenerateRefreshTokenAsync(userData, token);
+            }
+            else
+            {
+                if (refreshToken.AccessTokenId != token.Id)
+                {
+                    refreshToken.AccessTokenId = token.Id;
+                    await _repository.RefreshTokens.PartialUpdateAsync(refreshToken, x => x.AccessTokenId);
+                }
+            }
+
+            return refreshToken;
+        }
+
+        private SecurityToken GenerateSecurityToken(UserData userData)
+        {
+            var key = Encoding.UTF8.GetBytes(_configuration.Secret);
+
+            var claims = GenerateJwtClaims(userData);
+
+            var tokenDescripter = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Issuer = _configuration.Issuer,
+                Audience = _configuration.Audience,
+                Expires = DateTime.UtcNow.Add(_configuration.ExpiryTimeFrame),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+            };
+
+            var token = _jwtTokenHandler.CreateToken(tokenDescripter);
+
+            return token;
         }
 
         private async Task<RefreshToken> GenerateRefreshTokenAsync(UserData userData, SecurityToken accessToken)

@@ -426,4 +426,7 @@
   <data name="PasswordRequired" xml:space="preserve">
     <value>Password is required</value>
   </data>
+  <data name="CancelOrderConfirmation" xml:space="preserve">
+    <value>This order will be canceled. Do you want to proceed?</value>
+  </data>
 </root>
