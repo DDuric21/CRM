@@ -5,6 +5,7 @@
 @inject IOrderService orderService
 @inject ICustomerService customerService
 @inject ICrmModalService modalService
+@inject AuthenticationStateProvider AuthState
 
 @if (customerDTO == null)
 {
@@ -12,20 +13,70 @@
 }
 else
 {
-    <fieldset disabled="@IsDisabled()">
-        <h1>@(customerDTO.FirstName + " " + customerDTO.LastName)</h1>
-        <br />
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+        <button type="submit" class="btn btn-primary btn-lg" @onclick="SubmitOrder"> @Translation.SubmitOrder</button>
+        <button type="button" class="btn btn-outline-danger btn-lg" @onclick="CancelOrder"> @Translation.Cancel</button>
+    </div>
+    <fieldset disabled>
+        <div class="card my-2">
+            <div class="card-body">
+                <!-- Customer Information Section -->
+                <section class="mb-4">
+                    <h5 class="fw-semibold mb-3">@Translation.CustomerInformation</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="firstName">@Translation.FirstName</label>
+                            <InputText id="firstName" class="form-control form-control-sm" @bind-Value="customerDTO.FirstName" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="lastName">@Translation.LastName</label>
+                            <InputText id="lastName" class="form-control form-control-sm" @bind-Value="customerDTO.LastName" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="birthday">@Translation.Birthday</label>
+                            <InputDate id="birthday" class="form-control form-control-sm" @bind-Value="@customerDTO.Birthday" @bind-Value:format="dd-MM-yyyy" />
+                        </div>
 
-        <div class="d-flex align-items-stretch gap-3">
-            <fieldset disabled="@true">
-                <input type="text" @bind-value="customerDTO.FirstName" />
-                <input type="text" @bind-value="customerDTO.LastName" />
-                <input type="text" value='@customerDTO.Birthday.ToString("dd-MM-yyyy")' />
-            </fieldset>
-            <button type="submit" name="submit" class="btn btn-primary" @onclick="SubmitOrder">@Translation.SubmitOrder</button>
-            <button type="submit" hidden="@(actionID == (int)OrderAction.Delete)" name="cancel" class="btn btn-outline-danger" @onclick="CancelOrder">@Translation.Cancel</button>
+                        <div class="col-md-3">
+                            <label for="personalID">@Translation.PersonalID</label>
+                            <InputText id="personalID" class="form-control form-control-sm" @bind-Value="@customerDTO.PersonalID" />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Additional info Section -->
+                <section class="mb-2">
+                    <h5 class="fw-semibold mb-3">@Translation.OrderInfo</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="createdBy">@Translation.CreatedBy</label>
+                            <InputText id="createdBy" class="form-control form-control-sm" @bind-Value="orderDTO.CreatedByUsername" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="orderID">@Translation.OrderID</label>
+                            <input type="text" id="orderID" class="form-control form-control-sm" @bind-value="@orderDTO.OrderID" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="createdDate">@Translation.Created</label>
+                            <input type="text" id="createdDate" class="form-control form-control-sm" value="@orderDTO.DateCreated.ToStringValue()" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="createdDate">@Translation.Submited</label>
+                            <input type="text" id="createdDate" class="form-control form-control-sm" value="@orderDTO.DateSubmited.ToStringValue()" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="orderStatus">@Translation.OrderStatus</label>
+                            <input type="text" id="orderStatus" class="form-control form-control-sm" @bind-value="orderDTO.OrderStatus" />
+                        </div>
+                    </div>
+                </section>
+            </div>
         </div>
-
+    </fieldset>
+    <br />
+    <fieldset disabled="@IsDisabled()">
+        <h4>@Translation.OrderItems</h4>
         <CascadingValue Value="@orderDTO">
             <Asset AssetDTO="orderDTO.AssetDTO" ActionID="actionID" @ref="orderAsset"></Asset>
         </CascadingValue>
@@ -64,7 +115,9 @@ else
         }
         else
         {
-            customerDTO = await localStorageService.GetItemAsync<CustomerDTO>(OrderID.ToString());            
+            customerDTO = await localStorageService.GetItemAsync<CustomerDTO>(OrderID.ToString()); 
+            var authState = await AuthState.GetAuthenticationStateAsync();
+            orderDTO.CreatedByUsername = authState?.User?.Identity?.Name;
         }
 
         if (customerDTO.IsNullOrEmpty()

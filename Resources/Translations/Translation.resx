@@ -429,4 +429,25 @@
   <data name="CancelOrderConfirmation" xml:space="preserve">
     <value>This order will be canceled. Do you want to proceed?</value>
   </data>
+  <data name="CreatedBy" xml:space="preserve">
+    <value>Created by</value>
+  </data>
+  <data name="CustomerInformation" xml:space="preserve">
+    <value>Customer Information</value>
+  </data>
+  <data name="UserInformation" xml:space="preserve">
+    <value>User Information</value>
+  </data>
+  <data name="OrderInfo" xml:space="preserve">
+    <value>Order informations</value>
+  </data>
+  <data name="OrderStatus" xml:space="preserve">
+    <value>Order status</value>
+  </data>
+  <data name="OrderItems" xml:space="preserve">
+    <value>Order Items</value>
+  </data>
+  <data name="AssetItmes" xml:space="preserve">
+    <value>Asset Items</value>
+  </data>
 </root>

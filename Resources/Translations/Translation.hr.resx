@@ -429,4 +429,25 @@
   <data name="CancelOrderConfirmation" xml:space="preserve">
     <value>Ova će narudžba biti otkazana. Želite li nastaviti?</value>
   </data>
+  <data name="CreatedBy" xml:space="preserve">
+    <value>Stvorio</value>
+  </data>
+  <data name="CustomerInformation" xml:space="preserve">
+    <value>Informacije o kupcu</value>
+  </data>
+  <data name="UserInformation" xml:space="preserve">
+    <value>Podaci o korisniku</value>
+  </data>
+  <data name="OrderInfo" xml:space="preserve">
+    <value>Informacije o narudžbi</value>
+  </data>
+  <data name="OrderStatus" xml:space="preserve">
+    <value>Status narudžbe</value>
+  </data>
+  <data name="OrderItems" xml:space="preserve">
+    <value>Stavke Narudžbe</value>
+  </data>
+  <data name="AssetItmes" xml:space="preserve">
+    <value>Stavke Imovine</value>
+  </data>
 </root>

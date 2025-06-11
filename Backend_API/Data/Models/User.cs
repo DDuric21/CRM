@@ -13,5 +13,7 @@ namespace Backend_API.Data.Models
         public DateTime DateModified { get; set; }
 
         public int UserStatusID { get; set; }
+
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

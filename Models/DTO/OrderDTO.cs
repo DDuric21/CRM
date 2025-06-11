@@ -14,6 +14,8 @@ namespace Models.DTO
 
         public OrderAction Action { get; set; }
 
+        public string CreatedByUsername { get; set; }
+
         public DateTime DateCreated { get; set; }
 
         public DateTime DateSubmited { get; set; }

@@ -7,7 +7,7 @@ namespace Backend_API.Services
 {
     public interface IOrderService
     {
-        OrderDTO GetOrderData(Guid id);
+        Task<OrderDTO> GetOrderDataAsync(Guid id);
 
         Task<ResponseBase> CreateNewOrderAsync(CreateOrderRQ createOrderRQ);
 

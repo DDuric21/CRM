@@ -211,30 +211,17 @@ namespace Backend_API.Controllers
         [Route("Orders/{customerID}")]
         public async Task<IActionResult> GetCustomerOrders(long customerID)
         {
+            var orders = await _customerService.GetCustomerOrdersAsync(customerID);
+
             var orderDTOs = new List<OrderDTO>();
-
-            try
+            foreach (var order in orders)
             {
-                var orders = _customerService.GetCustomerOrders(customerID);
+                var orderDTO = _orderService.MapToDTO(order);
 
-                if (orders.IsNullOrEmpty())
-                {
-                    return Ok(new List<OrderDTO>());
-                }
-
-                foreach (var order in orders)
-                {
-                    var orderDTO = _orderService.MapToDTO(order);
-
-                    orderDTOs.Add(orderDTO);
-                }
-
-                return Ok(orderDTOs);
+                orderDTOs.Add(orderDTO);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(new GetCustomerOrdersRS { Orders = orderDTOs });
         }
 
         [HttpGet]

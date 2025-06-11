@@ -61,11 +61,29 @@ namespace Resources.Translations.API {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Incorrect CustomerAssetID provided.
+        /// </summary>
+        public static string IncorrectCustomerAssetID {
+            get {
+                return ResourceManager.GetString("IncorrectCustomerAssetID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Username not valid.
         /// </summary>
         public static string InvalidUsername {
             get {
                 return ResourceManager.GetString("InvalidUsername", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open order for this asset already exists. ID: {0}.
+        /// </summary>
+        public static string OpenOrderExists {
+            get {
+                return ResourceManager.GetString("OpenOrderExists", resourceCulture);
             }
         }
         
@@ -97,11 +115,11 @@ namespace Resources.Translations.API {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User {0} is not permitted to cancel orders..
+        ///   Looks up a localized string similar to User {0} is not permitted for action {1}..
         /// </summary>
-        public static string UserNotPermitted {
+        public static string UserActionNotPermitted {
             get {
-                return ResourceManager.GetString("UserNotPermitted", resourceCulture);
+                return ResourceManager.GetString("UserActionNotPermitted", resourceCulture);
             }
         }
     }

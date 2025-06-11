@@ -103,11 +103,12 @@ namespace Backend_API.Services
             return retrievedData;
         }
 
-        public List<Order> GetCustomerOrders(long customerID)
+        public async Task<List<Order>> GetCustomerOrdersAsync(long customerID)
         {
-            var retrievedData = _repository.Orders
+            var retrievedData = await _repository.Orders
                 .Where(x => x.CustomerID == customerID)
-                .ToList();
+                .Include(x => x.CreatedByUser)
+                .ToListAsync();
 
             return retrievedData;
         }

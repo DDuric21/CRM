@@ -22,7 +22,7 @@ namespace Backend_API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Backend_API.Data.Model.Address", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Address", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,7 +54,7 @@ namespace Backend_API.Migrations
                     b.ToTable("Addresses");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Asset", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Asset", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -86,7 +86,7 @@ namespace Backend_API.Migrations
                     b.ToTable("Assets");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.BillingProfile", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.BillingProfile", b =>
                 {
                     b.Property<string>("BillingProfileId")
                         .HasColumnType("nvarchar(450)");
@@ -119,7 +119,7 @@ namespace Backend_API.Migrations
                     b.HasCheckConstraint("CK_BillingProfile_Key_Format", "BillingProfileId LIKE '[0-9]-%[0-9]'");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Customer", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Customer", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -162,7 +162,7 @@ namespace Backend_API.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.CustomerAssetOptions", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.CustomerAssetOptions", b =>
                 {
                     b.Property<long>("CustomerAssetsID")
                         .HasColumnType("bigint");
@@ -185,7 +185,7 @@ namespace Backend_API.Migrations
                     b.ToTable("CustomerAssetOptions");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.CustomerAssets", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.CustomerAssets", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,7 +228,7 @@ namespace Backend_API.Migrations
                     b.ToTable("CustomerAssets");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Interaction", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Interaction", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -263,7 +263,7 @@ namespace Backend_API.Migrations
                     b.ToTable("Interactions");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.News", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.News", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -295,7 +295,7 @@ namespace Backend_API.Migrations
                     b.ToTable("News");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Option", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Option", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -332,7 +332,7 @@ namespace Backend_API.Migrations
                     b.ToTable("Options");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Order", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Order", b =>
                 {
                     b.Property<Guid>("OrderID")
                         .ValueGeneratedOnAdd()
@@ -340,6 +340,10 @@ namespace Backend_API.Migrations
 
                     b.Property<int>("ActionID")
                         .HasColumnType("int");
+
+                    b.Property<string>("CreatedByUserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<long?>("CustomerAssetsID")
                         .HasColumnType("bigint");
@@ -355,7 +359,7 @@ namespace Backend_API.Migrations
                     b.Property<DateTime>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateSubmited")
+                    b.Property<DateTime>("DateSubmitted")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("OrderStatusID")
@@ -366,6 +370,8 @@ namespace Backend_API.Migrations
 
                     b.HasKey("OrderID");
 
+                    b.HasIndex("CreatedByUserID");
+
                     b.HasIndex("CustomerAssetsID");
 
                     b.HasIndex("CustomerID");
@@ -373,7 +379,7 @@ namespace Backend_API.Migrations
                     b.ToTable("Order");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.RefreshToken", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.RefreshToken", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -415,7 +421,7 @@ namespace Backend_API.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.RolePermission", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.RolePermission", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -440,7 +446,7 @@ namespace Backend_API.Migrations
                     b.ToTable("RolePermissions");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.User", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -657,9 +663,9 @@ namespace Backend_API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Address", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Address", b =>
                 {
-                    b.HasOne("Backend_API.Data.Model.Customer", "Customer")
+                    b.HasOne("Backend_API.Data.Models.Customer", "Customer")
                         .WithMany("Addresses")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -668,14 +674,14 @@ namespace Backend_API.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.BillingProfile", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.BillingProfile", b =>
                 {
-                    b.HasOne("Backend_API.Data.Model.Address", "Address")
+                    b.HasOne("Backend_API.Data.Models.Address", "Address")
                         .WithMany("BillingProfiles")
                         .HasForeignKey("AddressID")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("Backend_API.Data.Model.Customer", "Customer")
+                    b.HasOne("Backend_API.Data.Models.Customer", "Customer")
                         .WithMany("BillingProfiles")
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -686,15 +692,15 @@ namespace Backend_API.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.CustomerAssetOptions", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.CustomerAssetOptions", b =>
                 {
-                    b.HasOne("Backend_API.Data.Model.CustomerAssets", "CustomerAssets")
+                    b.HasOne("Backend_API.Data.Models.CustomerAssets", "CustomerAssets")
                         .WithMany("CustomerAssetOptions")
                         .HasForeignKey("CustomerAssetsID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend_API.Data.Model.Option", "Option")
+                    b.HasOne("Backend_API.Data.Models.Option", "Option")
                         .WithMany("CustomerAssetOptions")
                         .HasForeignKey("OptionID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -705,21 +711,21 @@ namespace Backend_API.Migrations
                     b.Navigation("Option");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.CustomerAssets", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.CustomerAssets", b =>
                 {
-                    b.HasOne("Backend_API.Data.Model.Asset", "Asset")
+                    b.HasOne("Backend_API.Data.Models.Asset", "Asset")
                         .WithMany()
                         .HasForeignKey("AssetID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend_API.Data.Model.BillingProfile", "BillingProfile")
+                    b.HasOne("Backend_API.Data.Models.BillingProfile", "BillingProfile")
                         .WithMany("CustomerAssets")
                         .HasForeignKey("BillingProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend_API.Data.Model.Customer", "Customer")
+                    b.HasOne("Backend_API.Data.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -732,9 +738,9 @@ namespace Backend_API.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Interaction", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Interaction", b =>
                 {
-                    b.HasOne("Backend_API.Data.Model.Customer", "Customer")
+                    b.HasOne("Backend_API.Data.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -743,9 +749,9 @@ namespace Backend_API.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Option", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Option", b =>
                 {
-                    b.HasOne("Backend_API.Data.Model.Asset", "Asset")
+                    b.HasOne("Backend_API.Data.Models.Asset", "Asset")
                         .WithMany("Options")
                         .HasForeignKey("AssetID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -754,17 +760,25 @@ namespace Backend_API.Migrations
                     b.Navigation("Asset");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Order", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Order", b =>
                 {
-                    b.HasOne("Backend_API.Data.Model.CustomerAssets", "CustomerAssets")
+                    b.HasOne("Backend_API.Data.Models.User", "CreatedByUser")
+                        .WithMany("Orders")
+                        .HasForeignKey("CreatedByUserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend_API.Data.Models.CustomerAssets", "CustomerAssets")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerAssetsID");
 
-                    b.HasOne("Backend_API.Data.Model.Customer", "Customer")
+                    b.HasOne("Backend_API.Data.Models.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CreatedByUser");
 
                     b.Navigation("Customer");
 
@@ -782,7 +796,7 @@ namespace Backend_API.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Backend_API.Data.Model.User", null)
+                    b.HasOne("Backend_API.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -791,7 +805,7 @@ namespace Backend_API.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Backend_API.Data.Model.User", null)
+                    b.HasOne("Backend_API.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -806,7 +820,7 @@ namespace Backend_API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend_API.Data.Model.User", null)
+                    b.HasOne("Backend_API.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -815,29 +829,29 @@ namespace Backend_API.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Backend_API.Data.Model.User", null)
+                    b.HasOne("Backend_API.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Address", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Address", b =>
                 {
                     b.Navigation("BillingProfiles");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Asset", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Asset", b =>
                 {
                     b.Navigation("Options");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.BillingProfile", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.BillingProfile", b =>
                 {
                     b.Navigation("CustomerAssets");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Customer", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Customer", b =>
                 {
                     b.Navigation("Addresses");
 
@@ -846,16 +860,21 @@ namespace Backend_API.Migrations
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.CustomerAssets", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.CustomerAssets", b =>
                 {
                     b.Navigation("CustomerAssetOptions");
 
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("Backend_API.Data.Model.Option", b =>
+            modelBuilder.Entity("Backend_API.Data.Models.Option", b =>
                 {
                     b.Navigation("CustomerAssetOptions");
+                });
+
+            modelBuilder.Entity("Backend_API.Data.Models.User", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

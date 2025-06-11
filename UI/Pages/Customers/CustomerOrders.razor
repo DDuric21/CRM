@@ -9,6 +9,7 @@
             <th>@Translation.AssetName</th>
             <th>@Translation.Created</th>
             <th>@Translation.Submited</th>
+            <th>@Translation.CreatedBy</th>
         </tr>
     </thead>
     <tbody>
@@ -17,8 +18,9 @@
             <tr role="button" @ondblclick="() => RedirectToOrder(orderDTO.OrderID)">
                 <td><label id="@orderDTO.OrderID" >@orderDTO.OrderID</label></td>
                 <td><label id="@orderDTO.OrderID" >@orderDTO.AssetDTO.Name</label></td>
-                <td><label id="@orderDTO.OrderID" >@orderDTO.DateCreated.ToLocalTime().ToString("dd-MM-yyyy HH:mm:ss")</label></td>
-                <td><label id="@orderDTO.OrderID" >@orderDTO.DateSubmited.ToLocalTime().ToString("dd-MM-yyyy HH:mm:ss")</label></td>                    
+                <td><label id="@orderDTO.OrderID" >@orderDTO.DateCreated.ToStringValue()</label></td>
+                <td><label id="@orderDTO.OrderID" >@orderDTO.DateSubmited.ToStringValue()</label></td>
+                <td><label id="@orderDTO.OrderID" >@orderDTO.CreatedByUsername</label></td>
             </tr>
         }
     </tbody>
@@ -37,7 +39,7 @@
     {        
         var customerOrders = await customerService.GetCustomerOrdersAsync(CustomerDTO.Id);
 
-        await foreach(var order in customerOrders)
+        foreach(var order in customerOrders)
         {
             orders.Add(order);
         }

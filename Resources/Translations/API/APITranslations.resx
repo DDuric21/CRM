@@ -117,8 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="IncorrectCustomerAssetID" xml:space="preserve">
+    <value>Incorrect CustomerAssetID provided</value>
+  </data>
   <data name="InvalidUsername" xml:space="preserve">
     <value>Username not valid</value>
+  </data>
+  <data name="OpenOrderExists" xml:space="preserve">
+    <value>Open order for this asset already exists. ID: {0}</value>
   </data>
   <data name="OrderCancelationFailed" xml:space="preserve">
     <value>Failed to cancel order</value>
@@ -129,7 +135,7 @@
   <data name="OrderNotFound" xml:space="preserve">
     <value>Order not found</value>
   </data>
-  <data name="UserNotPermitted" xml:space="preserve">
-    <value>User {0} is not permitted to cancel orders.</value>
+  <data name="UserActionNotPermitted" xml:space="preserve">
+    <value>User {0} is not permitted for action {1}.</value>
   </data>
 </root>

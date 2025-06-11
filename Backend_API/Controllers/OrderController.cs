@@ -27,25 +27,17 @@ namespace Backend_API.Controllers
         {
             if (orderID == Guid.Empty)
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
+            var orderDTO = await _orderService.GetOrderDataAsync(orderID);
+
+            if (orderDTO.IsNullOrEmpty())
             {
-                var orderDTO = _orderService.GetOrderData(orderID);
-
-                if (orderDTO.IsNullOrEmpty())
-                {
-                    return Problem("No order data found!");
-                }
-
-                return Ok(orderDTO);
+                return Problem(APITranslations.OrderNotFound);
             }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(new GetOrderDataRS { Order = orderDTO });
         }
 
         [HttpPost]

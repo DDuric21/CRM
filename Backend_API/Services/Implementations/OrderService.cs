@@ -20,27 +20,31 @@ namespace Backend_API.Services
         private readonly ICrmRepository _repository;
         private readonly IMapper _mapper;
         private readonly IAssetService _assetService;
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly CrmUserManager _userManager;
 
         public OrderService(
             ICrmRepository repository,
             IMapper mapper,
             IAssetService assetService,
-            IAuthenticationService authenticationService)
+            IAuthorizationService authorizationService,
+            CrmUserManager userManager)
         {
             _repository = repository;
             _mapper = mapper;
             _assetService = assetService;
-            _authenticationService = authenticationService;
+            _authorizationService = authorizationService;
+            _userManager = userManager;
         }
 
-        public OrderDTO GetOrderData(Guid id)
+        public async Task<OrderDTO> GetOrderDataAsync(Guid id)
         {
-            var order = _repository.Orders
+            var order = await _repository.Orders
                 .Where(x => x.OrderID == id)
+                .Include(x => x.CreatedByUser)
                 .Include(x => x.Customer)
                 .ThenInclude(y => y.BillingProfiles)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             if (order is null)
             {
@@ -59,7 +63,7 @@ namespace Backend_API.Services
 
         public async Task<ResponseBase> CreateNewOrderAsync(CreateOrderRQ createOrderRQ)
         {
-            createOrderRQ.OrderDTO.OrderStatus = OrderStatus.Open;
+            await _authorizationService.IsUserActionPermitted(createOrderRQ.Username, CrmPermissionNames.CreateOrder);
 
             var validationResult = await CheckIfOrderCanBeCreatedAsync(createOrderRQ.OrderDTO);
             if (!validationResult.IsValid)
@@ -67,9 +71,11 @@ namespace Backend_API.Services
                 return new ResponseBase(false, validationResult.ErrorMessage);
             }
 
+            createOrderRQ.OrderDTO.OrderStatus = OrderStatus.Open;
             try
             {
-                var order = MapDtoToOrder(createOrderRQ.OrderDTO, createOrderRQ.WithOptions);
+                createOrderRQ.OrderDTO.CreatedByUsername = createOrderRQ.Username;
+                var order = await MapDtoToOrderAsync(createOrderRQ.OrderDTO, createOrderRQ.WithOptions);
                 await CreateOrderAsync(order);
 
                 return new ResponseBase(true);
@@ -87,7 +93,7 @@ namespace Backend_API.Services
 
             try
             {
-                var order = MapDtoToOrder(orderDTO);
+                var order = await MapDtoToOrderAsync(orderDTO);
                 return await SubmitOrderAsync(order);
             }
             catch (Exception ex)
@@ -99,13 +105,7 @@ namespace Backend_API.Services
 
         public async Task<ResponseBase> CancelOrderAsync(CancelOrderRQ cancelOrderRQ)
         {
-            var validationResult = await _authenticationService.IsUserActionPermitted(cancelOrderRQ.Username, CrmPermissionNames.CancelOrder);
-            if (!validationResult.IsValid) 
-            {
-                var errorMessage = string.Format(APITranslations.UserNotPermitted, cancelOrderRQ.Username);
-                DynamicLogger.LogError(errorMessage);
-                return new ResponseBase(false, errorMessage);
-            }
+            await _authorizationService.IsUserActionPermitted(cancelOrderRQ.Username, CrmPermissionNames.CancelOrder);
 
             var order = await _repository.Orders
                 .Where(x => x.OrderID == cancelOrderRQ.OrderId)
@@ -128,9 +128,9 @@ namespace Backend_API.Services
 
         private async Task<bool> SubmitOrderAsync(Order order)
         {
-            if (order.DateSubmited == DateTime.MinValue)
+            if (order.DateSubmitted == DateTime.MinValue)
             {
-                order.DateSubmited = DateTime.UtcNow;
+                order.DateSubmitted = DateTime.UtcNow;
             }
 
             var isSuccess = await HandleOrderActionAsync(order);
@@ -283,7 +283,7 @@ namespace Backend_API.Services
                 return new ValidationResult
                 {
                     IsValid = false,
-                    ErrorMessage = $"Open order for this asset already exists. ID: {existingOrder.OrderID}"
+                    ErrorMessage = string.Format(APITranslations.OpenOrderExists, existingOrder.OrderID)
                 };
             }
 
@@ -303,7 +303,7 @@ namespace Backend_API.Services
             if (orderDTO?.AssetDTO?.CustomerAssetID <= 0)
             {
                 DynamicLogger.LogError("Incorrect CustomerAssetID provided");
-                throw new Exception("Incorrect CustomerAssetID provided");
+                throw new Exception(APITranslations.IncorrectCustomerAssetID);
             }
 
             var assetOptions = _assetService.GetAssetOptions(orderDTO.AssetDTO.CustomerAssetID);
@@ -313,7 +313,7 @@ namespace Backend_API.Services
                 .ToList();
         }
 
-        private Order MapDtoToOrder(OrderDTO orderDTO, bool withOptions = false)
+        private async Task<Order> MapDtoToOrderAsync(OrderDTO orderDTO, bool withOptions = false)
         {
             if (withOptions)
             {
@@ -321,6 +321,12 @@ namespace Backend_API.Services
             }
 
             var order = _mapper.Map<Order>(orderDTO);
+
+            if (!orderDTO.CreatedByUsername.IsNullOrEmpty())
+            {
+                order.CreatedByUser = await _userManager.FindByNameAsync(orderDTO.CreatedByUsername);
+                order.CreatedByUserID = order.CreatedByUser?.Id;
+            }
 
             order.Parameters = JsonConvert.SerializeObject(order.CustomerAssets);
 
@@ -337,9 +343,14 @@ namespace Backend_API.Services
                 OrderStatus = (OrderStatus)order.OrderStatusID,
                 Action = (OrderAction)order.ActionID,
                 AssetDTO = _mapper.Map<AssetDTO>(customerAssets.Asset),
-                DateSubmited = order.DateSubmited,
+                DateSubmited = order.DateSubmitted,
                 DateCreated = order.DateCreated
             };
+
+            if (!order.CreatedByUser.IsNullOrEmpty())
+            {
+                orderDTO.CreatedByUsername = order.CreatedByUser.UserName;
+            }
 
             if (order.CustomerAssetsID.HasValue)
             {

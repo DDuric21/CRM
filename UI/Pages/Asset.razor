@@ -1,43 +1,39 @@
 ﻿@inject IAssetService assetService
 @inject ICrmModalService modalService
 
-<br />
-
 <div class="row g-2 align-items-stretch">
-    <div class="col-2">
     <!--Asset-->
-    <label>@Translation.AssetType</label>
-    @if (ActionID == (int)OrderAction.Create)
-    {
-        <select id="selectedAsset" class="form-select" @onchange="AssetSelected">
-            @foreach (var asset in selectableAssets)
-            {
-                @if (asset.Id == AssetDTO.Id)
+    <div class="col-2">
+        <label>@Translation.AssetType</label>
+        @if (ActionID == (int)OrderAction.Create)
+        {
+            <select id="selectedAsset" class="form-select" @onchange="AssetSelected">
+                @foreach (var asset in selectableAssets)
                 {
-                    <option selected value="@asset.Id">@asset.Name</option>                        
+                    @if (asset.Id == AssetDTO.Id)
+                    {
+                        <option selected value="@asset.Id">@asset.Name</option>                        
+                    }
+                    else
+                    {
+                        <option value="@asset.Id">@asset.Name</option>                        
+                    }
                 }
-                else
-                {
-                    <option value="@asset.Id">@asset.Name</option>                        
-                }
-            }
-        </select> 
-    }
-    else
-    {
-        <fieldset disabled="@true">
-            <select id="selectedAsset" class="form-select">
-                <option selected value="@AssetDTO.Id">@AssetDTO.Name</option>
-            </select>
-        </fieldset>
-    }
+            </select> 
+        }
+        else
+        {
+            <fieldset disabled="@true">
+                <select id="selectedAsset" class="form-select">
+                    <option selected value="@AssetDTO.Id">@AssetDTO.Name</option>
+                </select>
+            </fieldset>
+        }
     </div>
-</div>
 
 <br />
 
 <!--BillingProfile-->
-<div class="row g-2 align-items-stretch">
     <div class="col-2">
         <label>@Translation.BillingProfile</label>
         <fieldset disabled="@(ActionID == (int)OrderAction.Delete)">
@@ -49,12 +45,28 @@
             </select>
         </fieldset>
     </div>
+
+    <!--BillingProfile-->
+    <div class="col-2">
+        <label>@Translation.Address</label>
+        <fieldset disabled="@(ActionID == (int)OrderAction.Delete)">
+            <select id="customerAddresses" class="form-select" @bind="AssetDTO.AssetAddress.Id" >
+                @foreach (var address in OrderDTO.CustomerDTO.Addresses)
+                {
+                    <option value="@address.Id">@address.FullAddress</option>
+                }
+            </select>
+        </fieldset>
+    </div>
 </div>
 
 <br />
 
 <!--Asset options-->
-<button type="submit" name="submit" hidden="@(ActionID == (int)OrderAction.Delete)" class="btn btn-primary" @onclick="AddOption">@Translation.Add +</button>
+<div class="d-flex align-items-center gap-3">
+    <h4 class="mb-0">@Translation.AssetItmes</h4>
+    <button type="button" class="btn btn-primary btn-sm" @onclick="AddOption">@Translation.Add +</button>
+</div>
 <table class="table table-hover">
     <thead>
         <tr>

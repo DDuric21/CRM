@@ -20,9 +20,12 @@ namespace Models.DTO
 
         public List<OptionDTO> Options { get; set; }
 
+        public AddressDTO AssetAddress { get; set; }
+
         public AssetDTO()
         {
             Options = new List<OptionDTO>();
+            AssetAddress = new AddressDTO(); //this is temporary
         }
     }
 }

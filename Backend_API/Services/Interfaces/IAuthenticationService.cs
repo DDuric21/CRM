@@ -43,7 +43,5 @@ namespace Backend_API.Services
         void SetRefreshTokenCookie(IResponseCookies responseCookies, string refreshToken);
 
         void DeleteRefreshTokenCookie(IResponseCookies responseCookies);
-
-        Task<ValidationResult> IsUserActionPermitted(string username, string actionPermission);
     }
 }

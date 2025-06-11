@@ -6,10 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Models.Authentication;
-using Models.Classes;
 using Models.DTO;
 using Models.Helpers;
-using Resources.Translations.API;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -184,27 +182,6 @@ namespace Backend_API.Services
             };
 
             responseCookies.Append("refreshToken", string.Empty, cookieOptions);
-        }
-
-        public async Task<ValidationResult> IsUserActionPermitted(string username, string actionPermission)
-        {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                return new ValidationResult
-                {
-                    IsValid = false,
-                    ErrorMessage = APITranslations.InvalidUsername
-                };
-            }
-
-            var userData = await _userService.GetUserDataByNameAsync(username);
-
-            var isPermited = userData.UserRoles
-                .SelectMany(x => x.Value)
-                .Any(x => x.Type == CrmJwtClaimNames.Permission 
-                    && x.Value == actionPermission);
-
-            return new ValidationResult(isPermited);
         }
 
         private async Task MarkRefreshTokenAsUsed(string refreshToken)

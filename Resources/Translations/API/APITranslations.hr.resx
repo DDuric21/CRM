@@ -117,8 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="IncorrectCustomerAssetID" xml:space="preserve">
+    <value>Naveden je netočan ID imovine kupca</value>
+  </data>
   <data name="InvalidUsername" xml:space="preserve">
     <value>Korisničko ime nije važeće</value>
+  </data>
+  <data name="OpenOrderExists" xml:space="preserve">
+    <value>Otvorena narudžba za ovu imovinu već postoji. ID: {0}</value>
   </data>
   <data name="OrderCancelationFailed" xml:space="preserve">
     <value>Otkazivanje narudžbe nije uspjelo</value>
@@ -129,7 +135,7 @@
   <data name="OrderNotFound" xml:space="preserve">
     <value>Narudžba nije pronađena</value>
   </data>
-  <data name="UserNotPermitted" xml:space="preserve">
-    <value>Korisnik {0} nema dopuštenje za otkazivanje narudžbi.</value>
+  <data name="UserActionNotPermitted" xml:space="preserve">
+    <value>Korisnik {0} nema dopuštenje za akciju {1}.</value>
   </data>
 </root>

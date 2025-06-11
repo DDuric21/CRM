@@ -24,7 +24,7 @@ initializer.SetupAuthorization(builder);
 builder.Services.AddBlazoredModal();
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources/Translations");
 
 var app = builder.Build();
 

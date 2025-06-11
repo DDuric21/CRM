@@ -65,6 +65,7 @@ namespace Backend_API.Data.Mappings
                 .ForMember(dest => dest.CustomerDTO, opt => opt.MapFrom(src => src.Customer))
                 .ForMember(dest => dest.AssetDTO, opt => opt.MapFrom(src => src.CustomerAssets))
                 .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => (OrderStatus)src.OrderStatusID))
+                .ForMember(dest => dest.CreatedByUsername, opt => opt.MapFrom(src => src.CreatedByUser.UserName))
                 .ForMember(dest => dest.Action, opt => opt.MapFrom(src => (OrderAction)src.ActionID));
 
             // DTO ➜ ENTITY

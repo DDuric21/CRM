@@ -32,7 +32,7 @@ namespace Backend_API.Services
 
         Task<CustomerAssets> GetCustomerAssetDataAsync(long customerAssetsID);
 
-        List<Order> GetCustomerOrders(long customerID);
+        Task<List<Order>> GetCustomerOrdersAsync(long customerID);
 
         List<Interaction> GetCustomerInteractions(long customerID);
 

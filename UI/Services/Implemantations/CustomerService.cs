@@ -140,21 +140,21 @@ namespace UI.Services
             }
         }
 
-        public async Task<IAsyncEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID)
+        public async Task<IEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID)
         {
             var url = $"Customers/Orders/{customerID}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {
-                var response = await _communicationService.SendRequestAsync<IAsyncEnumerable<OrderDTO>>(request);
+                var response = await _communicationService.SendRequestAsyncNew<GetCustomerOrdersRS>(request);
 
-                return response;
+                return response.Orders;
             }
             catch (Exception ex)
             {
                 _loggingService.SendErrorLogToServerAsync(ex);
-                return AsyncEnumerable.Empty<OrderDTO>();
+                return Enumerable.Empty<OrderDTO>();
             }
         }
 

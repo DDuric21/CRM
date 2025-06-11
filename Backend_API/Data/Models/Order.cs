@@ -14,6 +14,7 @@ namespace Backend_API.Data.Models
 
         [ForeignKey("CustomerAssetsID")]
         public Nullable<long> CustomerAssetsID { get; set; }
+
         [NotMapped]
         public virtual CustomerAssets CustomerAssets { get; set; }
 
@@ -21,11 +22,16 @@ namespace Backend_API.Data.Models
 
         public int ActionID { get; set; }
 
+        [ForeignKey(nameof(CreatedByUserID))]
+        public string CreatedByUserID { get; set; }
+
+        public virtual User CreatedByUser { get; set; }
+
         public DateTime DateCreated { get; set; }
 
         public DateTime DateModified { get; set; }
 
-        public DateTime DateSubmited { get; set; }
+        public DateTime DateSubmitted { get; set; }
 
         public string? Parameters { get; set; }
     }

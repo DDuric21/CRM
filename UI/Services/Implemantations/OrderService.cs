@@ -43,9 +43,9 @@ namespace UI.Services
 
             try
             {
-                var response = await _communicationService.SendRequestAsync<OrderDTO>(request);
+                var response = await _communicationService.SendRequestAsyncNew<GetOrderDataRS>(request);
 
-                return response;
+                return response.Order;
             }
             catch (Exception ex)
             {
