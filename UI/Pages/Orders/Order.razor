@@ -115,7 +115,8 @@ else
         }
         else
         {
-            customerDTO = await localStorageService.GetItemAsync<CustomerDTO>(OrderID.ToString()); 
+            customerDTO = await localStorageService.GetItemAsync<CustomerDTO>(OrderID.ToString());
+            localStorageService.RemoveItemAsync(OrderID.ToString());
             var authState = await AuthState.GetAuthenticationStateAsync();
             orderDTO.CreatedByUsername = authState?.User?.Identity?.Name;
         }
