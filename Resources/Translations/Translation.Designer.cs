@@ -691,6 +691,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Order canceled successfully.
+        /// </summary>
+        public static string OrderCanceledSuccessfully {
+            get {
+                return ResourceManager.GetString("OrderCanceledSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Order ID.
         /// </summary>
         public static string OrderID {

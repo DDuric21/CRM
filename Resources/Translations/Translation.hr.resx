@@ -468,4 +468,7 @@
   <data name="Success" xml:space="preserve">
     <value>Uspjeh</value>
   </data>
+  <data name="OrderCanceledSuccessfully" xml:space="preserve">
+    <value>Narudžba je uspješno otkazana</value>
+  </data>
 </root>

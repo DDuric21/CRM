@@ -14,10 +14,12 @@
 else
 {
     <!-- Action Buttons -->
-    <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
-        <button type="submit" class="btn btn-primary btn-lg" @onclick="SubmitOrder"> @Translation.SubmitOrder</button>
-        <button type="button" class="btn btn-outline-danger btn-lg" @onclick="CancelOrder"> @Translation.Cancel</button>
-    </div>
+    <fieldset disabled="@IsDisabled()">
+        <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+            <button type="submit" class="btn btn-primary btn-lg" @onclick="SubmitOrder"> @Translation.SubmitOrder</button>
+            <button type="button" class="btn btn-outline-danger btn-lg" @onclick="CancelOrder"> @Translation.Cancel</button>
+        </div>
+    </fieldset>
     <fieldset disabled>
         <div class="card my-2">
             <div class="card-body">
@@ -177,7 +179,8 @@ else
         var response = await orderService.CancelOrderAsync(orderDTO.OrderID);
         if (response.IsSuccess)
         {
-            navigationManager.NavigateTo($"/Customers/{customerDTO.Id}");
+            orderDTO.OrderStatus = OrderStatus.Cancelled;
+            modalService.ShowSuccessToast(Translation.OrderCanceledSuccessfully);
         }
         else
         {
