@@ -13,10 +13,38 @@ namespace UI.Services
         private string ErrorTitle = Translation.Error;
         private string WarningTitle = Translation.Warning;
         private string InfoTitle = Translation.InfoTitle;
+        private const int DefaultToastDelay = 5000;
 
         public CrmModalService(IModalService modalService)
         {
             _modalService = modalService;
+        }
+
+        /// <summary>
+        /// Show a non-blocking “success” toast in the bottom-left that auto-closes.
+        /// </summary>
+        public void ShowSuccessToast(string message, string title = "", int delay = DefaultToastDelay)
+        {
+            if (string.IsNullOrEmpty(title))
+            {
+                title = Translation.Success;
+            }
+
+            var parameters = new ModalParameters
+            {
+                { nameof(ToastModal.Title), title },
+                { nameof(ToastModal.Message), message },
+                { nameof(ToastModal.Delay), delay }
+            };
+    
+            var options = new ModalOptions
+            {
+                HideHeader = true,
+                UseCustomLayout = true,
+                Class = "p-0 border-0"
+            };
+    
+            _modalService.Show<ToastModal>(title, parameters, options);
         }
 
         public void ShowCustomerFriendlyMessage()

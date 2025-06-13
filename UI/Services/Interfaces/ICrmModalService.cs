@@ -7,6 +7,8 @@ namespace UI.Services
 {
     public interface ICrmModalService
     {
+        void ShowSuccessToast(string message, string title = "", int delay = 5000);
+
         void ShowCustomerFriendlyMessage();
 
         void ShowErrorMessage(string message);

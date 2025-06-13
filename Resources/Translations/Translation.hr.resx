@@ -465,4 +465,7 @@
   <data name="SelectAssetType" xml:space="preserve">
     <value>Odaberite vrstu usluge</value>
   </data>
+  <data name="Success" xml:space="preserve">
+    <value>Uspjeh</value>
+  </data>
 </root>
