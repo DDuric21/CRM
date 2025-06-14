@@ -13,17 +13,19 @@ else
     <CascadingValue Value="@customerDTO">
         <Customer></Customer>
         <button class="btn btn-primary" @onclick="() => NavigateToCustomerAdministration()">@Translation.Edit</button>
+        <br />
         <CustomerNav DisplayComponent="ShowComponent"></CustomerNav>
+        <br />
         @switch (componentName)
         {
             case nameof(CustomerInteractions) :
-                <CustomerInteractions></CustomerInteractions>
+                <CustomerInteractions />
                 break;
             case nameof(CustomerAssets) :
-                <CustomerAssets></CustomerAssets>
+                <CustomerAssets />
                 break;
             case nameof(CustomerOrders) :
-                <CustomerOrders></CustomerOrders>
+                <CustomerOrders />
                 break;
             default:
                 <h3>@Translation.NoComponentSelected</h3>

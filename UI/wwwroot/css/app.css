@@ -119,3 +119,55 @@ th, td {
     max-width: none;    
 }
 
+
+.custom-navbar {
+    background-color: #cfe2ff; 
+    border-radius: 0.5rem; 
+    padding: 0; 
+}
+
+    .custom-navbar .nav-btn-container {
+        display: flex;  
+        width: 100%;
+        height: 4rem;
+        margin: 0;
+    }
+
+    .custom-navbar .btn-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+
+    .custom-navbar .start {
+        justify-content: flex-start;
+    }
+
+    .custom-navbar .center {
+        justify-content: center;
+    }
+
+    .custom-navbar .end {
+        justify-content: flex-end;
+    }
+
+    .custom-navbar .btn {
+        width: 50%;
+        height: 100%;
+        box-shadow: none;
+        cursor: pointer;
+    }
+
+    .custom-navbar .btn-inactive {
+        color: #1a376f;
+    }
+        .custom-navbar .btn-inactive:hover {
+            background-color: #82b8f5;
+            color: #fff;
+        }
+
+    .custom-navbar .btn-active {
+        background-color: #4a8fed;
+        color: #fff;
+        font-weight: 600;
+    }
