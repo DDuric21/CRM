@@ -1,33 +1,7 @@
 ﻿
 @inject ICustomerService customerService
-@inject NavigationManager navigationManager
 
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>@Translation.OrderID</th>
-            <th>@Translation.AssetName</th>
-            <th>@Translation.Created</th>
-            <th>@Translation.Submited</th>
-            <th>@Translation.CreatedBy</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var orderDTO in orders)
-        {
-            <tr role="button" @ondblclick="() => RedirectToOrder(orderDTO.OrderID)">
-                <td><label id="@orderDTO.OrderID" >@orderDTO.OrderID</label></td>
-                <td><label id="@orderDTO.OrderID" >@orderDTO.AssetDTO.Name</label></td>
-                <td><label id="@orderDTO.OrderID" >@orderDTO.DateCreated.ToStringValue()</label></td>
-                <td><label id="@orderDTO.OrderID" >@orderDTO.DateSubmitted.ToStringValue()</label></td>
-                <td><label id="@orderDTO.OrderID" >@orderDTO.CreatedByUsername</label></td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-
-
+<OrdersGrid Orders="orders"/>
 
 @code {
     [CascadingParameter]
@@ -44,10 +18,4 @@
             orders.Add(order);
         }
     }
-
-    private void RedirectToOrder(Guid id)
-    {
-        navigationManager.NavigateTo($"/Orders/Order?orderID={id}&readOrder={true}");
-    }
-
 }

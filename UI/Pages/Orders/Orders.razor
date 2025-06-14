@@ -1,6 +1,5 @@
 ﻿@page "/Orders/Orders"
 
-@inject NavigationManager navigationManager
 @inject IOrderService orderService
 @inject ICrmModalService modal
 
@@ -8,45 +7,10 @@
 <br />
 <h3>@Translation.Orders</h3>
 
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>@Translation.OrderID</th>
-            <th>@Translation.AssetName</th>
-            <th>Status</th>
-            <th>@Translation.Created</th>
-            <th>@Translation.Submited</th>
-            <th>@Translation.CreatedBy</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (orders is null)
-        {
-            <tr>
-                <td colspan="5" class="text-center py-5">
-                    <Loader />
-                </td>
-            </tr>
-        }
-        else
-        {
-            @foreach (var order in orders)
-            {
-                <tr role="button" @ondblclick="() => RedirectToOrder(order.OrderID)">
-                    <td><label id="@order.OrderID">@order.OrderID</label></td>
-                    <td><label id="@order.OrderID">@order.AssetDTO.Name</label></td>
-                    <td><label id="@order.OrderID">@order.OrderStatus</label></td>
-                    <td><label id="@order.OrderID">@order.DateCreated.ToStringValue()</label></td>
-                    <td><label id="@order.OrderID">@order.DateSubmitted.ToStringValue()</label></td>
-                    <td><label id="@order.OrderID">@order.CreatedByUsername</label></td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
+<OrdersGrid Orders="orders"/>
 
 @code {
-    private List<OrderDTO> orders = new List<OrderDTO>();
+    private SortedSet<OrderDTO> orders = new SortedSet<OrderDTO>(new OrdersSorter());
 
     private async Task GetFilteredOrdersAsync(OrderFilterRQ orderFilter)
     {
@@ -57,22 +21,18 @@
 
             if (!result.IsSuccess)
             {
-                orders = new List<OrderDTO>();
+                orders = new SortedSet<OrderDTO>();
                 modal.ShowErrorMessage(result.ErrorMessage);
                 return;
             }
 
-            orders = result.Data.Orders.ToList();
+            orders = new SortedSet<OrderDTO>(result.Data.Orders, new OrdersSorter());
         }
         catch (Exception ex)
         {
-            orders = new List<OrderDTO>();
+            orders = new SortedSet<OrderDTO>();
             modal.ShowErrorMessage(ex.Message);
         }
     }
 
-    private void RedirectToOrder(Guid id)
-    {
-        navigationManager.NavigateTo($"/Orders/Order?orderID={id}&readOrder=true");
-    }
 }
