@@ -18,6 +18,7 @@ namespace UI.Services
 
         public async Task<bool> UpdateAddressesAsync(List<AddressDTO> addresses)
         {
+            return false;   
             var url = "Addresses";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, addresses);
 
