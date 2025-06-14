@@ -296,6 +296,16 @@ namespace Backend_API.Services
                 users = users.Where(x => userFilter.UserStatuses.Contains((ItemState)x.UserStatusID));
             }
 
+            if (userFilter.Username != null)
+            {
+                users = users.Where(x => x.UserName != null && x.UserName.ToLower() == userFilter.Username.ToLower());
+            }
+
+            if (userFilter.Email != null)
+            {
+                users = users.Where(x => x.Email != null && x.Email.ToLower() == userFilter.Email.ToLower());
+            }
+
             if (userFilter.FirstName != null)
             {
                 users = users.Where(x => x.FirstName.StartsWith(userFilter.FirstName));

@@ -61,6 +61,15 @@ namespace Resources.Translations.API {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fetching users failed.
+        /// </summary>
+        public static string FetchingUsersFailed {
+            get {
+                return ResourceManager.GetString("FetchingUsersFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Incorrect CustomerAssetID provided.
         /// </summary>
         public static string IncorrectCustomerAssetID {

@@ -48,6 +48,16 @@ else
                 <input class="form-control" @bind="userFilter.LastName" placeholder="@Translation.EnterLastName" />
             </div>
 
+            <div class="col-2 p-2">
+                <label>@Translation.Username:</label>
+                <input class="form-control" @bind="userFilter.Username" placeholder="@Translation.EnterUsername" />
+            </div>
+
+            <div class="col-2 p-2">
+                <label>Email:</label>
+                <input class="form-control" @bind="userFilter.Email" placeholder="@Translation.EnterEmail" />
+            </div>
+
             <div class="col-4 p-2">
                 <label>@Translation.CreatedBetween:</label>
                 <div class="d-flex gap-2">
@@ -57,7 +67,7 @@ else
             </div>
 
             <div class="col-2 dropdown p-2">
-                <label>User Roles:</label>
+                <label>@Translation.UserRoles:</label>
                 <button class="form-select text-truncate" type="button" data-dropdown-id="rolesDropdown" id="dropdownButton" data-bs-toggle="dropdown">
                     @rolesButtonText
                 </button>

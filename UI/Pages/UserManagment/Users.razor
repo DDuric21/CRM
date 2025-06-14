@@ -16,6 +16,7 @@
             <th>@Translation.Username</th>
             <th>Email</th>
             <th>@Translation.Role</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
@@ -36,6 +37,7 @@
                     <td>@user.UserName</td>
                     <td>@user.UserEmail</td>
                     <td>@string.Join(" / ", user.UserRoles.Select(x => x.RoleName))</td>
+                    <td>@user.UserStatus</td>
                     <td>
                         <button class="btn btn-outline-secondary" @onclick="() => RedirectToUser(user.UserName)"><em class="oi oi-pencil"></em> @Translation.Edit</button>
                         <button class="btn btn-primary" hidden="@(user.UserStatus == ItemState.Active)" @onclick="() => ActivateUser(user.UserName)">@Translation.Activate</button>

@@ -5,6 +5,7 @@ using Models.DTO;
 using Models.Helpers;
 using Models.Requests;
 using Models.Responses;
+using Resources.Translations.API;
 
 namespace Backend_API.Controllers
 {
@@ -42,9 +43,9 @@ namespace Backend_API.Controllers
         {
             var users = await _userService.GetUsersAsync(userFilter);
 
-            if (users.IsNullOrEmpty())
+            if (users is null)
             {
-                return Problem("No users found!");
+                return Problem(APITranslations.FetchingUsersFailed);
             }
 
             return Ok(users);

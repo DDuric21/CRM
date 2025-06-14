@@ -8,6 +8,10 @@ namespace Models.Requests
 
         public string LastName { get; set; }
 
+        public string Username { get; set; }
+
+        public string Email { get; set; }
+
         public IEnumerable<ItemState> UserStatuses { get; set; }
 
         public IEnumerable<string> UserRoles { get; set; }

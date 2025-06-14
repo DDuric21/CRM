@@ -448,6 +448,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter email.
+        /// </summary>
+        public static string EnterEmail {
+            get {
+                return ResourceManager.GetString("EnterEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter first name.
         /// </summary>
         public static string EnterFirstName {
@@ -480,6 +489,15 @@ namespace Resources.Translations {
         public static string EnterPersonalID {
             get {
                 return ResourceManager.GetString("EnterPersonalID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter username.
+        /// </summary>
+        public static string EnterUsername {
+            get {
+                return ResourceManager.GetString("EnterUsername", resourceCulture);
             }
         }
         

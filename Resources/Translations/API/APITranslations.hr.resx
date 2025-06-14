@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="FetchingUsersFailed" xml:space="preserve">
+    <value>Dohvat korisnika nije uspio</value>
+  </data>
   <data name="IncorrectCustomerAssetID" xml:space="preserve">
     <value>Naveden je netočan ID imovine kupca</value>
   </data>
