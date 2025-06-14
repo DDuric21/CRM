@@ -117,11 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddressFieldRequired" xml:space="preserve">
+    <value>Polje adrese je obavezno</value>
+  </data>
+  <data name="CityFieldRequired" xml:space="preserve">
+    <value>Polje grada je obavezno</value>
+  </data>
+  <data name="CountryFieldRequired" xml:space="preserve">
+    <value>Polje zemlje je obavezno</value>
+  </data>
   <data name="InvalidGuid" xml:space="preserve">
     <value>Unesena vrijednost nije valjani GUID.</value>
   </data>
   <data name="PasswordRequired" xml:space="preserve">
     <value>Lozinka ne može biti prazna.</value>
+  </data>
+  <data name="PostalCodeFieldRequired" xml:space="preserve">
+    <value>Polje za poštanski broj je obavezno</value>
   </data>
   <data name="SelectedAddressNotValid" xml:space="preserve">
     <value>Odabrana adresa nije važeća</value>

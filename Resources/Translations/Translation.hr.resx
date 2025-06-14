@@ -471,4 +471,19 @@
   <data name="OrderCanceledSuccessfully" xml:space="preserve">
     <value>Narudžba je uspješno otkazana</value>
   </data>
+  <data name="AddressesUpdateSucess" xml:space="preserve">
+    <value>Adrese su uspješno ažurirane</value>
+  </data>
+  <data name="AddressAddedSucess" xml:space="preserve">
+    <value>Nova adresa je uspješno dodana</value>
+  </data>
+  <data name="AddressCity" xml:space="preserve">
+    <value>Mjesto</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Država</value>
+  </data>
+  <data name="PostalCode" xml:space="preserve">
+    <value>Poštanski broj</value>
+  </data>
 </root>

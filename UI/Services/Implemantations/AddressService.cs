@@ -7,6 +7,7 @@ namespace UI.Services
     {
         private readonly ICommunicationService _communicationService;
         private readonly ILoggingService _loggingService;
+        private const string ApiUrl = "Addresses";
 
         public AddressService(
             ICommunicationService communicationService,
@@ -17,10 +18,8 @@ namespace UI.Services
         }
 
         public async Task<bool> UpdateAddressesAsync(List<AddressDTO> addresses)
-        {
-            return false;   
-            var url = "Addresses";
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, addresses);
+        { 
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, ApiUrl, addresses);
 
             try
             {
@@ -37,8 +36,7 @@ namespace UI.Services
 
         public async Task<AddressDTO> CreateNewAddressAsync(AddressDTO addressDTO)
         {
-            var url = "Addresses";
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, addressDTO);
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, ApiUrl, addressDTO);
 
             try
             {
@@ -55,7 +53,7 @@ namespace UI.Services
 
         public async Task<int> DeleteAddressAsync(long addressId)
         {
-            var url = $"Addresses/{addressId}";
+            var url = $"{ApiUrl}/{addressId}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Delete, url);
 
             try

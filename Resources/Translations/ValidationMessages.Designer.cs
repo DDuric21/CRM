@@ -61,6 +61,33 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Address field is required.
+        /// </summary>
+        public static string AddressFieldRequired {
+            get {
+                return ResourceManager.GetString("AddressFieldRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to City field is required.
+        /// </summary>
+        public static string CityFieldRequired {
+            get {
+                return ResourceManager.GetString("CityFieldRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Country field is required.
+        /// </summary>
+        public static string CountryFieldRequired {
+            get {
+                return ResourceManager.GetString("CountryFieldRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The entered value is not a valid GUID..
         /// </summary>
         public static string InvalidGuid {
@@ -75,6 +102,15 @@ namespace Resources.Translations {
         public static string PasswordRequired {
             get {
                 return ResourceManager.GetString("PasswordRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Postal code field is required.
+        /// </summary>
+        public static string PostalCodeFieldRequired {
+            get {
+                return ResourceManager.GetString("PostalCodeFieldRequired", resourceCulture);
             }
         }
         
