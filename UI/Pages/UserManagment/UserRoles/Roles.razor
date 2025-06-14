@@ -53,13 +53,8 @@ else
     {
         var parameters = new ModalParameters()
             .Add("RoleName", role);
-        var options = new ModalOptions
-        {
-            Size = ModalSize.Custom,
-            SizeCustomClass = "custom-wide-modal"
-        };
 
-        await modal.Show<RoleEdit>(parameters, options);
+        await modal.Show<RoleEdit>(parameters);
     }
 
     private async Task DeleteUserRoleAsync(string role)

@@ -114,12 +114,6 @@ th, td {
     text-align: left;
 }
 
-.blazored-modal.custom-wide-modal {
-    width: 50vw;
-    max-width: none;    
-}
-
-
 .custom-navbar {
     background-color: #f7f7f7;
     border-radius: 0.5rem;
