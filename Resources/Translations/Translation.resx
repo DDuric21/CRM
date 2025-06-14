@@ -492,4 +492,7 @@
   <data name="EnterEmail" xml:space="preserve">
     <value>Enter email</value>
   </data>
+  <data name="CreateNewRole" xml:space="preserve">
+    <value>Create New Role</value>
+  </data>
 </root>

@@ -1,7 +1,13 @@
-﻿namespace Models.DTO
+﻿using Resources.Translations;
+using System.ComponentModel.DataAnnotations;
+
+namespace Models.DTO
 {
     public class RoleDTO
     {
+        [Required(
+           ErrorMessageResourceType = typeof(ValidationMessages),
+           ErrorMessageResourceName = nameof(ValidationMessages.RoleNameFieldRequired))]
         public string RoleName { get; set; }
 
         public Dictionary<string, bool> Permissions { get; set; }

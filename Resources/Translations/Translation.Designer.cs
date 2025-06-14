@@ -322,6 +322,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create New Role.
+        /// </summary>
+        public static string CreateNewRole {
+            get {
+                return ResourceManager.GetString("CreateNewRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Role.
         /// </summary>
         public static string CreateRole {

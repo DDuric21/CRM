@@ -88,11 +88,29 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to First name field is required.
+        /// </summary>
+        public static string FirstNameFieldRequired {
+            get {
+                return ResourceManager.GetString("FirstNameFieldRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The entered value is not a valid GUID..
         /// </summary>
         public static string InvalidGuid {
             get {
                 return ResourceManager.GetString("InvalidGuid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last name field is required.
+        /// </summary>
+        public static string LastNameFieldRequired {
+            get {
+                return ResourceManager.GetString("LastNameFieldRequired", resourceCulture);
             }
         }
         
@@ -106,11 +124,29 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Personal ID field is required.
+        /// </summary>
+        public static string PersonalIDFieldRequired {
+            get {
+                return ResourceManager.GetString("PersonalIDFieldRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Postal code field is required.
         /// </summary>
         public static string PostalCodeFieldRequired {
             get {
                 return ResourceManager.GetString("PostalCodeFieldRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Role name field is required.
+        /// </summary>
+        public static string RoleNameFieldRequired {
+            get {
+                return ResourceManager.GetString("RoleNameFieldRequired", resourceCulture);
             }
         }
         

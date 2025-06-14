@@ -126,14 +126,26 @@
   <data name="CountryFieldRequired" xml:space="preserve">
     <value>Polje zemlje je obavezno</value>
   </data>
+  <data name="FirstNameFieldRequired" xml:space="preserve">
+    <value>Polje za ime je obavezno</value>
+  </data>
   <data name="InvalidGuid" xml:space="preserve">
     <value>Unesena vrijednost nije valjani GUID.</value>
+  </data>
+  <data name="LastNameFieldRequired" xml:space="preserve">
+    <value>Polje za prezime je obavezno</value>
   </data>
   <data name="PasswordRequired" xml:space="preserve">
     <value>Lozinka ne može biti prazna.</value>
   </data>
+  <data name="PersonalIDFieldRequired" xml:space="preserve">
+    <value>Polje za osobni identifikacijski broj je obavezno</value>
+  </data>
   <data name="PostalCodeFieldRequired" xml:space="preserve">
     <value>Polje za poštanski broj je obavezno</value>
+  </data>
+  <data name="RoleNameFieldRequired" xml:space="preserve">
+    <value>Polje za naziv uloge je obavezno</value>
   </data>
   <data name="SelectedAddressNotValid" xml:space="preserve">
     <value>Odabrana adresa nije važeća</value>

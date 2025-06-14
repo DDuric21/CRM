@@ -9,18 +9,19 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Create New Role</h5>
+                    <h5 class="mb-0">@Translation.CreateNewRole</h5>
                 </div>
 
                     <div class="card-body">
                         <EditForm Model="@roleDTO" OnValidSubmit="@CreateNewRoleAsync">
+                            <DataAnnotationsValidator />
                             <div class="mb-3">
                                 <label class="form-label">@Translation.RoleName</label>
-                                <InputText class="form-control" @bind-Value="roleDTO.RoleName" required />
+                                <InputText class="form-control" @bind-Value="roleDTO.RoleName" />
                             </div>
 
                             <Permissions RoleName="@roleDTO.RoleName" @ref="permissions" />
-
+                            <ValidationSummary />
                             <div class="d-grid mt-4">
                                 <button type="submit" class="btn btn-primary">@Translation.CreateRole</button>
                             </div>

@@ -126,14 +126,26 @@
   <data name="CountryFieldRequired" xml:space="preserve">
     <value>Country field is required</value>
   </data>
+  <data name="FirstNameFieldRequired" xml:space="preserve">
+    <value>First name field is required</value>
+  </data>
   <data name="InvalidGuid" xml:space="preserve">
     <value>The entered value is not a valid GUID.</value>
+  </data>
+  <data name="LastNameFieldRequired" xml:space="preserve">
+    <value>Last name field is required</value>
   </data>
   <data name="PasswordRequired" xml:space="preserve">
     <value>Password cannot be blank.</value>
   </data>
+  <data name="PersonalIDFieldRequired" xml:space="preserve">
+    <value>Personal ID field is required</value>
+  </data>
   <data name="PostalCodeFieldRequired" xml:space="preserve">
     <value>Postal code field is required</value>
+  </data>
+  <data name="RoleNameFieldRequired" xml:space="preserve">
+    <value>Role name field is required</value>
   </data>
   <data name="SelectedAddressNotValid" xml:space="preserve">
     <value>Selected address is not valid</value>
