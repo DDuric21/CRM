@@ -121,15 +121,16 @@ th, td {
 
 
 .custom-navbar {
-    background-color: #cfe2ff; 
-    border-radius: 0.5rem; 
-    padding: 0; 
+    background-color: #f7f7f7;
+    border-radius: 0.5rem;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
     .custom-navbar .nav-btn-container {
-        display: flex;  
+        display: flex;
         width: 100%;
-        height: 4rem;
+        height: 3.2rem;
         margin: 0;
     }
 
@@ -156,18 +157,14 @@ th, td {
         height: 100%;
         box-shadow: none;
         cursor: pointer;
+        font-size: 1.3rem;
     }
 
     .custom-navbar .btn-inactive {
         color: #1a376f;
     }
-        .custom-navbar .btn-inactive:hover {
-            background-color: #82b8f5;
-            color: #fff;
-        }
 
-    .custom-navbar .btn-active {
-        background-color: #4a8fed;
-        color: #fff;
-        font-weight: 600;
+    .custom-navbar .btn:hover, .btn-active {
+        background-color: #2078F4;
+        color: white;
     }
