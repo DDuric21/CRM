@@ -57,16 +57,26 @@ namespace Backend_API.Data.Mappings
                         ? src.BillingProfile
                         : new BillingProfile(src.BillingProfileId)
                 ))
+                .ForMember(dest => dest.AssetAddress, opt => opt.MapFrom(src =>
+                    src.AssetAddress != null && src.AssetAddress.Id > 0
+                        ? src.AssetAddress
+                        : src.AssetAddressID.HasValue
+                            ? new Address { Id = src.AssetAddressID.Value }
+                            : new Address()
+                ))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Asset.Price))
                 .ForMember(dest => dest.CurrencyID, opt => opt.MapFrom(src => src.Asset.CurrencyID))
                 .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.CustomerAssetOptions));
 
             CreateMap<Order, OrderDTO>()
+                .ForMember(dest => dest.OrderID, opt => opt.MapFrom(src => src.OrderID))
                 .ForMember(dest => dest.CustomerDTO, opt => opt.MapFrom(src => src.Customer))
                 .ForMember(dest => dest.AssetDTO, opt => opt.MapFrom(src => src.CustomerAssets))
                 .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => (OrderStatus)src.OrderStatusID))
                 .ForMember(dest => dest.CreatedByUsername, opt => opt.MapFrom(src => src.CreatedByUser.UserName))
-                .ForMember(dest => dest.Action, opt => opt.MapFrom(src => (OrderAction)src.ActionID));
+                .ForMember(dest => dest.Action, opt => opt.MapFrom(src => (OrderAction)src.ActionID))
+                .ForMember(dest => dest.DateCreated, opt => opt.MapFrom(src => src.DateCreated))
+                .ForMember(dest => dest.DateSubmitted, opt => opt.MapFrom(src => src.DateSubmitted));
 
             // DTO ➜ ENTITY
             CreateMap<AddressDTO, Address>();
@@ -96,6 +106,12 @@ namespace Backend_API.Data.Mappings
 
             CreateMap<AssetDTO, CustomerAssets>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.CustomerAssetID))
+                .ForMember(dest => dest.AssetAddress, opt => opt.Ignore())
+                .ForMember(dest => dest.AssetAddressID, opt =>
+                {
+                    opt.PreCondition(src => src.AssetAddress != null && src.AssetAddress.Id > 0);
+                    opt.MapFrom(src => src.AssetAddress.Id);
+                })
                 .ForMember(dest => dest.AssetID, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.AssetStatusID, opt => opt.MapFrom(src => (int)src.AssetStatus))
                 .ForMember(dest => dest.Asset, opt => opt.MapFrom(src => src))

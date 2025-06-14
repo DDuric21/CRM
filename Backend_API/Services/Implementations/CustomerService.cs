@@ -95,6 +95,7 @@ namespace Backend_API.Services
             var retrievedData = await _repository.CustomerAssets
                 .Where(x => x.Id == customerAssetsID)
                 .Include(x => x.Asset)
+                .Include(x => x.AssetAddress)
                 .Include(x => x.BillingProfile)
                 .Include(x => x.CustomerAssetOptions)
                 .ThenInclude(y => y.Option)

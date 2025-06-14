@@ -18,7 +18,7 @@ namespace Models.DTO
 
         public DateTime DateCreated { get; set; }
 
-        public DateTime DateSubmited { get; set; }
+        public DateTime DateSubmitted { get; set; }
 
         public OrderDTO()
         {

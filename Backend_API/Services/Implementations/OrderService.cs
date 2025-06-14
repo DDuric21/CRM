@@ -44,6 +44,8 @@ namespace Backend_API.Services
                 .Include(x => x.CreatedByUser)
                 .Include(x => x.Customer)
                 .ThenInclude(y => y.BillingProfiles)
+                .Include(x => x.Customer)
+                .ThenInclude(y => y.Addresses)
                 .FirstOrDefaultAsync();
 
             if (order is null)
@@ -87,19 +89,21 @@ namespace Backend_API.Services
             }
         }
 
-        public async Task<bool> SubmitOrderDataAsync(OrderDTO orderDTO)
+        public async Task<ResponseBase> SubmitOrderDataAsync(OrderDTO orderDTO)
         {
             orderDTO.Action = DefineOrderAction(orderDTO.Action);
 
             try
             {
                 var order = await MapDtoToOrderAsync(orderDTO);
-                return await SubmitOrderAsync(order);
+                var result = await SubmitOrderAsync(order);
+
+                return new ResponseBase(result);
             }
             catch (Exception ex)
             {
                 DynamicLogger.LogException(ex, ex.Message);
-                return false;
+                return new ResponseBase(false, APITranslations.OrderSubmissionFailed);
             } 
         }
 
@@ -165,10 +169,7 @@ namespace Backend_API.Services
 
         private async Task<bool> SubmitOrderAsync(Order order)
         {
-            if (order.DateSubmitted == DateTime.MinValue)
-            {
-                order.DateSubmitted = DateTime.UtcNow;
-            }
+            SetSubmitDate(order);
 
             var isSuccess = await HandleOrderActionAsync(order);
 
@@ -188,6 +189,14 @@ namespace Backend_API.Services
             return isSuccess;
         }
 
+        private static void SetSubmitDate(Order order)
+        {
+            if (order.DateSubmitted == DateTime.MinValue)
+            {
+                order.DateSubmitted = DateTime.UtcNow;
+            }
+        }
+
         private async Task<bool> HandleOrderActionAsync(Order order)
         {
             int result = 0;
@@ -198,9 +207,11 @@ namespace Backend_API.Services
                     break;
                 case OrderAction.Delete:
                     result = await DeactivateCustomerAssetAsync(order);
+                    await _repository.Orders.PartialUpdateAsync(order, x => x.DateSubmitted);
                     break;
                 case OrderAction.Update:
                     result = await UpdateCustomerAssetAsync(order.CustomerAssets, order.OrderID);
+                    await _repository.Orders.PartialUpdateAsync(order, x => x.DateSubmitted);
                     break;
                 default:
                     DynamicLogger.LogError($"Unhandled order action used {order.ActionID}");
@@ -405,6 +416,16 @@ namespace Backend_API.Services
                 order.CreatedByUserID = order.CreatedByUser?.Id;
             }
 
+            if (order.CustomerAssets.AssetAddressID.HasValue)
+            {
+                var assetAddressDTO = orderDTO.CustomerDTO.Addresses.FirstOrDefault(x => x.Id == order.CustomerAssets.AssetAddressID.Value);
+                var assetAddress = assetAddressDTO.IsNullOrEmpty()
+                    ? await _repository.Addresses.Where(x => x.Id == order.CustomerAssets.AssetAddressID.Value).FirstOrDefaultAsync()
+                    : _mapper.Map<Address>(assetAddressDTO);
+
+                order.CustomerAssets.AssetAddress = assetAddress;
+            }
+
             order.Parameters = JsonConvert.SerializeObject(order.CustomerAssets);
 
             return order;
@@ -420,7 +441,7 @@ namespace Backend_API.Services
                 OrderStatus = (OrderStatus)order.OrderStatusID,
                 Action = (OrderAction)order.ActionID,
                 AssetDTO = _mapper.Map<AssetDTO>(customerAssets.Asset),
-                DateSubmited = order.DateSubmitted,
+                DateSubmitted = order.DateSubmitted,
                 DateCreated = order.DateCreated
             };
 
@@ -457,6 +478,7 @@ namespace Backend_API.Services
             customerAsset.AssetID = order.CustomerAssets.AssetID;
             customerAsset.CustomerID = order.CustomerID;
             customerAsset.Id = order.CustomerAssets.Id;
+            customerAsset.AssetAddressID = order.CustomerAssets.AssetAddressID;
             customerAsset.AssetStatusID = DefineAssetStatus((OrderAction)order.ActionID, (ItemState)order.CustomerAssets.AssetStatusID);
             customerAsset.BillingProfileId = order.CustomerAssets.BillingProfileId;
 

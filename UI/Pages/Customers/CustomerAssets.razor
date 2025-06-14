@@ -86,6 +86,9 @@
             : OrderAction.Update;
 
         var asset = assets.First(x => x.CustomerAssetID == customerAssetID);
+        asset.AssetAddress = CustomerDTO.Addresses
+            .FirstOrDefault(x => x.Id == asset.AssetAddress.Id);
+
         var order = new OrderDTO
         {
             OrderID = orderID,

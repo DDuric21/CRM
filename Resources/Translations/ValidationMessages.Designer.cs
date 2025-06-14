@@ -79,6 +79,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Selected address is not valid.
+        /// </summary>
+        public static string SelectedAddressNotValid {
+            get {
+                return ResourceManager.GetString("SelectedAddressNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please enter your username..
         /// </summary>
         public static string UsernameRequired {

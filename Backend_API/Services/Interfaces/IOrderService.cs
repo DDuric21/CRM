@@ -13,7 +13,7 @@ namespace Backend_API.Services
 
         Task<ResponseBase> CancelOrderAsync(CancelOrderRQ cancelOrderRQ);
 
-        Task<bool> SubmitOrderDataAsync(OrderDTO order);
+        Task<ResponseBase> SubmitOrderDataAsync(OrderDTO order);
 
         OrderDTO MapToDTO(Order order);
 

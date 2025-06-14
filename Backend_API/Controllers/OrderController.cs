@@ -65,25 +65,12 @@ namespace Backend_API.Controllers
         {
             if (orderDTO.IsNullOrEmpty())
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
-            {
-                var result = await _orderService.SubmitOrderDataAsync(orderDTO);
+            var result = await _orderService.SubmitOrderDataAsync(orderDTO);
 
-                if (!result)
-                {
-                    return Problem("No order created!");
-                }
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+            return Ok(result);
         }
 
         [HttpPut]

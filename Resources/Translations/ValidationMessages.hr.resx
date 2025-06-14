@@ -123,6 +123,9 @@
   <data name="PasswordRequired" xml:space="preserve">
     <value>Lozinka ne može biti prazna.</value>
   </data>
+  <data name="SelectedAddressNotValid" xml:space="preserve">
+    <value>Odabrana adresa nije važeća</value>
+  </data>
   <data name="UsernameRequired" xml:space="preserve">
     <value>Molimo unesite svoje korisničko ime.</value>
   </data>

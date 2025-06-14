@@ -31,9 +31,9 @@
         }
     </div>
 
-<br />
+    <br />
 
-<!--BillingProfile-->
+    <!--BillingProfile-->
     <div class="col-2">
         <label>@Translation.BillingProfile</label>
         <fieldset disabled="@(ActionID == (int)OrderAction.Delete)">
@@ -46,16 +46,17 @@
         </fieldset>
     </div>
 
-    <!--BillingProfile-->
+    <!--Asset Address-->
+
     <div class="col-2">
         <label>@Translation.Address</label>
         <fieldset disabled="@(ActionID == (int)OrderAction.Delete)">
-            <select id="customerAddresses" class="form-select" @bind="AssetDTO.AssetAddress.Id" >
-                @foreach (var address in OrderDTO.CustomerDTO.Addresses)
+            <InputSelect @bind-Value="AssetDTO.AssetAddress.Id" TValue="long" class="form-select">
+                @foreach (var addr in selectableAddresses)
                 {
-                    <option value="@address.Id">@address.FullAddress</option>
+                    <option value="@addr.Id">@addr.FullAddress</option>
                 }
-            </select>
+            </InputSelect>
         </fieldset>
     </div>
 </div>
@@ -118,27 +119,32 @@
     public OrderDTO OrderDTO { get; set; }
 
     [Parameter]
-    public AssetDTO AssetDTO { get; set; } = new AssetDTO();
+    public AssetDTO AssetDTO { get; set; }
 
     [Parameter]
     public int ActionID { get; set; }
 
-    private List<AssetDTO> selectableAssets = new List<AssetDTO>();
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "readOrder")]
+    public bool ReadOrder { get; set; }
 
+    private List<AssetDTO> selectableAssets = new List<AssetDTO>();
+    private List<AddressDTO> selectableAddresses = new List<AddressDTO>();
+    private List<BillingProfileDTO> selectableBillingProfiles = new List<BillingProfileDTO>();
     private List<OptionDTO> selectableOptions => selectableAssets
         .FirstOrDefault(x => x.Id == GetSelectedAsset())
         .Options;
     private List<OptionDTO> selectedOptions = new List<OptionDTO>();
 
-    private List<BillingProfileDTO> selectableBillingProfiles = new List<BillingProfileDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        AssetDTO = AssetDTO ?? new AssetDTO();
+        AssetDTO = AssetDTO ?? OrderDTO.AssetDTO ?? new AssetDTO();
 
-        if (OrderDTO.OrderStatus == OrderStatus.Finished)
+        selectableAddresses = OrderDTO.CustomerDTO.Addresses ?? new List<AddressDTO> { AssetDTO.AssetAddress };
+
+        if (ReadOrder)
         {
-            AssetDTO = OrderDTO.AssetDTO;
             selectableBillingProfiles.Add(AssetDTO.BillingProfile);
             selectableAssets.Add(AssetDTO);
             return;
@@ -162,6 +168,7 @@
             this.selectableAssets.ForEach(x => x.Options.Insert(0, new OptionDTO()));
             this.selectableAssets.Insert(0, new AssetDTO());
             this.selectableBillingProfiles.Insert(0, new BillingProfileDTO { BilingProfileStatus = ItemState.Active });
+            this.selectableAddresses.Insert(0, new AddressDTO());
         }
 
         if (ActionID == (int)OrderAction.Update)

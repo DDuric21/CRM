@@ -29,7 +29,7 @@ namespace Backend_API.Services
 
             if (!isPermited)
             {
-                var errorMessage = string.Format(APITranslations.UserActionNotPermitted, username, actionPermission);
+                var errorMessage = string.Format(APITranslations.UserActionNotPermitted, username);
                 throw new Exception(errorMessage);
             }
 

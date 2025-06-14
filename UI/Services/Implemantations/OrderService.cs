@@ -21,21 +21,21 @@ namespace UI.Services
             _loggingService = loggingService;
         }
 
-        public async Task<bool> SubmitOrderAsync(OrderDTO orderDTO)
+        public async Task<ResponseBase> SubmitOrderAsync(OrderDTO orderDTO)
         {
             var url = $"{ApiUrl}/{orderDTO.OrderID}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, orderDTO);
 
             try
             {
-                var response = await _communicationService.SendRequestAsync<bool>(request);
+                var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
 
                 return response;
             }
             catch (Exception ex)
             {
                 _loggingService.SendErrorLogToServerAsync(ex);
-                return false;
+                return new ResponseBase(false, ex.Message);
             }
         }
 

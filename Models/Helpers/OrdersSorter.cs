@@ -14,7 +14,7 @@ namespace Models.Helpers
             var created = y.DateCreated.CompareTo(x.DateCreated);
 
             var comparationResult = created == 0
-                ? y.DateSubmited.CompareTo(x.DateSubmited)
+                ? y.DateSubmitted.CompareTo(x.DateSubmitted)
                 : created;
 
             return comparationResult;

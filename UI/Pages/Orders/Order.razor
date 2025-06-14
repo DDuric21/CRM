@@ -65,7 +65,7 @@ else
                         </div>
                         <div class="col-md-3">
                             <label for="createdDate">@Translation.Submited</label>
-                            <input type="text" id="createdDate" class="form-control form-control-sm" value="@orderDTO.DateSubmited.ToStringValue()" />
+                            <input type="text" id="createdDate" class="form-control form-control-sm" value="@orderDTO.DateSubmitted.ToStringValue()" />
                         </div>
                         <div class="col-md-3">
                             <label for="orderStatus">@Translation.OrderStatus</label>
@@ -80,7 +80,7 @@ else
     <fieldset disabled="@IsDisabled()">
         <h4>@Translation.OrderItems</h4>
         <CascadingValue Value="@orderDTO">
-            <Asset AssetDTO="orderDTO.AssetDTO" ActionID="actionID" @ref="orderAsset"></Asset>
+            <Asset ActionID="actionID" @ref="orderAsset"></Asset>
         </CascadingValue>
     </fieldset>
 }
@@ -134,6 +134,11 @@ else
             orderDTO.OrderID = this.OrderID;            
         }
 
+        if (orderDTO.DateCreated == default)
+        {
+            orderDTO.DateCreated = DateTime.UtcNow;
+        }
+
         if (orderDTO.CustomerDTO.IsNullOrEmpty())
         {
             orderDTO.CustomerDTO = this.customerDTO;            
@@ -145,8 +150,11 @@ else
             if (actionID != (int)OrderAction.Create)
             {
                 orderDTO.AssetDTO = await customerService.GetCustomerAssetDataAsync(customerAssetID);
-            }
+            }            
         }
+
+        orderDTO.AssetDTO.AssetAddress = orderDTO.CustomerDTO.Addresses
+            .FirstOrDefault(x => x.Id == orderDTO.AssetDTO.AssetAddress.Id) ?? new AddressDTO();
 
         SetOrderAction();
     }
@@ -157,14 +165,14 @@ else
 
         var response = await orderService.SubmitOrderAsync(orderDTO);
 
-        if (response)
+        if (response.IsSuccess)
         {
             await modalService.ShowDialog(Translation.OrderSuccessfullySubmitted, ModalDialogType.OK);
-            navigationManager.NavigateTo($"/Customers/{customerDTO.Id}");
+            orderDTO.OrderStatus = OrderStatus.Submitted;
         }
         else
         {
-            modalService.ShowCustomerFriendlyMessage();
+            modalService.ShowErrorMessage(response.ErrorMessage);
         }
     }
 
@@ -193,8 +201,8 @@ else
         if ((int)orderDTO.Action <= 0)
         {
             orderDTO.Action = actionID > 0
-            ? (OrderAction)actionID
-            : OrderAction.Create;
+                ? (OrderAction)actionID
+                : OrderAction.Create;
         }
     }
 

@@ -7,7 +7,7 @@ namespace UI.Services
 {
     public interface IOrderService
     {
-        Task<bool> SubmitOrderAsync(OrderDTO orderDTO);
+        Task<ResponseBase> SubmitOrderAsync(OrderDTO orderDTO);
 
         Task<ResponseBase> CreateOrderAsync(OrderDTO orderDTO, bool withOptions = false);
 

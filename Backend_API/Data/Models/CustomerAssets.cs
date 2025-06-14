@@ -8,7 +8,9 @@ namespace Backend_API.Data.Models
         public long CustomerID { get; set; }
         public virtual Customer Customer { get; set; }
 
-        public long AssetAddressID{ get; set; }
+        [ForeignKey(nameof(AssetAddressID))]
+        public long? AssetAddressID{ get; set; }
+        public virtual Address AssetAddress { get; set; }
 
         [ForeignKey("AssetID")]
         public long AssetID { get; set; }

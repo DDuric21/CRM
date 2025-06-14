@@ -124,7 +124,16 @@ namespace Resources.Translations.API {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User {0} is not permitted for action {1}..
+        ///   Looks up a localized string similar to Failed to submit order.
+        /// </summary>
+        public static string OrderSubmissionFailed {
+            get {
+                return ResourceManager.GetString("OrderSubmissionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User {0} is not permitted for action..
         /// </summary>
         public static string UserActionNotPermitted {
             get {

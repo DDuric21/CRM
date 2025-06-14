@@ -4,6 +4,7 @@ using Backend_API.Data.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend_API.Migrations
 {
     [DbContext(typeof(CrmDbContext))]
-    partial class CrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250613174755_making asset address id a foreign key")]
+    partial class makingassetaddressidaforeignkey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,7 +53,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.Asset", b =>
@@ -83,7 +85,7 @@ namespace Backend_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Assets", (string)null);
+                    b.ToTable("Assets");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.BillingProfile", b =>
@@ -114,7 +116,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.ToTable("BillingProfiles", (string)null);
+                    b.ToTable("BillingProfiles");
 
                     b.HasCheckConstraint("CK_BillingProfile_Key_Format", "BillingProfileId LIKE '[0-9]-%[0-9]'");
                 });
@@ -159,7 +161,7 @@ namespace Backend_API.Migrations
                     b.HasIndex("PersonalID")
                         .IsUnique();
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.CustomerAssetOptions", b =>
@@ -182,7 +184,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("OptionID");
 
-                    b.ToTable("CustomerAssetOptions", (string)null);
+                    b.ToTable("CustomerAssetOptions");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.CustomerAssets", b =>
@@ -227,7 +229,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.ToTable("CustomerAssets", (string)null);
+                    b.ToTable("CustomerAssets");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.Interaction", b =>
@@ -262,7 +264,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.ToTable("Interactions", (string)null);
+                    b.ToTable("Interactions");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.News", b =>
@@ -294,7 +296,7 @@ namespace Backend_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("News", (string)null);
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.Option", b =>
@@ -331,7 +333,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("AssetID");
 
-                    b.ToTable("Options", (string)null);
+                    b.ToTable("Options");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.Order", b =>
@@ -378,7 +380,7 @@ namespace Backend_API.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.ToTable("Order", (string)null);
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.RefreshToken", b =>
@@ -420,7 +422,7 @@ namespace Backend_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.RolePermission", b =>
@@ -445,7 +447,7 @@ namespace Backend_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("Backend_API.Data.Models.User", b =>
