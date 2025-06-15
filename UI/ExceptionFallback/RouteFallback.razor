@@ -24,6 +24,14 @@
             LoggingService.SendErrorLogToServerAsync(logDetails);
         }
 
+        if (Exception is UnauthorizedAccessException)
+        {
+            ModalService.ShowErrorMessage(Translation.SessionExpired);
+            var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)AuthenticationStateProvider;
+            await crmAuthenticationStateProvider.Logout();
+            return;
+        }
+
         if (!AppConfig.IsDevelopment())
         {
             ModalService.ShowCustomerFriendlyMessage();
@@ -33,14 +41,7 @@
             await ModalService.ShowErrorMessageAsync(Exception?.Message);
         }
 
-        if (Exception is UnauthorizedAccessException)
-        {
-            var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)AuthenticationStateProvider;
-            await crmAuthenticationStateProvider.Logout();
-        }
-        else
-        {
-            Navigation.NavigateTo("/index", forceLoad: true);            
-        }
+        Navigation.NavigateTo("/index", forceLoad: true);            
+
     }
 }
