@@ -495,4 +495,19 @@
   <data name="CreateNewRole" xml:space="preserve">
     <value>Kreiraj Novu Ulogu</value>
   </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>Sesija je istekla. Molimo vas da se ponovno prijavite.</value>
+  </data>
+  <data name="LegalAddress" xml:space="preserve">
+    <value>Pravna adresa</value>
+  </data>
+  <data name="AdministrateCustomer" xml:space="preserve">
+    <value>Administrirajte kupca</value>
+  </data>
+  <data name="BackToCustomerView" xml:space="preserve">
+    <value>Povratak na prikaz kupca</value>
+  </data>
+  <data name="CustomerUpdateSuccess" xml:space="preserve">
+    <value>Korisnik je uspješno ažuriran</value>
+  </data>
 </root>

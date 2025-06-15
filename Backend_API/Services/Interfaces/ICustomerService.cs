@@ -22,11 +22,11 @@ namespace Backend_API.Services
         Customer MapDtoToCustomer(CustomerDTO customerDTO);
 
         /// <summary>
-        /// Retrives all data related to customer
+        /// Retrieves all data related to customer
         /// </summary>
         /// <param name="id">Id of customer</param>
-        /// <returns>Customer object</returns>
-        Task<Customer> GetCustomerDataAsync(long id);
+        /// <returns>CustomerDTO object</returns>
+        Task<CustomerDTO> GetCustomerDataAsync(long id);
 
         IEnumerable<CustomerAssets> GetCustomerAssets(long id);
 

@@ -142,6 +142,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Administrate customer.
+        /// </summary>
+        public static string AdministrateCustomer {
+            get {
+                return ResourceManager.GetString("AdministrateCustomer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Asset Items.
         /// </summary>
         public static string AssetItmes {
@@ -174,6 +183,15 @@ namespace Resources.Translations {
         public static string AssetType {
             get {
                 return ResourceManager.GetString("AssetType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back to customer view.
+        /// </summary>
+        public static string BackToCustomerView {
+            get {
+                return ResourceManager.GetString("BackToCustomerView", resourceCulture);
             }
         }
         
@@ -381,6 +399,15 @@ namespace Resources.Translations {
         public static string CustomersAssets {
             get {
                 return ResourceManager.GetString("CustomersAssets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Customer updated successfully.
+        /// </summary>
+        public static string CustomerUpdateSuccess {
+            get {
+                return ResourceManager.GetString("CustomerUpdateSuccess", resourceCulture);
             }
         }
         
@@ -624,6 +651,15 @@ namespace Resources.Translations {
         public static string LastName {
             get {
                 return ResourceManager.GetString("LastName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal address.
+        /// </summary>
+        public static string LegalAddress {
+            get {
+                return ResourceManager.GetString("LegalAddress", resourceCulture);
             }
         }
         
@@ -1038,6 +1074,15 @@ namespace Resources.Translations {
         public static string SelectStatus {
             get {
                 return ResourceManager.GetString("SelectStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Session expired. Please login again..
+        /// </summary>
+        public static string SessionExpired {
+            get {
+                return ResourceManager.GetString("SessionExpired", resourceCulture);
             }
         }
         

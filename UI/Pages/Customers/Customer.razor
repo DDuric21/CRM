@@ -1,30 +1,51 @@
 ﻿@inject ICustomerService customerService
 @inject ICrmModalService modal
 
-<h1>@(CustomerDTO.FirstName + " " + CustomerDTO.LastName)</h1>
-<br />
+<div class="card my-2">
+    <div class="card-body">
+        <section class="mb-2">
+            <h5 class="fw-semibold mb-3">@Translation.CustomerInformation</h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="firstName">@Translation.FirstName</label>
+                    <InputText id="firstName" class="form-control form-control-sm" @bind-Value="CustomerDTO.FirstName" />
+                </div>
+                <div class="col-md-3">
+                    <label for="lastName">@Translation.LastName</label>
+                    <InputText id="lastName" class="form-control form-control-sm" @bind-Value="CustomerDTO.LastName" />
+                </div>
+                <div class="col-md-3">
+                    <label for="birthday">@Translation.Birthday</label>
+                    <InputDate id="birthday" class="form-control form-control-sm" @bind-Value="CustomerDTO.Birthday" @bind-Value:format="dd-MM-yyyy" />
+                </div>
 
-<EditForm Model="@CustomerDTO" OnSubmit="@SaveChanges">
-    <fieldset disabled="@(!IsAdmin)">
-        <InputText @bind-Value="CustomerDTO.FirstName"></InputText>
-        <InputText @bind-Value="CustomerDTO.LastName"></InputText>
-        <InputDate @bind-Value="CustomerDTO.Birthday"></InputDate>
-        <button type="submit" name="submit" class="btn btn-primary">@Translation.SaveChanges</button>
-    </fieldset>
-</EditForm>
+                <div class="col-md-3">
+                    <label for="personalID">@Translation.PersonalID</label>
+                    <InputText id="personalID" class="form-control form-control-sm" @bind-Value="CustomerDTO.PersonalID" />
+                </div>
+
+                <div class="col-md-3">
+                    <label for="legalAddress">@Translation.LegalAddress</label>
+                    <InputText id="legalAddress" class="form-control form-control-sm" @bind-Value="legalAddress" disabled="@true"/>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
 
 @code {
-    [Parameter]
-    public bool IsAdmin { get; set; }
-
     [CascadingParameter]
     public CustomerDTO CustomerDTO { get; set; }
 
-    protected async Task SaveChanges()
+    private string legalAddress = string.Empty;
+
+    protected override async Task OnInitializedAsync()
     {
-        if (!await customerService.UpdateCustomer(CustomerDTO))
-        {
-            modal.ShowCustomerFriendlyMessage();
-        }
+        var address = CustomerDTO?.Addresses?.FirstOrDefault(x => x.IsLegal);
+        legalAddress = address != null
+            ? address.FullAddress
+            : string.Empty;
+
+        await base.OnInitializedAsync();
     }
 }

@@ -23,16 +23,18 @@ namespace Backend_API.Services
             _mapper = mapper;
         }
 
-        public async Task<Customer> GetCustomerDataAsync(long customerId)
+        public async Task<CustomerDTO> GetCustomerDataAsync(long customerId)
         {
             var customerData = await _repository.Customers.GetAllCustomerRelatedDataAsync(customerId);
 
             if (customerData.IsNullOrEmpty())
             {
-                return new Customer();
+                return new CustomerDTO();
             }
 
-            return customerData;
+            var customerDTO = _mapper.Map<CustomerDTO>(customerData);
+
+            return customerDTO;
         }
 
         public CustomerDTO MapCustomerToDTO(Customer customer)
@@ -43,21 +45,6 @@ namespace Backend_API.Services
             }
 
             var customerDTO = _mapper.Map<CustomerDTO>(customer);
-            customerDTO.Addresses = new List<AddressDTO>();
-
-            foreach (var address in customer.Addresses ?? Enumerable.Empty<Address>())
-            {
-                customerDTO.Addresses.Add(_mapper.Map<AddressDTO>(address));
-            }
-
-            customerDTO.BillingProfiles = new List<BillingProfileDTO>();
-
-            foreach (var billingProfile in customer.BillingProfiles ?? Enumerable.Empty<BillingProfile>())
-            {
-                var billingProfileDTO = _mapper.Map<BillingProfileDTO>(billingProfile);
-
-                customerDTO.BillingProfiles.Add(billingProfileDTO);
-            }
 
             return customerDTO;
         }

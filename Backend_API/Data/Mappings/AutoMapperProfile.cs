@@ -26,26 +26,53 @@ namespace Backend_API.Data.Mappings
                 .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.Email))
                 .ForPath(dest => dest.UserStatus, opt => opt.MapFrom(src => (ItemState)src.UserStatusID));
 
-            CreateMap<Address, AddressDTO>();
+            CreateMap<Address, AddressDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.IsLegal, opt => opt.MapFrom(src => src.IsLegal))
+                .ForMember(dest => dest.FullAddress, opt => opt.MapFrom(src => src.FullAddress))
+                .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId));
 
-            CreateMap<Option, OptionDTO>();
+            CreateMap<Option, OptionDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price));
 
             CreateMap<CustomerAssetOptions, OptionDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OptionID))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Option.Name))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Option.Price));
 
-            CreateMap<Asset, AssetDTO>();
+            CreateMap<Asset, AssetDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                .ForMember(dest => dest.CurrencyID, opt => opt.MapFrom(src => src.CurrencyID))
+                .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.Options));
 
             CreateMap<BillingProfile, BillingProfileDTO>()
                 .ForMember(dest => dest.BilingProfileStatus, opt => opt.MapFrom(src => (ItemState)src.BillingProfileStatusID))
                 .ForMember(dest => dest.BillingProfileId, opt => opt.MapFrom(src => src.BillingProfileId))
                 .ForMember(dest => dest.CustomerID, opt => opt.MapFrom(src => src.CustomerID))
+                .ForMember(dest => dest.BillingAddress, opt => opt.MapFrom(src =>
+                    src.Address != null && src.Address.Id > 0
+                        ? src.Address
+                        : src.AddressID.HasValue
+                            ? new Address { Id = src.AddressID.Value }
+                            : new Address()
+                ))
                 .ForMember(dest => dest.BillingAddress, opt => opt.MapFrom(src => src.Address));
 
             CreateMap<Customer, CustomerDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                .ForMember(dest => dest.PersonalID, opt => opt.MapFrom(src => src.PersonalID))
                 .ForMember(dest => dest.CustomerStatus, opt => opt.MapFrom(src => (ItemState)src.CustomerStatusID))
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (CustomerType)src.TypeID));
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (CustomerType)src.TypeID))
+                .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.Birthday))
+                .ForMember(dest => dest.Addresses, opt => opt.MapFrom(src => src.Addresses))
+                .ForMember(dest => dest.Assets, opt => opt.MapFrom(src => src.Assets))
+                .ForMember(dest => dest.BillingProfiles, opt => opt.MapFrom(src => src.BillingProfiles));
 
             CreateMap<CustomerAssets, AssetDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AssetID))

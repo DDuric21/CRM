@@ -19,8 +19,15 @@ th, td {
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
-    border-color: #1861ac;
 }
+    .btn-primary:focus,
+    .btn-primary.focus,
+    .btn-primary:active,
+    .btn-primary.active,
+    .open > .dropdown-toggle.btn-primary {
+        outline: none !important;
+        box-shadow: none !important;
+    }
 
 .content {
     padding-top: 1.1rem;

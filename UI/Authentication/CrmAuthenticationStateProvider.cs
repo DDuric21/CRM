@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Models.Authentication;
 using Models.Helpers;
 using System.Security.Claims;
+using UI.Helpers;
 using UI.Services;
 
 namespace UI.Authentication
@@ -11,7 +12,7 @@ namespace UI.Authentication
     public class CrmAuthenticationStateProvider : AuthenticationStateProvider
     {
         private const string AUTH_TYPE = "token";
-        private const string USER_SESSION = "UserSession";
+        private const string USER_SESSION = CrmStorageKeys.UserSession;
         private readonly ISessionStorageService _sessionStorage;
         private readonly IAuthenticationService _authenticationService;
         private readonly ILoggingService _loggingService;

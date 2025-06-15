@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Repositories;
+using Backend_API.Helpers;
 using Backend_API.Logging;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ using Models.DTO;
 using Models.Helpers;
 using Models.Requests;
 using Models.Responses;
+using Resources.Translations.API;
 
 namespace Backend_API.Controllers
 {
@@ -74,27 +76,20 @@ namespace Backend_API.Controllers
         [Route("{customerId}")]
         public async Task<IActionResult> GetCustomer(long customerId)
         {
-            var customerDTO = new CustomerDTO();
-
-            try
+            if (customerId <= 0)
             {
-                var customer = await _customerService.GetCustomerDataAsync(customerId);
-
-                if (customer.IsNullOrEmpty())
-                {
-                    DynamicLogger.LogError(nameof(GetCustomer), $"No customer found for ID: {customerId}");
-                    return Problem();
-                }
-
-                customerDTO = _customerService.MapCustomerToDTO(customer);
-            }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return Problem(ex.Message);
+                return HttpContext.BadRequest();
             }
 
-            return Ok(customerDTO);
+            var customer = await _customerService.GetCustomerDataAsync(customerId);
+
+            if (customer is null)
+            {
+                DynamicLogger.LogError($"No customer found for ID: {customerId}");
+                return Problem(APITranslations.CustomerNotFound);
+            }
+
+            return Ok(new GetCustomerDataRS(customer));
         }
 
         [HttpPost]

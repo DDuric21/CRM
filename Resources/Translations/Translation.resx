@@ -495,4 +495,19 @@
   <data name="CreateNewRole" xml:space="preserve">
     <value>Create New Role</value>
   </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>Session expired. Please login again.</value>
+  </data>
+  <data name="LegalAddress" xml:space="preserve">
+    <value>Legal address</value>
+  </data>
+  <data name="AdministrateCustomer" xml:space="preserve">
+    <value>Administrate customer</value>
+  </data>
+  <data name="BackToCustomerView" xml:space="preserve">
+    <value>Back to customer view</value>
+  </data>
+  <data name="CustomerUpdateSuccess" xml:space="preserve">
+    <value>Customer updated successfully</value>
+  </data>
 </root>
