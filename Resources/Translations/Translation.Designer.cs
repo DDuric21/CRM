@@ -637,6 +637,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Interaction was update successfully.
+        /// </summary>
+        public static string InteractionUpdateSucess {
+            get {
+                return ResourceManager.GetString("InteractionUpdateSucess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Language.
         /// </summary>
         public static string Language {

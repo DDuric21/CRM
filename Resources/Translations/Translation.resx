@@ -510,4 +510,7 @@
   <data name="CustomerUpdateSuccess" xml:space="preserve">
     <value>Customer updated successfully</value>
   </data>
+  <data name="InteractionUpdateSucess" xml:space="preserve">
+    <value>Interaction was update successfully</value>
+  </data>
 </root>

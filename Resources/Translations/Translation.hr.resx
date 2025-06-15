@@ -510,4 +510,7 @@
   <data name="CustomerUpdateSuccess" xml:space="preserve">
     <value>Korisnik je uspješno ažuriran</value>
   </data>
+  <data name="InteractionUpdateSucess" xml:space="preserve">
+    <value>Interakcija je uspješno ažurirana</value>
+  </data>
 </root>

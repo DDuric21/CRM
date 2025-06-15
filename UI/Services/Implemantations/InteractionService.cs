@@ -42,7 +42,7 @@ namespace UI.Services
 
         public async Task<ResponseBase> UpdateInteractionAsync(InteractionDTO interactionDTO)
         {
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, ApiUrl, interactionDTO);
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, ApiUrl, interactionDTO);
 
             try
             {
