@@ -471,10 +471,10 @@
   <data name="OrderCanceledSuccessfully" xml:space="preserve">
     <value>Order canceled successfully</value>
   </data>
-  <data name="AddressesUpdateSucess" xml:space="preserve">
+  <data name="AddressesUpdateSuccess" xml:space="preserve">
     <value>Addresses updated successfully</value>
   </data>
-  <data name="AddressAddedSucess" xml:space="preserve">
+  <data name="AddressAddedSuccess" xml:space="preserve">
     <value>New address added successfully</value>
   </data>
   <data name="AddressCity" xml:space="preserve">
@@ -510,7 +510,7 @@
   <data name="CustomerUpdateSuccess" xml:space="preserve">
     <value>Customer updated successfully</value>
   </data>
-  <data name="InteractionUpdateSucess" xml:space="preserve">
+  <data name="InteractionUpdateSuccess" xml:space="preserve">
     <value>Interaction was update successfully</value>
   </data>
   <data name="Bills" xml:space="preserve">
@@ -518,5 +518,17 @@
   </data>
   <data name="NotYetSupported" xml:space="preserve">
     <value>Not yet supported</value>
+  </data>
+  <data name="BillingProfiles" xml:space="preserve">
+    <value>Billing Profiles</value>
+  </data>
+  <data name="Paperless" xml:space="preserve">
+    <value>Paperless</value>
+  </data>
+  <data name="BillingProfileUpdateSuccess" xml:space="preserve">
+    <value>Billing profile update successfully</value>
+  </data>
+  <data name="BillingProfileDeactivationSuccess" xml:space="preserve">
+    <value>Billing profile deactivation successfully</value>
   </data>
 </root>

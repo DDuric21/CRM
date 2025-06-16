@@ -1,12 +1,14 @@
 ﻿using Models.DTO;
-using Models.Responses;
+using UI.Helpers;
 
 namespace UI.Services
 {
     public interface IBillingProfileService
     {
-        Task<BillingProfileDTO> CreateNewBillingProfileAsync(long customerID);
-        Task<bool> UpdateBillingProfileAsync(BillingProfileDTO billingProfileDTO);
-        Task<bool> DeactivateBillingProfileAsync(string billingProfileId);
+        Task<ActionResult<BillingProfileDTO>> CreateNewBillingProfileAsync(long customerID);
+
+        Task<ActionResult<BillingProfileDTO>> UpdateBillingProfileAsync(BillingProfileDTO billingProfileDTO);
+
+        Task<ActionResult<object>> DeactivateBillingProfileAsync(string billingProfileId);
     }
 }

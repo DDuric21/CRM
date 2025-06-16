@@ -471,10 +471,10 @@
   <data name="OrderCanceledSuccessfully" xml:space="preserve">
     <value>Narudžba je uspješno otkazana</value>
   </data>
-  <data name="AddressesUpdateSucess" xml:space="preserve">
+  <data name="AddressesUpdateSuccess" xml:space="preserve">
     <value>Adrese su uspješno ažurirane</value>
   </data>
-  <data name="AddressAddedSucess" xml:space="preserve">
+  <data name="AddressAddedSuccess" xml:space="preserve">
     <value>Nova adresa je uspješno dodana</value>
   </data>
   <data name="AddressCity" xml:space="preserve">
@@ -510,7 +510,7 @@
   <data name="CustomerUpdateSuccess" xml:space="preserve">
     <value>Korisnik je uspješno ažuriran</value>
   </data>
-  <data name="InteractionUpdateSucess" xml:space="preserve">
+  <data name="InteractionUpdateSuccess" xml:space="preserve">
     <value>Interakcija je uspješno ažurirana</value>
   </data>
   <data name="Bills" xml:space="preserve">
@@ -518,5 +518,17 @@
   </data>
   <data name="NotYetSupported" xml:space="preserve">
     <value>Nije još podržano</value>
+  </data>
+  <data name="BillingProfiles" xml:space="preserve">
+    <value>Profili Naplate</value>
+  </data>
+  <data name="Paperless" xml:space="preserve">
+    <value>Bez papira</value>
+  </data>
+  <data name="BillingProfileUpdateSuccess" xml:space="preserve">
+    <value>Profil naplate uspješno ažuriran</value>
+  </data>
+  <data name="BillingProfileDeactivationSuccess" xml:space="preserve">
+    <value>Profil naplate usješno deaktiviran</value>
   </data>
 </root>

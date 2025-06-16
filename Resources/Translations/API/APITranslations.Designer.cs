@@ -61,6 +61,33 @@ namespace Resources.Translations.API {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Billing profile not created!.
+        /// </summary>
+        public static string BillingProfileNotCreated {
+            get {
+                return ResourceManager.GetString("BillingProfileNotCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Billing profile not deactivated!.
+        /// </summary>
+        public static string BillingProfileNotDeactivated {
+            get {
+                return ResourceManager.GetString("BillingProfileNotDeactivated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Billing profile not updated!.
+        /// </summary>
+        public static string BillingProfileNotUpdated {
+            get {
+                return ResourceManager.GetString("BillingProfileNotUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Customer not found.
         /// </summary>
         public static string CustomerNotFound {
@@ -84,6 +111,24 @@ namespace Resources.Translations.API {
         public static string IncorrectCustomerAssetID {
             get {
                 return ResourceManager.GetString("IncorrectCustomerAssetID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid billing profile ID.
+        /// </summary>
+        public static string InvalidBillingProfileID {
+            get {
+                return ResourceManager.GetString("InvalidBillingProfileID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid customer ID provided.
+        /// </summary>
+        public static string InvalidCustomerIdProvided {
+            get {
+                return ResourceManager.GetString("InvalidCustomerIdProvided", resourceCulture);
             }
         }
         

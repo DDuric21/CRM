@@ -151,7 +151,7 @@
         }
 
         selectableBillingProfiles = OrderDTO.CustomerDTO.BillingProfiles
-            .Where(x => x.BilingProfileStatus == ItemState.Active)
+            .Where(x => x.BillingProfileStatus == ItemState.Active)
             .ToList();
 
         if (ActionID == (int)OrderAction.Create)
@@ -167,7 +167,7 @@
             //add empty items for better UX
             this.selectableAssets.ForEach(x => x.Options.Insert(0, new OptionDTO()));
             this.selectableAssets.Insert(0, new AssetDTO());
-            this.selectableBillingProfiles.Insert(0, new BillingProfileDTO { BilingProfileStatus = ItemState.Active });
+            this.selectableBillingProfiles.Insert(0, new BillingProfileDTO { BillingProfileStatus = ItemState.Active });
             this.selectableAddresses.Insert(0, new AddressDTO());
         }
 

@@ -1,9 +1,8 @@
-﻿using AutoMapper;
-using Backend_API.Data.Models;
+﻿using Backend_API.Helpers;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
-using Models.Responses;
+using Resources.Translations.API;
 
 namespace Backend_API.Controllers
 {
@@ -11,45 +10,24 @@ namespace Backend_API.Controllers
     public class BillingProfileController : AuthorizationController
     {
         private readonly IBillingProfileService _billingProfileService; 
-        private readonly IMapper _mapper;
 
-        public BillingProfileController(
-            IBillingProfileService billingProfileService,
-            IMapper mapper)
+
+        public BillingProfileController(IBillingProfileService billingProfileService)
         {
             _billingProfileService = billingProfileService;
-            _mapper = mapper;
         }
-
 
         [HttpPost]
         public async Task<IActionResult> CreateNewBillingProfile([FromBody] long customerID)
         {
             if (customerID <= 0)
             {
-                return BadRequest();
+                return HttpContext.BadRequest(APITranslations.InvalidCustomerIdProvided);
             }
 
-            try
-            {
-                var profileID = await _billingProfileService.CreateNewBillingProfileAsync(customerID);
+            var profile = await _billingProfileService.CreateNewBillingProfileAsync(customerID);
 
-                if (string.IsNullOrWhiteSpace(profileID))
-                {
-                    return Problem("Billing profile not created!");
-                }
-                var newBillingProfileDTO = new BillingProfileDTO
-                {
-                    BillingProfileId = profileID,
-                    CustomerID = customerID
-                };
-
-                return Ok(newBillingProfileDTO);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            return Ok(profile);
         }
 
         [HttpPut]
@@ -57,25 +35,12 @@ namespace Backend_API.Controllers
         {
             if (billingProfileDTO is null)
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
-            {
-                var billingProfile = _mapper.Map<BillingProfile>(billingProfileDTO);
-                var profileID = await _billingProfileService.UpdateBillingProfileAsync(billingProfile);
+            var response = await _billingProfileService.UpdateBillingProfileAsync(billingProfileDTO);
 
-                if (profileID <= 0)
-                {
-                    return Problem("Billing profile not updated!");
-                }
-
-                return Ok(new ResponseBase());
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -84,24 +49,12 @@ namespace Backend_API.Controllers
         {
             if (string.IsNullOrWhiteSpace(billingProfileId))
             {
-                return BadRequest();
+                return HttpContext.BadRequest(APITranslations.InvalidBillingProfileID);
             }
 
-            try
-            {
-                var result = await _billingProfileService.DeactivateBillingProfileAsync(billingProfileId);
+            var result = await _billingProfileService.DeactivateBillingProfileAsync(billingProfileId);
 
-                if (result <= 0)
-                {
-                    return Problem("Billing profile not deactivated!");
-                }
-
-                return Ok(new ResponseBase());
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            return Ok(result);
         }
     }
 }

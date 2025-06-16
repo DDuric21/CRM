@@ -47,7 +47,6 @@
                     <td>
                         <InputTextArea rows="1" class="form-control w-100" readonly="@(!interaction.Key.IsEditable)" @bind-Value="interaction.Value.Description" style="resize: vertical;" />
                     </td>
-
                     <td>
                         <button hidden="@interaction.Key.IsEditable" type="button" class="btn btn-outline-secondary" @onclick ="() => EditInteraction(interaction.Key.Id)"><em class="oi oi-pencil"></em> @Translation.Edit</button>
                         <button hidden="@(!interaction.Key.IsEditable)" type="button" class="btn btn-outline-primary" @onclick="() => SaveInteractionAsync(interaction.Value)">@Translation.Save</button>
@@ -158,7 +157,7 @@
         }
         else
         {
-            modal.ShowSuccessToast(Translation.InteractionUpdateSucess);
+            modal.ShowSuccessToast(Translation.InteractionUpdateSuccess);
         }
 
         return result.IsSuccess;

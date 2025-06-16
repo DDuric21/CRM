@@ -1,13 +1,14 @@
-﻿using Backend_API.Data.Models;
+﻿using Models.DTO;
+using Models.Responses;
 
 namespace Backend_API.Services
 {
     public interface IBillingProfileService
     {
-        Task<string> CreateNewBillingProfileAsync(long customerID);
+        Task<CreateNewBillingProfileRS> CreateNewBillingProfileAsync(long customerID);
 
-        Task<int> UpdateBillingProfileAsync(BillingProfile billingProfile);
+        Task<UpdateBillingProfileRS> UpdateBillingProfileAsync(BillingProfileDTO billingProfileDTO);
 
-        Task<int> DeactivateBillingProfileAsync(string billingProfileId);
+        Task<ResponseBase> DeactivateBillingProfileAsync(string billingProfileId);
     }
 }

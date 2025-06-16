@@ -99,9 +99,9 @@ namespace Resources.Translations {
         /// <summary>
         ///   Looks up a localized string similar to New address added successfully.
         /// </summary>
-        public static string AddressAddedSucess {
+        public static string AddressAddedSuccess {
             get {
-                return ResourceManager.GetString("AddressAddedSucess", resourceCulture);
+                return ResourceManager.GetString("AddressAddedSuccess", resourceCulture);
             }
         }
         
@@ -126,9 +126,9 @@ namespace Resources.Translations {
         /// <summary>
         ///   Looks up a localized string similar to Addresses updated successfully.
         /// </summary>
-        public static string AddressesUpdateSucess {
+        public static string AddressesUpdateSuccess {
             get {
-                return ResourceManager.GetString("AddressesUpdateSucess", resourceCulture);
+                return ResourceManager.GetString("AddressesUpdateSuccess", resourceCulture);
             }
         }
         
@@ -205,6 +205,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Billing profile deactivation successfully.
+        /// </summary>
+        public static string BillingProfileDeactivationSuccess {
+            get {
+                return ResourceManager.GetString("BillingProfileDeactivationSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Billing Profile ID.
         /// </summary>
         public static string BillingProfileID {
@@ -214,6 +223,23 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Billing Profiles.
+        /// </summary>
+        public static string BillingProfiles {
+            get {
+                return ResourceManager.GetString("BillingProfiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Billing profile update successfully.
+        /// </summary>
+        public static string BillingProfileUpdateSuccess {
+            get {
+                return ResourceManager.GetString("BillingProfileUpdateSuccess", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Bills.
         /// </summary>
@@ -649,9 +675,9 @@ namespace Resources.Translations {
         /// <summary>
         ///   Looks up a localized string similar to Interaction was update successfully.
         /// </summary>
-        public static string InteractionUpdateSucess {
+        public static string InteractionUpdateSuccess {
             get {
-                return ResourceManager.GetString("InteractionUpdateSucess", resourceCulture);
+                return ResourceManager.GetString("InteractionUpdateSuccess", resourceCulture);
             }
         }
         
@@ -877,6 +903,15 @@ namespace Resources.Translations {
         public static string OrderSuccessfullySubmitted {
             get {
                 return ResourceManager.GetString("OrderSuccessfullySubmitted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paperless.
+        /// </summary>
+        public static string Paperless {
+            get {
+                return ResourceManager.GetString("Paperless", resourceCulture);
             }
         }
         

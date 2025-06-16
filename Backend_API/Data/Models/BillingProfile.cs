@@ -18,6 +18,8 @@ namespace Backend_API.Data.Models
         public long? AddressID { get; set; }
         public virtual Address Address { get; set; }
 
+        public bool Paperless { get; set; }
+
         public int BillingProfileStatusID { get; set; }
 
         public DateTime DateCreated { get; set; }
