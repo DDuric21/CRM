@@ -48,8 +48,11 @@ else
                     case nameof(CustomerProfiles):
                         <CustomerProfiles BillingProfiles="@customerDTO.BillingProfiles"></CustomerProfiles>
                         break;
+                    case nameof(CustomerBills):
+                        <CustomerBills />
+                        break;
                     default:
-                        <Loader />
+                        <h3>@Translation.NoComponentSelected</h3>
                         break;
                 }
             </section>

@@ -214,6 +214,16 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        /// <summary>
+        ///   Looks up a localized string similar to Bills.
+        /// </summary>
+        public static string Bills {
+            get {
+                return ResourceManager.GetString("Bills", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Birthday.
         /// </summary>
         public static string Birthday {
@@ -795,6 +805,15 @@ namespace Resources.Translations {
         public static string NothingAtThisAddress {
             get {
                 return ResourceManager.GetString("NothingAtThisAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not yet supported.
+        /// </summary>
+        public static string NotYetSupported {
+            get {
+                return ResourceManager.GetString("NotYetSupported", resourceCulture);
             }
         }
         

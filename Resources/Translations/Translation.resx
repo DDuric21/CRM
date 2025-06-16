@@ -513,4 +513,10 @@
   <data name="InteractionUpdateSucess" xml:space="preserve">
     <value>Interaction was update successfully</value>
   </data>
+  <data name="Bills" xml:space="preserve">
+    <value>Bills</value>
+  </data>
+  <data name="NotYetSupported" xml:space="preserve">
+    <value>Not yet supported</value>
+  </data>
 </root>

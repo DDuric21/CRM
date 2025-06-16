@@ -513,4 +513,10 @@
   <data name="InteractionUpdateSucess" xml:space="preserve">
     <value>Interakcija je uspješno ažurirana</value>
   </data>
+  <data name="Bills" xml:space="preserve">
+    <value>Računi</value>
+  </data>
+  <data name="NotYetSupported" xml:space="preserve">
+    <value>Nije još podržano</value>
+  </data>
 </root>

@@ -19,8 +19,9 @@
             </div>
 
             <div class="btn-wrapper end">
-                <button class="btn @(activeTab == nameof(CustomerOrders) ? "btn-active" : "btn-inactive")">
-                    Navbar w/ text3
+                <button class="btn @(activeTab == nameof(CustomerBills) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerBills))">
+                    @Translation.Bills
                 </button>
             </div>
 
