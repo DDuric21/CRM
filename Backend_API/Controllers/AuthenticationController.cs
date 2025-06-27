@@ -1,4 +1,5 @@
-﻿using Backend_API.Services;
+﻿using Backend_API.Logging;
+using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.Authentication;
 using Models.DTO;
@@ -73,7 +74,7 @@ namespace Backend_API.Controllers
             }
             catch (Exception ex)
             {
-                //add logging
+                DynamicLogger.LogException(ex, ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
