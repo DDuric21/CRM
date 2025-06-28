@@ -92,6 +92,20 @@ namespace Backend_API.Controllers
             return Ok(new GetCustomerDataRS(customer));
         }
 
+        [HttpGet]
+        [Route("ContactDetails/{customerId}")]
+        public async Task<IActionResult> GetCustomerContactDetails(long customerId)
+        {
+            if (customerId <= 0)
+            {
+                return HttpContext.BadRequest();
+            }
+
+            var customercontactDetails = await _customerService.GetCustomerContactDetailsAsync(customerId);
+
+            return Ok(new GetCustomerContactDetailsRS(customercontactDetails));
+        }
+
         [HttpPost]
         [Route("Assets")]
         public async Task<IActionResult> GetCustomerAssets([FromBody] long id)

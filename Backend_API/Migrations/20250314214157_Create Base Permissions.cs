@@ -29,6 +29,7 @@ namespace Backend_API.Migrations
                 { DateTime.UtcNow, DateTime.UtcNow, "edit_order" },
                 { DateTime.UtcNow, DateTime.UtcNow, "cancel_order" },
                 { DateTime.UtcNow, DateTime.UtcNow, "create_order" },
+                { DateTime.UtcNow, DateTime.UtcNow, "edit_contactDetails" },
                 });
         }
 
@@ -37,7 +38,7 @@ namespace Backend_API.Migrations
             migrationBuilder.DeleteData(
                 table: "RolePermissions",
                 keyColumn: "Name",
-                keyValues: new object[] { "read_user", "edit_user", "delete_user", "create_user", "read_customer", "edit_customer", "delete_customer", "create_customer", "read_asset", "edit_asset", "delete_asset", "create_asset", "read_order", "edit_order", "cancel_order", "create_order" });
+                keyValues: new object[] { "read_user", "edit_user", "delete_user", "create_user", "read_customer", "edit_customer", "delete_customer", "create_customer", "read_asset", "edit_asset", "delete_asset", "create_asset", "read_order", "edit_order", "cancel_order", "create_order", "edit_contactDetails" });
         }
     }
 }

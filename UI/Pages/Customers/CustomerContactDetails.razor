@@ -1,0 +1,114 @@
+﻿@inject ICustomerService customerService
+@inject ICrmModalService modal
+@inject IContactDetailsService contactDetailsService
+
+@if (ContactDetails is null)
+{
+    <Loader />
+}
+else
+{
+    <EditForm Model="ContactDetails" OnValidSubmit="SaveChanges">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="alert alert-danger" />
+
+        <div class="row">
+            <!-- Left column: Phones -->
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label for="phone1" class="form-label">@Translation.MainPhoneNumber</label>
+                    <InputText id="phone1" class="form-control" @bind-Value="ContactDetails.PhoneNumber1" />
+                    <ValidationMessage For="@(() => ContactDetails.PhoneNumber1)" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="phone2" class="form-label">@Translation.AlternatePhoneNumber 2</label>
+                    <InputText id="phone2" class="form-control" @bind-Value="ContactDetails.PhoneNumber2" />
+                    <ValidationMessage For="@(() => ContactDetails.PhoneNumber2)" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="phone3" class="form-label">@Translation.AlternatePhoneNumber  3</label>
+                    <InputText id="phone3" class="form-control" @bind-Value="ContactDetails.PhoneNumber3" />
+                    <ValidationMessage For="@(() => ContactDetails.PhoneNumber3)" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="phone4" class="form-label">@Translation.AlternatePhoneNumber  4</label>
+                    <InputText id="phone4" class="form-control" @bind-Value="ContactDetails.PhoneNumber4" />
+                    <ValidationMessage For="@(() => ContactDetails.PhoneNumber4)" class="text-danger" />
+                </div>
+            </div>
+
+            <!-- Middle column: Emails -->
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label for="email1" class="form-label">@Translation.PrimaryEmail</label>
+                    <InputText id="email1" class="form-control" @bind-Value="ContactDetails.Email1" />
+                    <ValidationMessage For="@(() => ContactDetails.Email1)" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="email2" class="form-label">@Translation.SecondaryEmail</label>
+                    <InputText id="email2" class="form-control" @bind-Value="ContactDetails.Email2" />
+                    <ValidationMessage For="@(() => ContactDetails.Email2)" class="text-danger" />
+                </div>
+            </div>
+
+            <!-- Right column: Faxes -->
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label for="fax1" class="form-label">@Translation.FaxNumber 1</label>
+                    <InputText id="fax1" class="form-control" @bind-Value="ContactDetails.FaxNumber1" />
+                    <ValidationMessage For="@(() => ContactDetails.FaxNumber1)" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="fax2" class="form-label">@Translation.FaxNumber 2</label>
+                    <InputText id="fax2" class="form-control" @bind-Value="ContactDetails.FaxNumber2" />
+                    <ValidationMessage For="@(() => ContactDetails.FaxNumber2)" class="text-danger" />
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">@Translation.Save</button>
+    </EditForm>
+
+}
+
+@code {
+    [CascadingParameter]
+    public CustomerDTO CustomerDTO { get; set; }
+
+    [Parameter] 
+    public Models.DTO.CustomerContactDetails ContactDetails { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ContactDetails is null)
+        {
+            var result = await customerService.GetCustomerContactDetailsAsync(CustomerDTO.Id);
+
+            if (result.IsSuccess)
+            {
+                ContactDetails = result.Data;
+            }
+            else
+            {
+                ContactDetails = new Models.DTO.CustomerContactDetails();
+                modal.ShowErrorMessage(result.ErrorMessage);
+            }
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task SaveChanges()
+    {
+        var result = await contactDetailsService.UpdateContactDetailsAsync(CustomerDTO.Id, ContactDetails);
+        if (result.IsSuccess)
+        {
+            modal.ShowSuccessToast(Translation.ContactDetailsUpdated);
+        }
+        else
+        {
+            modal.ShowErrorMessage(result.ErrorMessage);
+        }
+    }
+
+}

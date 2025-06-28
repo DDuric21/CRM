@@ -126,6 +126,9 @@
   <data name="CountryFieldRequired" xml:space="preserve">
     <value>Country field is required</value>
   </data>
+  <data name="EmailNotInValidFormat" xml:space="preserve">
+    <value>Entered email is not in valid format</value>
+  </data>
   <data name="FirstNameFieldRequired" xml:space="preserve">
     <value>First name field is required</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="LastNameFieldRequired" xml:space="preserve">
     <value>Last name field is required</value>
+  </data>
+  <data name="MainPhoneNumberIsRequired" xml:space="preserve">
+    <value>Main phone number is required</value>
   </data>
   <data name="PasswordRequired" xml:space="preserve">
     <value>Password cannot be blank.</value>

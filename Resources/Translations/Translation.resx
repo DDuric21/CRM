@@ -531,4 +531,28 @@
   <data name="BillingProfileDeactivationSuccess" xml:space="preserve">
     <value>Billing profile deactivation successfully</value>
   </data>
+  <data name="ContactDetails" xml:space="preserve">
+    <value>Contact Details</value>
+  </data>
+  <data name="MainPhoneNumber" xml:space="preserve">
+    <value>Main Phone Number</value>
+  </data>
+  <data name="AlternatePhoneNumber" xml:space="preserve">
+    <value>Alternate Phone</value>
+  </data>
+  <data name="PrimaryEmail" xml:space="preserve">
+    <value>PrimaryEmail</value>
+  </data>
+  <data name="SecondaryEmail" xml:space="preserve">
+    <value>Secondary Email</value>
+  </data>
+  <data name="FaxNumber" xml:space="preserve">
+    <value>Fax Number</value>
+  </data>
+  <data name="ContactDetailsNotSaved" xml:space="preserve">
+    <value>Contact Details Not Saved</value>
+  </data>
+  <data name="ContactDetailsUpdated" xml:space="preserve">
+    <value>Contact Details Successfully Updated</value>
+  </data>
 </root>

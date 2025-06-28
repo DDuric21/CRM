@@ -63,6 +63,11 @@ namespace Backend_API.Data.DbContext
             modelBuilder.Entity<Customer>()
                 .HasIndex(x => x.PersonalID)
                 .IsUnique();
+            modelBuilder.Entity<Customer>()
+                .HasOne(x => x.ContactDetails)
+                .WithOne(x => x.Customer)
+                .HasForeignKey<ContactDetails>(cd => cd.CustomerId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<User>();
 
@@ -141,6 +146,7 @@ namespace Backend_API.Data.DbContext
         public DbSet<BillingProfile> BillingProfiles { get; set; }
         public DbSet<News> News { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<ContactDetails> ContactDetails { get; set; }
         #endregion
     }
 }

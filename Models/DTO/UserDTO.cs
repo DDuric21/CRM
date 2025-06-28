@@ -15,6 +15,7 @@ namespace Models.DTO
            ErrorMessageResourceName = nameof(ValidationMessages.UsernameRequired))]
         public string? UserName { get; set; }
 
+        [EmailAddress(ErrorMessage = nameof(ValidationMessages.EmailNotInValidFormat))]
         public string UserEmail { get; set; }
 
         [Required(

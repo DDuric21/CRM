@@ -207,6 +207,30 @@ namespace UI.Services
             }
         }
 
+        public async Task<ActionResult<CustomerContactDetails>> GetCustomerContactDetailsAsync(long customerId)
+        {
+            var url = $"{ApiUrl}/ContactDetails/{customerId}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<GetCustomerContactDetailsRS>(request);
+                if (!response.IsSuccess)
+                {
+                    return new ActionResult<CustomerContactDetails>(response.ErrorMessage ?? Translation.CustomerFriendlyMessage);
+                }
+                else
+                {
+                    return new ActionResult<CustomerContactDetails>(response.CustomerContactDetails);
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new ActionResult<CustomerContactDetails>(ex.Message);
+            }
+        }
+
         private async Task<ActionResult<CustomerDTO>> GetCustomerDataFromServerAsync(long customerID)
         {
             var url = $"{ApiUrl}/{customerID}";

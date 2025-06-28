@@ -142,6 +142,22 @@ namespace Backend_API.Services
             return filteredCustomers;
         }
 
+        public async Task<CustomerContactDetails> GetCustomerContactDetailsAsync(long customerId)
+        {
+            var contactDetails = await _repository.ContactDetails
+                .Where(x => x.CustomerId == customerId)
+                .FirstOrDefaultAsync();
+
+            var customerContactDetails = new CustomerContactDetails();
+
+            if (contactDetails != null)
+            {
+                customerContactDetails = _mapper.Map<CustomerContactDetails>(contactDetails);
+            }
+
+            return customerContactDetails;
+        }
+
         private IQueryable<Customer> ApplyCustomerFilters(IQueryable<Customer> customers, CustomerFilterRQ customerFilter)
         {
             if (!customerFilter.CustomerTypes.IsNullOrEmpty())

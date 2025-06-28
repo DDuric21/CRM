@@ -531,4 +531,28 @@
   <data name="BillingProfileDeactivationSuccess" xml:space="preserve">
     <value>Profil naplate usješno deaktiviran</value>
   </data>
+  <data name="ContactDetails" xml:space="preserve">
+    <value>Kontakt podaci</value>
+  </data>
+  <data name="MainPhoneNumber" xml:space="preserve">
+    <value>Glavni broj telefona</value>
+  </data>
+  <data name="AlternatePhoneNumber" xml:space="preserve">
+    <value>Dodatni kontakt broj</value>
+  </data>
+  <data name="PrimaryEmail" xml:space="preserve">
+    <value>Glavni e-mail</value>
+  </data>
+  <data name="SecondaryEmail" xml:space="preserve">
+    <value>Dodatni e-mail</value>
+  </data>
+  <data name="FaxNumber" xml:space="preserve">
+    <value>Broj faksa</value>
+  </data>
+  <data name="ContactDetailsNotSaved" xml:space="preserve">
+    <value>Kontakt podaci nisu pohranjeni</value>
+  </data>
+  <data name="ContactDetailsUpdated" xml:space="preserve">
+    <value>Kontakt podaci uspješno ažurirani</value>
+  </data>
 </root>

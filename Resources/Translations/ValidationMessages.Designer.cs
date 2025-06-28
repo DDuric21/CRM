@@ -88,6 +88,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entered email is not in valid format.
+        /// </summary>
+        public static string EmailNotInValidFormat {
+            get {
+                return ResourceManager.GetString("EmailNotInValidFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to First name field is required.
         /// </summary>
         public static string FirstNameFieldRequired {
@@ -111,6 +120,15 @@ namespace Resources.Translations {
         public static string LastNameFieldRequired {
             get {
                 return ResourceManager.GetString("LastNameFieldRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Main phone number is required.
+        /// </summary>
+        public static string MainPhoneNumberIsRequired {
+            get {
+                return ResourceManager.GetString("MainPhoneNumberIsRequired", resourceCulture);
             }
         }
         

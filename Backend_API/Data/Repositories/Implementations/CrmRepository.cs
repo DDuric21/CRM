@@ -186,5 +186,20 @@ namespace Backend_API.Data.Repositories
                 return _rolePermissions;
             }
         }
+
+        public IGenericRepository<ContactDetails> _contactDetails;
+
+        public IGenericRepository<ContactDetails> ContactDetails
+        {
+            get
+            {
+                if (_contactDetails == null)
+                {
+                    _contactDetails = new GenericRepository<ContactDetails>(_context);
+                }
+
+                return _contactDetails;
+            }
+        }
     }
 }

@@ -126,6 +126,9 @@
   <data name="CountryFieldRequired" xml:space="preserve">
     <value>Polje zemlje je obavezno</value>
   </data>
+  <data name="EmailNotInValidFormat" xml:space="preserve">
+    <value>Unesena e-mail adresa nije u valjanom formatu</value>
+  </data>
   <data name="FirstNameFieldRequired" xml:space="preserve">
     <value>Polje za ime je obavezno</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="LastNameFieldRequired" xml:space="preserve">
     <value>Polje za prezime je obavezno</value>
+  </data>
+  <data name="MainPhoneNumberIsRequired" xml:space="preserve">
+    <value>Glavni telefonski broj je obavezan</value>
   </data>
   <data name="PasswordRequired" xml:space="preserve">
     <value>Lozinka ne može biti prazna.</value>

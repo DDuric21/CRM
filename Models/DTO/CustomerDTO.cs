@@ -36,6 +36,8 @@ namespace Models.DTO
 
         public List<BillingProfileDTO> BillingProfiles { get; set; }
 
+        public CustomerContactDetails ContactDetails { get; set; }
+
         public CustomerDTO()
         {
             Addresses = new List<AddressDTO>();

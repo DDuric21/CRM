@@ -68,6 +68,7 @@ namespace Backend_API.Startup
             builder.Services.AddScoped<IBillingProfileService, BillingProfileService>();
             builder.Services.AddScoped<INewsService, NewsService>();
             builder.Services.AddScoped<IOptionService, OptionService>();
+            builder.Services.AddScoped<IContactDetailsService, ContactDetailsService>();
             builder.Services.AddSingleton<IDataValidationService, DataValidationService>();
 
             builder.Services.AddCors(options =>

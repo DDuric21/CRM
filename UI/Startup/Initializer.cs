@@ -27,6 +27,7 @@ namespace UI.Startup
             builder.Services.AddScoped<INewsService, NewsService>();
             builder.Services.AddScoped<ILoggingService, LoggingService>();
             builder.Services.AddScoped<ICrmModalService, CrmModalService>();
+            builder.Services.AddScoped<IContactDetailsService, ContactDetailsService>();
             builder.Services.AddScoped<AuthenticationStateProvider, CrmAuthenticationStateProvider>();
             builder.Services.AddScoped<ICookie, Cookie>();
         }

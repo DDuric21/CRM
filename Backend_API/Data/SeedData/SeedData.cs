@@ -55,6 +55,8 @@ namespace Backend_API.Data.SeedData
         {
             CreateCustomers(context);
 
+            CreateCustomerContactDetails(context);
+
             CreateAddresses(context);
 
             CreateAssets(context);
@@ -105,6 +107,37 @@ namespace Backend_API.Data.SeedData
                         TypeID = 1,
                         CustomerStatusID = 2,
                     }
+                });
+
+                //needed so that FK constraints don't appear
+                context.SaveChanges();
+            }
+        }
+
+        private static void CreateCustomerContactDetails(CrmDbContext context)
+        {
+            if (!context.ContactDetails.Any())
+            {
+                context.ContactDetails.AddRange(new List<ContactDetails>
+                {
+                    new ContactDetails
+                    {
+                        CustomerId = 1,
+                        Email1 = "Test",
+                        Email2 = "Test2",
+                        PhoneNumber1 = "0987654321",
+                        PhoneNumber2 = "0987654322",
+                        PhoneNumber3 = "0987654323",
+                        PhoneNumber4 = "0987654324",
+                        FaxNumber1 = "0987654325",
+                        FaxNumber2 = "0987654326"
+                    },
+                    new ContactDetails
+                    {
+                        CustomerId = 2,
+                        Email1 = "Test",
+                        PhoneNumber1 = "0987654321",
+                    },
                 });
 
                 //needed so that FK constraints don't appear
@@ -278,7 +311,8 @@ namespace Backend_API.Data.SeedData
                 CrmPermissionNames.ReadAsset,
                 CrmPermissionNames.EditAsset,
                 CrmPermissionNames.DeleteAsset,
-                CrmPermissionNames.CreateAsset
+                CrmPermissionNames.CreateAsset,
+                CrmPermissionNames.EditContactDetails
             };
 
             var adminRole = roleManager.Roles.FirstOrDefault(x => x.Name == _adminRole);

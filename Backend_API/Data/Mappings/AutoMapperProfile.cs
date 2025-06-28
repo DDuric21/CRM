@@ -62,6 +62,8 @@ namespace Backend_API.Data.Mappings
                             : new Address()
                 ));
 
+            CreateMap<ContactDetails, CustomerContactDetails>();
+
             CreateMap<Customer, CustomerDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
@@ -72,7 +74,8 @@ namespace Backend_API.Data.Mappings
                 .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.Birthday))
                 .ForMember(dest => dest.Addresses, opt => opt.MapFrom(src => src.Addresses))
                 .ForMember(dest => dest.Assets, opt => opt.MapFrom(src => src.Assets))
-                .ForMember(dest => dest.BillingProfiles, opt => opt.MapFrom(src => src.BillingProfiles));
+                .ForMember(dest => dest.BillingProfiles, opt => opt.MapFrom(src => src.BillingProfiles))
+                .ForMember(dest => dest.ContactDetails, opt => opt.MapFrom(src => src.ContactDetails));
 
             CreateMap<CustomerAssets, AssetDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AssetID))
@@ -116,10 +119,14 @@ namespace Backend_API.Data.Mappings
                 .ForMember(dest => dest.OptionID, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Option, opt => opt.MapFrom(src => src));
 
+
+            CreateMap<CustomerContactDetails, ContactDetails>();
+
             CreateMap<CustomerDTO, Customer>()
                 .ForMember(dest => dest.CustomerStatusID, opt => opt.MapFrom(src => (int)src.CustomerStatus))
                 .ForMember(dest => dest.TypeID, opt => opt.MapFrom(src => (int)src.Type))
-                .ForMember(dest => dest.Assets, opt => opt.Ignore());
+                .ForMember(dest => dest.Assets, opt => opt.Ignore())
+                .ForMember(dest => dest.ContactDetails, opt => opt.Ignore());
 
             CreateMap<BillingProfileDTO, BillingProfile>()
                 .ForMember(dest => dest.BillingProfileId, opt => opt.MapFrom(src => src.BillingProfileId))

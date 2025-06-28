@@ -26,5 +26,7 @@ namespace UI.Services
         Task<IAsyncEnumerable<InteractionDTO>> GetCustomerInteractionsAsync(long customerID);
 
         Task<CustomerGridFilterDataRS> GetCustomerFilterBaseValues();
+
+        Task<ActionResult<CustomerContactDetails>> GetCustomerContactDetailsAsync(long customerId);
     }
 }

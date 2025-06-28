@@ -24,5 +24,7 @@ namespace Backend_API.Data.Models
         public virtual ICollection<Order> Orders { get; set; }
 
         public virtual ICollection<BillingProfile> BillingProfiles { get; set; }
+
+        public virtual ContactDetails ContactDetails { get; set; }
     }
 }

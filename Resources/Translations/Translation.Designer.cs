@@ -151,6 +151,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alternate Phone.
+        /// </summary>
+        public static string AlternatePhoneNumber {
+            get {
+                return ResourceManager.GetString("AlternatePhoneNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Asset Items.
         /// </summary>
         public static string AssetItmes {
@@ -309,6 +318,33 @@ namespace Resources.Translations {
         public static string Confirmation {
             get {
                 return ResourceManager.GetString("Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contact Details.
+        /// </summary>
+        public static string ContactDetails {
+            get {
+                return ResourceManager.GetString("ContactDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contact Details Not Saved.
+        /// </summary>
+        public static string ContactDetailsNotSaved {
+            get {
+                return ResourceManager.GetString("ContactDetailsNotSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contact Details Successfully Updated.
+        /// </summary>
+        public static string ContactDetailsUpdated {
+            get {
+                return ResourceManager.GetString("ContactDetailsUpdated", resourceCulture);
             }
         }
         
@@ -592,6 +628,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fax Number.
+        /// </summary>
+        public static string FaxNumber {
+            get {
+                return ResourceManager.GetString("FaxNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Filter.
         /// </summary>
         public static string Filter {
@@ -732,6 +777,15 @@ namespace Resources.Translations {
         public static string Logout {
             get {
                 return ResourceManager.GetString("Logout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Main Phone Number.
+        /// </summary>
+        public static string MainPhoneNumber {
+            get {
+                return ResourceManager.GetString("MainPhoneNumber", resourceCulture);
             }
         }
         
@@ -988,6 +1042,15 @@ namespace Resources.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to PrimaryEmail.
+        /// </summary>
+        public static string PrimaryEmail {
+            get {
+                return ResourceManager.GetString("PrimaryEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Profiles.
         /// </summary>
         public static string Profiles {
@@ -1083,6 +1146,15 @@ namespace Resources.Translations {
         public static string SaveChanges {
             get {
                 return ResourceManager.GetString("SaveChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Secondary Email.
+        /// </summary>
+        public static string SecondaryEmail {
+            get {
+                return ResourceManager.GetString("SecondaryEmail", resourceCulture);
             }
         }
         

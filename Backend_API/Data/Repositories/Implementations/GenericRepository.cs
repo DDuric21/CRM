@@ -92,8 +92,7 @@ namespace Backend_API.Data.Repositories
 
         public async Task<int> UpdateAsync(T entity)
         {
-            //malo bolje ovo rješiti
-            _context.Set<T>().Add(entity);
+            _context.Set<T>().Update(entity);
             _context.Entry(entity).State = EntityState.Modified;
 
             return await _context.SaveChangesAsync();

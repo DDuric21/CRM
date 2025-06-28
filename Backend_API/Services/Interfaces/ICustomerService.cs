@@ -39,5 +39,7 @@ namespace Backend_API.Services
         CustomerGridFilterDataRS GetCustomerFilterBaseValues();
 
         Task<List<Customer>> GetCustomersAsync(CustomerFilterRQ customerFilter);
+
+        Task<CustomerContactDetails> GetCustomerContactDetailsAsync(long customerId);
     }
 }

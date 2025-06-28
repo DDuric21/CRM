@@ -51,6 +51,9 @@ else
                     case nameof(CustomerBills):
                         <CustomerBills />
                         break;
+                    case nameof(CustomerContactDetails):
+                        <CustomerContactDetails ContactDetails="@customerDTO.ContactDetails" />
+                        break;
                     default:
                         <h3>@Translation.NoComponentSelected</h3>
                         break;
