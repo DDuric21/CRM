@@ -12,7 +12,7 @@
 @code {
     private SortedSet<OrderDTO> orders = new SortedSet<OrderDTO>(new OrdersSorter());
 
-    private async Task GetFilteredOrdersAsync(OrderFilterRQ orderFilter)
+    private async Task GetFilteredOrdersAsync(OrderFilter orderFilter)
     {
         orders = null;
         try

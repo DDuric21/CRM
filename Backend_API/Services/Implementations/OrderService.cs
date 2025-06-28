@@ -148,7 +148,7 @@ namespace Backend_API.Services
             return response;
         }
 
-        public async Task<GetOrdersRS> GetOrdersAsync(OrderFilterRQ orderFilter)
+        public async Task<GetOrdersRS> GetOrdersAsync(OrderFilter orderFilter)
         {
             var orders = _repository.Orders
                 .With(x => x.CreatedByUser)
@@ -344,7 +344,7 @@ namespace Backend_API.Services
             await _repository.Orders.InsertAsync(order);
         }
 
-        private async Task<IEnumerable<Order>> FilterOrdersAsync(IQueryable<Order> orders, OrderFilterRQ orderFilter)
+        private async Task<IEnumerable<Order>> FilterOrdersAsync(IQueryable<Order> orders, OrderFilter orderFilter)
         {
             if (!string.IsNullOrEmpty(orderFilter.OrderID))
             {

@@ -17,6 +17,6 @@ namespace UI.Services
 
         Task<ActionResult<OrderGridFilterDataRS>> GetOrderFilterBaseValuesAsync();
 
-        Task<ActionResult<GetOrdersRS>> GetOrdersAsync(OrderFilterRQ orderFilterRQ);
+        Task<ActionResult<GetOrdersRS>> GetOrdersAsync(OrderFilter orderFilter);
     }
 }

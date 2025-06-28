@@ -108,7 +108,7 @@ namespace Backend_API.Controllers
 
         [HttpPost]
         [Route("GetOrders")]
-        public async Task<IActionResult> GetOrders([FromBody] OrderFilterRQ orderFilter)
+        public async Task<IActionResult> GetOrders([FromBody] OrderFilter orderFilter)
         {
             var orders = await _orderService.GetOrdersAsync(orderFilter);
 

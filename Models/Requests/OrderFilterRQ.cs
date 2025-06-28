@@ -3,7 +3,7 @@ using Models.Enums;
 
 namespace Models.Requests
 {
-    public class OrderFilterRQ : RequestBase
+    public class OrderFilter : RequestBase
     {
         public string OrderID { get; set; }
 

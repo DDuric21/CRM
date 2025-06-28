@@ -19,6 +19,6 @@ namespace Backend_API.Services
 
         Task<OrderGridFilterDataRS> GetOrderFilterBaseValuesAsync();
 
-        Task<GetOrdersRS> GetOrdersAsync(OrderFilterRQ orderFilterRQ);
+        Task<GetOrdersRS> GetOrdersAsync(OrderFilter orderFilter);
     }
 }

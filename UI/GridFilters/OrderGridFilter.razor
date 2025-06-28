@@ -81,9 +81,9 @@ else
 
 @code {
     [Parameter]
-    public EventCallback<OrderFilterRQ> OnFilterExecute { get; set; }
+    public EventCallback<OrderFilter> OnFilterExecute { get; set; }
 
-    private OrderFilterRQ orderFilter = new OrderFilterRQ();
+    private OrderFilter orderFilter = new OrderFilter();
     private OrderGridFilterDataRS orderGridFilterData { get; set; }
     private IEnumerable<SelectedOrderStatus> selectedOrderStatuses = new List<SelectedOrderStatus>();
     private IEnumerable<SelectedAssetType> selectedAssetTypes = new List<SelectedAssetType> ();

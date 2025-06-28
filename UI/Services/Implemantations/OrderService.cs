@@ -121,10 +121,10 @@ namespace UI.Services
             }
         }
 
-        public async Task<ActionResult<GetOrdersRS>> GetOrdersAsync(OrderFilterRQ orderFilterRQ)
+        public async Task<ActionResult<GetOrdersRS>> GetOrdersAsync(OrderFilter orderFilter)
         {
             var url = $"{ApiUrl}/GetOrders";
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, orderFilterRQ);
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, orderFilter);
 
             try
             {
