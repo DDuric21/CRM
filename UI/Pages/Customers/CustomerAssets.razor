@@ -5,12 +5,13 @@
 @inject NavigationManager navigationManager
 @inject ICrmModalService modal
 
-<table>
+<table class="table table-hover">
     <thead>
-        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewAsset()" >New +</button>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewAsset()">@Translation.New +</button>
         <tr>
-            <th>Name</th>
-            <th>Price</th>
+            <th>@Translation.Name</th>
+            <th>@Translation.Price</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
@@ -22,8 +23,10 @@
                 <td><label id="@assetDTO.Id" >@assetDTO.AssetStatus.ToString()</label></td>
                 @if (assetDTO.AssetStatus != ItemState.Inactive)
                 {
-                    <td><button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)"><span class="oi oi-pencil"></span> Edit</button></td>
-                    <td><button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)" >Deactivate</button></td>                    
+                    <td>
+                        <button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)"><span class="oi oi-pencil"></span> @Translation.Edit</button>
+                        <button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)">@Translation.Deactivate</button>
+                    </td>
                 }
             </tr>
         }
@@ -64,13 +67,15 @@
             CustomerDTO = this.CustomerDTO
         };
 
-        if (!await orderService.CreateOrderAsync(order))
+        var result = await orderService.CreateOrderAsync(order);
+        if (!result.IsSuccess)
         {
-            modal.ShowCustomerFriendlyMessage();
+            await modal.ShowErrorMessageAsync(result.ErrorMessage);
             return;
         }
+
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
-        navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={(int)OrderAction.Create}:0");
+        navigationManager.NavigateTo($"/Orders/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={(int)OrderAction.Create}:0");
     }
 
     private async void EditAsset(bool isDelete, long customerAssetID)
@@ -81,6 +86,9 @@
             : OrderAction.Update;
 
         var asset = assets.First(x => x.CustomerAssetID == customerAssetID);
+        asset.AssetAddress = CustomerDTO.Addresses
+            .FirstOrDefault(x => x.Id == asset.AssetAddress.Id);
+
         var order = new OrderDTO
         {
             OrderID = orderID,
@@ -88,15 +96,16 @@
             Action = action,
             AssetDTO = asset
         };
-        var loadAssetOptions = true;
-        if (!await orderService.CreateOrderAsync(order, loadAssetOptions))
+
+        var result = await orderService.CreateOrderAsync(order, withOptions: true);
+        if (!result.IsSuccess)
         {
-            modal.ShowCustomerFriendlyMessage();
+            await modal.ShowErrorMessageAsync(result.ErrorMessage);
             return;
-        }
+        } 
 
         var actionIndicator = $"{(int)action}:{customerAssetID}";
         await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
-        navigationManager.NavigateTo($"/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={actionIndicator}");        
+        navigationManager.NavigateTo($"/Orders/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={actionIndicator}");        
     }
 }

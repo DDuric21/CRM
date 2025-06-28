@@ -1,0 +1,129 @@
+﻿@page "/UserManagment/Users"
+
+@inject NavigationManager navigationManager
+@inject IUserService userService
+@inject ICrmModalService modal
+
+<UserGridFilter OnFilterExecute="GetUsersAsync"/>
+<br />
+<h3>@Translation.Users</h3>
+<button id="btnAddUser" class="btn btn-primary" @onclick="Redirect">@Translation.New +</button>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>@Translation.Name</th>
+            <th>@Translation.Username</th>
+            <th>Email</th>
+            <th>@Translation.Role</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (users is null)
+        {
+            <tr>
+                <td colspan="3" class="text-center py-5">
+                    <Loader />
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var user in users)
+            {
+                <tr role="button" @ondblclick="() => RedirectToUser(user.UserName)">
+                    <td>@($"{user.FirstName} {user.LastName}")</td>
+                    <td>@user.UserName</td>
+                    <td>@user.UserEmail</td>
+                    <td>@string.Join(" / ", user.UserRoles.Select(x => x.RoleName))</td>
+                    <td>@user.UserStatus</td>
+                    <td>
+                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToUser(user.UserName)"><em class="oi oi-pencil"></em> @Translation.Edit</button>
+                        <button class="btn btn-primary" hidden="@(user.UserStatus == ItemState.Active)" @onclick="() => ActivateUser(user.UserName)">@Translation.Activate</button>
+                        <button class="btn btn-danger" hidden="@(user.UserStatus == ItemState.Inactive)" @onclick="() => DeactivateUser(user.UserName)">@Translation.Deactivate</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<UserDTO> users = new List<UserDTO>();
+
+    private async Task GetUsersAsync(UserFilterRQ userFilter)
+    {
+        users = null;
+        var asyncUsers = await userService.GetUsersAsync(userFilter);
+
+        users = await asyncUsers.ToListAsync();
+    }
+
+    protected async void DeactivateUser(string username)
+    {
+        var confirmationMessage = string.Format(Translation.DeactivateUserConfirmation, username);
+        var result = await modal.ShowDialog(confirmationMessage, ModalDialogType.Delete);
+
+        if (result.Cancelled)
+        {
+            return;
+        }
+
+        var request = new ChangeUserStatusRQ
+            {
+                UserName = username,
+                NewUserStatus = ItemState.Inactive
+            };
+
+        if (!await userService.ChangeUserStatus(request))
+        {
+            modal.ShowCustomerFriendlyMessage();
+            return;
+        }
+
+        var deactivatedUser = users.First(x => x.UserName == username);
+        deactivatedUser.UserStatus = ItemState.Inactive;
+
+        StateHasChanged();
+    }  
+
+    protected async void ActivateUser(string username)
+    {
+        var confirmationMessage = string.Format(Translation.ActivateUserConfirmation, username);
+        var result = await modal.ShowDialog(confirmationMessage, ModalDialogType.OK);
+
+        if (result.Cancelled)
+        {
+            return;
+        }
+
+        var request = new ChangeUserStatusRQ
+            {
+                UserName = username,
+                NewUserStatus = ItemState.Active
+            };
+
+        if (!await userService.ChangeUserStatus(request))
+        {
+            modal.ShowCustomerFriendlyMessage();
+            return;
+        }
+
+        var activatedUser = users.First(x => x.UserName == username);
+        activatedUser.UserStatus = ItemState.Active;
+
+        StateHasChanged();
+    }
+
+    protected void RedirectToUser(string username)
+    {
+        navigationManager.NavigateTo($"/UserManagment/UserSettings?username={username}");
+    }
+
+    protected void Redirect()
+    {
+        navigationManager.NavigateTo("/UserManagment/NewUserForm");
+    }
+
+}

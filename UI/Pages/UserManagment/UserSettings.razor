@@ -1,0 +1,133 @@
+﻿@page "/UserManagment/UserSettings"
+
+@inject IUserService userService
+@inject IRoleService roleService
+@inject ICrmModalService modal
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+@attribute [Authorize(Policy = CrmPolicyNames.EditUser)]
+
+<PageTitle>@Translation.UserSettings</PageTitle>
+
+@if (UserDTO.IsNullOrEmpty())
+{
+    <Loader/>
+}
+else
+{
+    <h3>@Translation.UserSettings</h3>
+    <EditForm Model="@UserDTO" OnSubmit="@SubmitUserSettings">
+        <div>
+            <InputText @bind-Value="@UserDTO.FirstName" />
+            <InputText @bind-Value="@UserDTO.LastName" />
+            <br>
+            <InputText @bind-Value="@UserDTO.UserEmail" />
+        </div>
+        <div>
+            @Translation.UserRoles:
+            <br>
+            @foreach (var role in selectedUserRoles)
+            {
+                <div class="form-check form-switch ms-3">
+                    <InputCheckbox class="form-check-input" @bind-Value="role.IsSelected"  />
+                    <label class="form-check-label">@role.UserRole.RoleName</label>               
+                </div>
+            }
+        </div> 
+        <br>
+        <button type="submit" name="submitUserSettings" class="btn btn-primary">@Translation.Save</button>
+    </EditForm>
+
+    <br>
+    <div class="culture-switcher">
+        <label for="cultureSelect">@Translation.Language:</label>
+        <select id="cultureSelect" @bind="selectedCulture">
+            @foreach (var culture in supportedLanguages)
+            {
+                <option value="@culture.Key.Name">@culture.Value</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <span>@Translation.TimeZone</span>
+    </div>
+}
+
+@code {
+    [CascadingParameter] 
+    protected Task<AuthenticationState> authenticationState { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "username")]
+    public string Username { get; set; }
+
+    public UserDTO UserDTO { get; set; }
+
+    private IEnumerable<SelectedUserRole> selectedUserRoles { get; set; }
+    private IEnumerable<UserRoleDTO> possibleUserRoles { get; set; }
+
+    private string selectedCulture;
+    private string currentCulture = CultureInfo.DefaultThreadCurrentUICulture.Name;
+
+    private Dictionary<CultureInfo, string> supportedLanguages;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Username))
+        {
+            var user = (await authenticationState).User;
+            Username = user.Identity.Name;
+        }
+
+        UserDTO = await userService.GetUserDataAsync(Username);
+
+        selectedUserRoles = possibleUserRoles
+            .Select(x => new SelectedUserRole
+                {
+                    IsSelected = UserDTO.UserRoles.Any(y => y.RoleName.ToLower() == x.RoleName),
+                    UserRole = x
+                })
+            .ToHashSet();
+
+        StateHasChanged();
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        possibleUserRoles = await roleService.GetApplicableRolesAsync();
+
+        supportedLanguages = new()
+        {
+            [new CultureInfo("en-US")] = "English-US",
+            [new CultureInfo("hr-HR")] = "Hrvatski-HR"
+        };
+
+        selectedCulture = supportedLanguages.Keys
+            .First(x => x.Name == currentCulture)
+            .Name;
+    }
+
+    private async Task SubmitUserSettings()
+    {
+        var updateResult = await userService.UpdateUserDataAsync(UserDTO, selectedUserRoles);
+
+        if (!updateResult.IsSuccess)
+        {
+            modal.ShowErrorMessage(updateResult.ErrorMessage);
+        }
+
+        await ChangeCultureAsync();
+    }
+
+    private async Task ChangeCultureAsync()
+    {
+        if (selectedCulture != currentCulture)
+        {
+            await LocalStorage.SetItemAsync("crmApplicationCulture", selectedCulture);
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+    }
+}

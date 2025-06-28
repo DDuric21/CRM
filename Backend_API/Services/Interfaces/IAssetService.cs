@@ -28,5 +28,7 @@ namespace Backend_API.Services
         IEnumerable<Asset> GetAssetsWithOptions();
 
         Task<Dictionary<ItemState, int>> GetAssetsChartDataAsync(DateTime timePeriod = new DateTime());
+
+        Task<IEnumerable<AssetDTO>> GetAllAssetsAsync();
     }
 }

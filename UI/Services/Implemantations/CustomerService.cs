@@ -1,6 +1,10 @@
-﻿using Models.DTO;
+﻿using Blazored.SessionStorage;
+using Models.DTO;
 using Models.Requests;
 using Models.Responses;
+using Resources.Translations;
+using UI.Authentication;
+using UI.Helpers;
 
 namespace UI.Services
 {
@@ -8,19 +12,22 @@ namespace UI.Services
     {
         private readonly ICommunicationService _communicationService;
         private readonly ILoggingService _loggingService;
+        private readonly ISessionStorageService _sessionStorage;
+        private const string ApiUrl = "Customers";
 
         public CustomerService(
             ICommunicationService communicationService,
-            ILoggingService loggingService)
+            ILoggingService loggingService,
+            ISessionStorageService sessionStorage)
         {
             _communicationService = communicationService;
             _loggingService = loggingService;
+            _sessionStorage = sessionStorage;
         }
 
         public async Task<IAsyncEnumerable<CustomerDTO>> GetCustomersAsync(CustomerFilterRQ customerFilter)
         {
-            var url = "Customers";
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, customerFilter);          
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, ApiUrl, customerFilter);          
 
             try
             {
@@ -35,27 +42,29 @@ namespace UI.Services
             }
         }
 
-        public async Task<CustomerDTO> GetCustomerDataAsync(long customerID)
+        public async Task<ActionResult<CustomerDTO>> GetCustomerDataAsync(long customerID)
         {
-            var url = $"Customers/{customerID}";
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
-
             try
             {
-                var response = await _communicationService.SendRequestAsync<CustomerDTO>(request);
-
-                return response;
+                var storageKey = $"{CrmStorageKeys.CustomerData}{customerID}";
+                var customerDTO = await _sessionStorage.ReadEncryptedItemAsync<CustomerDTO>(storageKey);
+                if (customerDTO != null && customerDTO.Id > 0)
+                {
+                    return new ActionResult<CustomerDTO>(customerDTO);
+                }
             }
             catch (Exception ex)
             {
                 _loggingService.SendErrorLogToServerAsync(ex);
-                return new CustomerDTO();
+                return new ActionResult<CustomerDTO>(ex.Message);
             }
+
+            return await GetCustomerDataFromServerAsync(customerID);
         }
 
         public async Task<long> CreateNewCustomerAsync(CustomerDTO customerDTO)
         {
-            var url = "Customers/Create";
+            var url = $"{ApiUrl}/Create";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, customerDTO);
             
             try
@@ -72,7 +81,7 @@ namespace UI.Services
 
         public async Task<bool> DeleteCustomer(long customerID)
         {
-            var url = "Customers/{customerID}";
+            var url = $"{ApiUrl}/{customerID}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Delete, url);
 
             try
@@ -87,26 +96,30 @@ namespace UI.Services
             }
         }
 
-        public async Task<bool> UpdateCustomer(CustomerDTO customerDTO)
+        public async Task<ResponseBase> UpdateCustomer(CustomerDTO customerDTO)
         {
-            var url = "Customers";
-            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, url, customerDTO);
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Put, ApiUrl, customerDTO);
 
             try
             {
-                var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
-                return true;
+                var response = await _communicationService.SendRequestAsyncNew<ResponseBase>(request);
+                if (!response.IsSuccess && string.IsNullOrEmpty(response.ErrorMessage))
+                {
+                    response.ErrorMessage = Translation.CustomerFriendlyMessage;
+                }
+
+                return response;
             }
             catch (Exception ex)
             {
                 _loggingService.SendErrorLogToServerAsync(ex);
-                return false;
+                return new ResponseBase(false, ex.Message);
             }
         }
 
         public async Task<IAsyncEnumerable<AssetDTO>> GetCustomerAssetsAsync(long id)
         {
-            var url = "Customers/Assets";
+            var url = $"{ApiUrl}/Assets";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, id);
 
             try
@@ -124,7 +137,7 @@ namespace UI.Services
 
         public async Task<AssetDTO> GetCustomerAssetDataAsync(long customerAssetid)
         {
-            var url = $"Customers/Assets/{customerAssetid}";
+            var url = $"{ApiUrl}/Assets/{customerAssetid}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
@@ -140,27 +153,27 @@ namespace UI.Services
             }
         }
 
-        public async Task<IAsyncEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID)
+        public async Task<IEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID)
         {
-            var url = $"Customers/Orders/{customerID}";
+            var url = $"{ApiUrl}/Orders/{customerID}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
             {
-                var response = await _communicationService.SendRequestAsync<IAsyncEnumerable<OrderDTO>>(request);
+                var response = await _communicationService.SendRequestAsyncNew<GetOrdersRS>(request);
 
-                return response;
+                return response.Orders;
             }
             catch (Exception ex)
             {
                 _loggingService.SendErrorLogToServerAsync(ex);
-                return AsyncEnumerable.Empty<OrderDTO>();
+                return Enumerable.Empty<OrderDTO>();
             }
         }
 
         public async Task<IAsyncEnumerable<InteractionDTO>> GetCustomerInteractionsAsync(long customerID)
         {
-            var url = $"Customers/Interactions/{customerID}";
+            var url = $"{ApiUrl}/Interactions/{customerID}";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
@@ -178,7 +191,7 @@ namespace UI.Services
 
         public async Task<CustomerGridFilterDataRS> GetCustomerFilterBaseValues()
         {
-            var url = "Customers/GridFilterData";
+            var url = $"{ApiUrl}/GridFilterData";
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
 
             try
@@ -191,6 +204,28 @@ namespace UI.Services
             {
                 _loggingService.SendErrorLogToServerAsync(ex);
                 return new CustomerGridFilterDataRS();
+            }
+        }
+
+        private async Task<ActionResult<CustomerDTO>> GetCustomerDataFromServerAsync(long customerID)
+        {
+            var url = $"{ApiUrl}/{customerID}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsyncNew<GetCustomerDataRS>(request);
+                if (!response.IsSuccess)
+                {
+                    return new ActionResult<CustomerDTO>(response.ErrorMessage ?? Translation.CustomerFriendlyMessage);
+                }
+
+                return new ActionResult<CustomerDTO>(response.CustomerDTO);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return new ActionResult<CustomerDTO>(ex.Message);
             }
         }
     }

@@ -1,0 +1,92 @@
+﻿@page "/UserManagment/NewUserForm"
+
+@inject IAuthenticationService authenticationService
+@inject IRoleService roleService
+@inject NavigationManager navigationManager
+@inject ICrmModalService modal
+
+<h3>@Translation.RegisterNewUser</h3>
+
+<EditForm Model="@userDTO" OnSubmit="@CreateNewUserAsync">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="inputFirstName">@Translation.FirstName</label>
+            <input class="form-control" id="inputFirstName" placeholder="@Translation.FirstName" @bind-value="userDTO.FirstName">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputLastName">@Translation.LastName</label>
+            <input class="form-control" id="inputLastName" placeholder="@Translation.LastName" @bind-value="userDTO.LastName">
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        <label for="inputEmail">Email</label>
+        <input type="email" class="form-control" id="inputEmail" placeholder="user@email.com" @bind-value="userDTO.UserEmail">
+    </div>
+    <div class="form-group col-md-6">
+        <label for="inputPassword">@Translation.Password</label>
+        <input type="password" class="form-control" id="inputPassword" placeholder="@Translation.Password" @bind-value="userDTO.Password">
+    </div>
+    <!-- This serves for roles -->
+    <div class="form-group">
+        @Translation.UserRoles:
+        @if (selectedUserRoles.IsNullOrEmpty())
+        {
+            <Loader></Loader>
+        }
+        else
+        {
+            <br>
+            @foreach (var role in selectedUserRoles)
+            {
+                <div class="form-check form-switch ms-3">
+                    <InputCheckbox class="form-check-input" @bind-Value="role.IsSelected" />
+                    <label class="form-check-label">@role.UserRole.RoleName</label>               
+                </div>
+            }
+            <br>
+        }
+    </div>
+    <button type="submit" class="btn btn-primary">@Translation.Register</button>
+</EditForm>
+
+
+@code {
+    private UserDTO userDTO = new UserDTO();
+
+    private IEnumerable<SelectedUserRole> selectedUserRoles { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var possibleUserRoles = await roleService.GetApplicableRolesAsync();
+        selectedUserRoles = possibleUserRoles.Select(x => new SelectedUserRole { UserRole = x })
+            .ToHashSet();
+    }
+
+    private async Task CreateNewUserAsync()
+    {
+        MapRolesToUserDTO();
+        var user = await authenticationService.RegisterNewUserAsync(userDTO);
+
+        if (user.IsNullOrEmpty())
+        {
+            modal.ShowCustomerFriendlyMessage();
+            return;
+        }
+
+        navigationManager.NavigateTo($"/UserManagment/UserSettings?username={user.UserName}");
+    }
+
+    private void MapRolesToUserDTO()
+    {
+        userDTO.UserRoles = selectedUserRoles
+            .Where(x => x.IsSelected)
+            .Select(x => 
+                new UserRoleDTO
+                {
+                    RoleName = x.UserRole.RoleName
+                })
+            .ToList();
+    }
+}

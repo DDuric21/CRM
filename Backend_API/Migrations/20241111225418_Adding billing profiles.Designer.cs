@@ -303,7 +303,7 @@ namespace Backend_API.Migrations
                     b.Property<DateTime>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateSubmited")
+                    b.Property<DateTime>("DateSubmitted")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("OrderStatusID")

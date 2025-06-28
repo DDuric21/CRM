@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Repositories;
+using Backend_API.Helpers;
 using Backend_API.Logging;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ using Models.DTO;
 using Models.Helpers;
 using Models.Requests;
 using Models.Responses;
+using Resources.Translations.API;
 
 namespace Backend_API.Controllers
 {
@@ -74,27 +76,20 @@ namespace Backend_API.Controllers
         [Route("{customerId}")]
         public async Task<IActionResult> GetCustomer(long customerId)
         {
-            var customerDTO = new CustomerDTO();
-
-            try
+            if (customerId <= 0)
             {
-                var customer = await _customerService.GetCustomerDataAsync(customerId);
-
-                if (customer.IsNullOrEmpty())
-                {
-                    DynamicLogger.LogError(nameof(GetCustomer), $"No customer found for ID: {customerId}");
-                    return Problem();
-                }
-
-                customerDTO = _customerService.MapCustomerToDTO(customer);
-            }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return Problem(ex.Message);
+                return HttpContext.BadRequest();
             }
 
-            return Ok(customerDTO);
+            var customer = await _customerService.GetCustomerDataAsync(customerId);
+
+            if (customer is null)
+            {
+                DynamicLogger.LogError($"No customer found for ID: {customerId}");
+                return Problem(APITranslations.CustomerNotFound);
+            }
+
+            return Ok(new GetCustomerDataRS(customer));
         }
 
         [HttpPost]
@@ -211,30 +206,17 @@ namespace Backend_API.Controllers
         [Route("Orders/{customerID}")]
         public async Task<IActionResult> GetCustomerOrders(long customerID)
         {
+            var orders = await _customerService.GetCustomerOrdersAsync(customerID);
+
             var orderDTOs = new List<OrderDTO>();
-
-            try
+            foreach (var order in orders)
             {
-                var orders = _customerService.GetCustomerOrders(customerID);
+                var orderDTO = _orderService.MapToDTO(order);
 
-                if (orders.IsNullOrEmpty())
-                {
-                    return Ok(new List<OrderDTO>());
-                }
-
-                foreach (var order in orders)
-                {
-                    var orderDTO = _orderService.MapToDTO(order);
-
-                    orderDTOs.Add(orderDTO);
-                }
-
-                return Ok(orderDTOs);
+                orderDTOs.Add(orderDTO);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(new GetOrdersRS { Orders = orderDTOs });
         }
 
         [HttpGet]

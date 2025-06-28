@@ -2,7 +2,7 @@
 <fieldset >
     <input type="text" @bind-value="OptionDTO.Name"></input>
     <input type="text" @bind-value="OptionDTO.Price"></input>
-    <button type="submit" name="submit" class="btn btn-danger" @onclick="RemoveOption"><em class="oi oi-trash"></em> Delete</button>
+    <button type="submit" name="submit" class="btn btn-danger" @onclick="RemoveOption"><em class="oi oi-trash"></em> @Translation.Delete</button>
 </fieldset>
 
 @code {

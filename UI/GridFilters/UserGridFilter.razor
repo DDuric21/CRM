@@ -10,7 +10,7 @@ else
     <div class="row bg-light bg-gradient p-4" style="border-radius:50px">
 
         <div class="d-flex justify-content-between align-items-center mb-1">
-            <h4 class="m-0">Grid Filter</h4>
+            <h4 class="m-0">@Translation.GridFilter</h4>
             <div class="d-flex justify-content-center col-1">
                 <button type="submit" class="btn btn-primary" @onclick="() => ExecuteFilter()">Filter</button>
             </div>
@@ -39,17 +39,27 @@ else
             </div>
 
             <div class="col-2 p-2">
-                <label>First Name:</label>
-                <input class="form-control" @bind="userFilter.FirstName" placeholder="Enter first name" />
+                <label>@Translation.FirstName:</label>
+                <input class="form-control" @bind="userFilter.FirstName" placeholder="@Translation.EnterFirstName" />
             </div>
 
             <div class="col-2 p-2">
-                <label>Last Name:</label>
-                <input class="form-control" @bind="userFilter.LastName" placeholder="Enter last name" />
+                <label>@Translation.LastName:</label>
+                <input class="form-control" @bind="userFilter.LastName" placeholder="@Translation.EnterLastName" />
+            </div>
+
+            <div class="col-2 p-2">
+                <label>@Translation.Username:</label>
+                <input class="form-control" @bind="userFilter.Username" placeholder="@Translation.EnterUsername" />
+            </div>
+
+            <div class="col-2 p-2">
+                <label>Email:</label>
+                <input class="form-control" @bind="userFilter.Email" placeholder="@Translation.EnterEmail" />
             </div>
 
             <div class="col-4 p-2">
-                <label>Created between:</label>
+                <label>@Translation.CreatedBetween:</label>
                 <div class="d-flex gap-2">
                     <input type="date" class="form-control" @bind="userFilter.CreatedDateStart" />
                     <input type="date" class="form-control" @bind="userFilter.CreatedDateEnd" />
@@ -57,7 +67,7 @@ else
             </div>
 
             <div class="col-2 dropdown p-2">
-                <label>User Roles:</label>
+                <label>@Translation.UserRoles:</label>
                 <button class="form-select text-truncate" type="button" data-dropdown-id="rolesDropdown" id="dropdownButton" data-bs-toggle="dropdown">
                     @rolesButtonText
                 </button>
@@ -92,15 +102,15 @@ else
         .Where(x => x.IsSelected)
         .Select(x => x.UserRole.RoleName)
         .Any() 
-        ? string.Join(", ", selectedUserRoles.Where(x => x.IsSelected).Select(x => x.UserRole.RoleName)) 
-        : "Select Roles";
+        ? string.Join(", ", selectedUserRoles.Where(x => x.IsSelected).Select(x => x.UserRole.RoleName))
+        : Translation.SelectRoles;
 
     private string statusesButtonText => selectedUserStatuses
         .Where(x => x.IsSelected)
         .Select(x => x.Status)
         .Any() 
-        ? string.Join(", ", selectedUserStatuses.Where(x => x.IsSelected).Select(x => x.Status)) 
-        : "Select Status";
+        ? string.Join(", ", selectedUserStatuses.Where(x => x.IsSelected).Select(x => x.Status))
+        : Translation.SelectStatus;
 
     private async Task ExecuteFilter()
     {

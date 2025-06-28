@@ -1,4 +1,6 @@
 ﻿using Models.Enums;
+using Resources.Translations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models.DTO
 {
@@ -7,11 +9,20 @@ namespace Models.DTO
         // should be removed later
         public long Id { get; set; }
 
+        [Required(
+           ErrorMessageResourceType = typeof(ValidationMessages),
+           ErrorMessageResourceName = nameof(ValidationMessages.FirstNameFieldRequired))]
         public string? FirstName { get; set; }
 
+        [Required(
+           ErrorMessageResourceType = typeof(ValidationMessages),
+           ErrorMessageResourceName = nameof(ValidationMessages.LastNameFieldRequired))]
         public string? LastName { get; set; }
 
-        public string PersonalID{ get; set; }
+        [Required(
+           ErrorMessageResourceType = typeof(ValidationMessages),
+           ErrorMessageResourceName = nameof(ValidationMessages.PersonalIDFieldRequired))]
+        public string PersonalID { get; set; }
 
         public List<AddressDTO> Addresses { get; set; }
 

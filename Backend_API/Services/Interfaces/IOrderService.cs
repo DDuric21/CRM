@@ -1,17 +1,24 @@
 ﻿using Backend_API.Data.Models;
 using Models.DTO;
 using Models.Requests;
+using Models.Responses;
 
 namespace Backend_API.Services
 {
     public interface IOrderService
     {
-        OrderDTO GetOrderData(Guid id);
+        Task<OrderDTO> GetOrderDataAsync(Guid id);
 
-        Task<bool> CreateNewOrderAsync(CreateOrderRQ createOrderRQ);
+        Task<ResponseBase> CreateNewOrderAsync(CreateOrderRQ createOrderRQ);
 
-        Task<bool> SubmitOrderDataAsync(OrderDTO order);
+        Task<ResponseBase> CancelOrderAsync(CancelOrderRQ cancelOrderRQ);
+
+        Task<ResponseBase> SubmitOrderDataAsync(OrderDTO order);
 
         OrderDTO MapToDTO(Order order);
+
+        Task<OrderGridFilterDataRS> GetOrderFilterBaseValuesAsync();
+
+        Task<GetOrdersRS> GetOrdersAsync(OrderFilter orderFilter);
     }
 }

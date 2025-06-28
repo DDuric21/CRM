@@ -15,5 +15,6 @@ namespace Backend_API.Data.Repositories
         IGenericRepository<Interaction> Interactions { get; }
         IBillingProfileRepository BillingProfiles { get; }
         IGenericRepository<News> News { get; }
+        IGenericRepository<RolePermission> RolePermissions { get; }
     }
 }

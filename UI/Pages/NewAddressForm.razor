@@ -2,13 +2,55 @@
 @inject IAddressService addressService
 @inject ICrmModalService modalService
 
-<div class="modal-body">
-    <input type="text" placeholder="Full address" @bind-value="addressDTO.FullAddress" /><br>
-</div>
+<div class="modal-body" style="padding-top: 0; margin-top:-1.5rem;">
+    <div class="container mt-0">
+        <div class="row justify-content-center">
+            <div class="col-md-8" style="min-width: 600px;">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@Translation.CreateNewAddress</h5>
+                    </div>
+                    <div class="card-body">
+                        <EditForm Model="newAddress" OnValidSubmit="CreateAddressAsync">
+                            <DataAnnotationsValidator />
 
-<div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Cancel" >Cancel</button>
-    <button type="button" class="btn btn-primary" @onclick="Close" >Create</button>
+                            <div class="mb-3">
+                                <label class="form-label">@Translation.Country</label>
+                                <InputText class="form-control" @bind-Value="newAddress.Country" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">@Translation.AddressCity</label>
+                                <InputText class="form-control" @bind-Value="newAddress.City" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">@Translation.PostalCode</label>
+                                <InputNumber class="form-control" @bind-Value="newAddress.PostalCode" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">@Translation.Address</label>
+                                <InputText class="form-control" @bind-Value="newAddress.Address" />
+                            </div>
+
+                            <ValidationSummary />
+
+                            <div class="mb-3">
+                                <label class="form-label">@Translation.FullAddress</label>
+                                <input type="text" class="form-control" value="@fullAddress" disabled />
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-secondary me-2" @onclick="Cancel">@Translation.Cancel</button>
+                                <button type="submit" class="btn btn-primary">@Translation.Create</button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @code {
@@ -19,33 +61,30 @@
     public long CustomerId { get; set; }
 
     private AddressDTO addressDTO = new AddressDTO();
-
+    private NewAddress newAddress = new NewAddress();
+    private string fullAddress => $"{newAddress.Address}, {newAddress.PostalCode}, {newAddress.City}, {newAddress.Country}";
 
     protected override async Task OnInitializedAsync()
     {        
         addressDTO.CustomerId = CustomerId;
-        modalInstance.Title = "Create New Address";
-    }
-
-    private async Task<AddressDTO> CreateNewAddress()
-    {
-        var result = await addressService.CreateNewAddressAsync(addressDTO);
-
-        return result;
+        modalInstance.Title = Translation.CreateNewAddress;
     }
 
     protected async Task Cancel() => await modalInstance.CancelAsync();
 
-    protected async Task Close()
+    protected async Task CreateAddressAsync()
     {
-        var result = await CreateNewAddress();
+        addressDTO.FullAddress = fullAddress;
+        var result = await addressService.CreateNewAddressAsync(addressDTO);
 
         if (result.IsNullOrEmpty())
         {
-            modalService.ShowErrorMessage("Address is not created!");
+            modalService.ShowErrorMessage(Translation.AddressNotCreated);
             Cancel();
+            return;
         }
 
+        modalService.ShowSuccessToast(Translation.AddressAddedSuccess);
         await modalInstance.CloseAsync(ModalResult.Ok(result));
     }
 }

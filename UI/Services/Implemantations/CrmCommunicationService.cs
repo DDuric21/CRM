@@ -1,6 +1,11 @@
-﻿using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 using Models.Authentication;
+using Models.Authentication.DataStructures;
 using Models.Helpers;
+using Models.Requests;
+using Models.Responses;
+using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
 using UI.Authentication;
@@ -13,15 +18,18 @@ namespace UI.Services
         private readonly HttpClient _httpClient;
         private readonly IJSRuntime _jsRuntime;
         private IJSObjectReference? _module;
+        private readonly IServiceProvider _serviceProvider;
 
         public CrmCommunicationService(
             AppConfig apiConfig,
             HttpClient httpClient,
-            IJSRuntime jsRuntime)
+            IJSRuntime jsRuntime,
+            IServiceProvider serviceProvider)
         {
             _apiConfig = apiConfig;
             _httpClient = httpClient;
             _jsRuntime = jsRuntime;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<HttpRequestMessage> CreateRequestAsync<T>(HttpMethod httpMethod, string target, T requestBody, bool addAuthorization = true)
@@ -30,7 +38,12 @@ namespace UI.Services
             var request = new HttpRequestMessage(httpMethod, url);
 
             await AddBasicHeaders(request, addAuthorization);
-            
+
+            if (requestBody is RequestBase body)
+            {
+                await SetRequestUsernameAsync(body);
+            }
+
             var content = JsonContent.Create(requestBody);
             request.Content = content;
 
@@ -45,6 +58,50 @@ namespace UI.Services
             await AddBasicHeaders(request, true);
 
             return request;
+        }
+
+        public async Task<T> SendRequestAsyncNew<T>(HttpRequestMessage request) where T : IApiResponse, new()
+        {
+            var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string errorMessage = await ExtractErrorMessageAsync(options, response);
+
+                throw new Exception(errorMessage);
+            }
+
+            if (response.Content.Headers.ContentLength == 0)
+            {
+                return new T { IsSuccess = true };
+            }
+
+            var deserialisedResult = await DeserialiseResponseAsync<T>(options, response);
+
+            return deserialisedResult;
+        }
+
+        public async Task SendErrorLogToServerUsingJsAsync(Exception exception, string url = null)
+        {
+            if (_module == null)
+            {
+                _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+                   "import", "./js/modules.js");
+            }
+
+            var path = url;
+            var stackTrace = ExceptionHelper.FlattenExceptionMessages(exception);
+
+            await _module.InvokeVoidAsync(
+                "logExceptionToServer",
+                _apiConfig.SecureBackendUrl,
+                exception.Message,
+                stackTrace,
+                path,
+                "Fatal");
         }
 
         public async Task<T> SendRequestAsync<T>(HttpRequestMessage request)
@@ -74,6 +131,11 @@ namespace UI.Services
 
             if (!response.IsSuccessStatusCode)
             {
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    throw new UnauthorizedAccessException();
+                }
+
                 var errorMessage = string.Format("Server returned an error with status: {0} \r\n {1}", response.StatusCode, response.Content);
                 throw new Exception(errorMessage);
             }
@@ -97,9 +159,18 @@ namespace UI.Services
             return deserialisedResult;
         }
 
+        public async ValueTask DisposeAsync()
+        {
+            if (_module is not null)
+            {
+                await _module.DisposeAsync();
+            }
+        }
+
         private async Task AddBasicHeaders(HttpRequestMessage request, bool addAuthorization = false)
         {
             request.Headers.Add(HttpHeaderNames.Accept, "application/json");
+            request.Headers.Add(HttpHeaderNames.AcceptLanguage, CultureInfo.CurrentCulture.Name);
 
             // this would be best to set at the begging of the action e.g. button clicked
             request.Headers.Add(HttpHeaderNames.CorrelationID, Guid.NewGuid().ToString());
@@ -109,6 +180,18 @@ namespace UI.Services
                 var jwt = await GetAuthorizationToken();
                 request.Headers.Add(HttpHeaderNames.Authorization, $"Bearer {jwt}");
             }
+        }
+
+        private async Task SetRequestUsernameAsync<T>(T requestBody) where T : RequestBase
+        {
+            var provider = _serviceProvider.GetRequiredService<AuthenticationStateProvider>();
+            var user = (await provider.GetAuthenticationStateAsync()).User;
+
+            var userName = user.Identity?.Name
+                        ?? user.FindFirst("preferred_username")?.Value
+                        ?? "";
+
+            requestBody.Username = userName;
         }
 
         private async Task<string> GetAuthorizationToken()
@@ -143,38 +226,90 @@ namespace UI.Services
                     JasonWebToken.Value = response;
                 }
             }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 SendErrorLogToServerUsingJsAsync(ex);
             }
         }
 
-        public async Task SendErrorLogToServerUsingJsAsync(Exception exception, string url = null)
+        private async Task<string> ExtractErrorMessageAsync(JsonSerializerOptions options, HttpResponseMessage response)
         {
-            if (_module == null)
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (!_apiConfig.IsDevelopment())
             {
-                _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                   "import", "./js/modules.js");
+                return GetProductionErrorMessage(response);
             }
 
-            var path = url;
-            var stackTrace = ExceptionHelper.FlattenExceptionMessages(exception);
+            try
+            {
+                var problem = JsonSerializer.Deserialize<ProblemDetails>(responseContent, options);
+                if (!string.IsNullOrWhiteSpace(problem?.Detail))
+                {
+                    return problem.Detail;
 
-            await _module.InvokeVoidAsync(
-                "logExceptionToServer",
-                _apiConfig.SecureBackendUrl,
-                exception.Message,
-                stackTrace,
-                path,
-                "Fatal");
+                }
+                else if (!string.IsNullOrWhiteSpace(problem?.Title))
+                {
+                    return problem.Title;
+                }
+            }
+            catch
+            {
+                if (!string.IsNullOrWhiteSpace(responseContent))
+                {
+                    return responseContent;
+                }
+            }
+
+            return $"HTTP {response.StatusCode}";
         }
 
-        public async ValueTask DisposeAsync()
+        private async Task<T> DeserialiseResponseAsync<T>(JsonSerializerOptions options, HttpResponseMessage response)
         {
-            if (_module is not null)
+            T deserialisedResult = default;
+            try
             {
-                await _module.DisposeAsync();
+                var responseContent = await response.Content.ReadAsStreamAsync();
+                deserialisedResult = await JsonSerializer.DeserializeAsync<T>(responseContent, options: options);
             }
+            catch (Exception ex)
+            {
+                await SendErrorLogToServerUsingJsAsync(ex, response.RequestMessage?.RequestUri?.ToString());
+
+                if (_apiConfig.IsDevelopment())
+                {
+                    throw;
+                }
+
+                throw new Exception(GetProductionErrorMessage(response));
+            }
+
+            if (deserialisedResult == null)
+            {
+                await SendErrorLogToServerUsingJsAsync(new Exception("Deserialised result is null."), response.RequestMessage?.RequestUri?.ToString());
+                if (_apiConfig.IsDevelopment())
+                {
+                    throw new Exception("Deserialised result is null.");
+                }
+
+                throw new Exception(GetProductionErrorMessage(response));
+            }
+
+            return deserialisedResult;
+        }
+
+        private string GetProductionErrorMessage(HttpResponseMessage response)
+        {
+            var headerExists = response.Headers.TryGetValues(HttpHeaderNames.CorrelationID, out var correlationId);
+
+            return headerExists
+                ? $"An error occurred. Please contact support with the following correlation ID: {correlationId.FirstOrDefault()}"
+                : "An error occurred. Please contact support.";
         }
     }
 }

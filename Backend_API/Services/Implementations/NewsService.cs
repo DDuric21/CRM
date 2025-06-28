@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
+using Backend_API.Logging;
 using Microsoft.EntityFrameworkCore;
 using Models.DTO;
 using Models.Requests;
@@ -20,7 +21,23 @@ namespace Backend_API.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<News>> GetNewsAsync(IEnumerable<RetrieveNewsRQ> retrieveNewsRQs)
+        public async Task<IEnumerable<NewsDTO>> RetrieveNewsAsync(IEnumerable<RetrieveNewsRQ> retrieveNewsRQs)
+        {
+            try
+            {
+                var news = await GetNewsAsync(retrieveNewsRQs);
+                var newsDTOs = _mapper.Map<IEnumerable<NewsDTO>>(news);
+
+                return newsDTOs;
+            }
+            catch (Exception ex)
+            {
+                DynamicLogger.LogException(ex, ex.Message);
+                throw;
+            }
+        }
+
+        private async Task<IEnumerable<News>> GetNewsAsync(IEnumerable<RetrieveNewsRQ> retrieveNewsRQs)
         {
             var news = new List<News>();
 
@@ -52,7 +69,9 @@ namespace Backend_API.Services
                         newsLimits[item.NewsTypeID]--;
 
                         if (newsLimits[item.NewsTypeID] == 0)
-                            newsLimits.Remove(item.NewsTypeID); // Remove when limit is met
+                        {
+                            newsLimits.Remove(item.NewsTypeID);
+                        }
                     }
                 }
 
@@ -60,18 +79,6 @@ namespace Backend_API.Services
             }
 
             return news;
-        }
-
-        public IEnumerable<NewsDTO> MapNewsToDTOs(IEnumerable<News> news)
-        {
-            var newsDTO = new List<NewsDTO>();
-
-            foreach (var x in news)
-            {
-                newsDTO.Add(_mapper.Map<NewsDTO>(x));
-            }
-
-            return newsDTO;
         }
     }
 }

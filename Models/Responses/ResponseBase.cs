@@ -1,7 +1,19 @@
 ﻿namespace Models.Responses
 {
-    public class ResponseBase
+    public class ResponseBase : IApiResponse
     {
-        public string ErrorMessage { get; set; }
+        public bool IsSuccess { get; set; }
+
+        public string? ErrorMessage { get; set; }
+
+        public ResponseBase()
+        {
+        }
+
+        public ResponseBase(bool isSuccess, string? errorMessage = null)
+        {
+            IsSuccess = isSuccess;
+            ErrorMessage = errorMessage;
+        }
     }
 }

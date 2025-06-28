@@ -15,7 +15,7 @@ namespace Backend_API.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            context.Request.EnableBuffering(); 
+            context.Request.EnableBuffering();
 
             var requestBody = await ReadRequestBodyAsync(context);
             var requestLog = $"{context.Request.Method} URL: '...{context.Request.Path}' Body: {requestBody}";
@@ -24,15 +24,32 @@ namespace Backend_API.Middleware
             using var memStream = new MemoryStream();
             context.Response.Body = memStream;
 
-            await _next(context);
+            try
+            {
+                await _next(context);
+            }
+            finally
+            {
+                memStream.Seek(0, SeekOrigin.Begin);
+                string responseBodyText;
 
-            var responseBodyText = await ReadResponseBodyAsync(memStream);
+                try
+                {
+                    responseBodyText = await ReadResponseBodyAsync(memStream);
+                }
+                catch (Exception ex)
+                {
+                    responseBodyText = $"[Failed to read response body: {ex.Message}]";
+                }
 
-            var responseLog = $"Status: {context.Response.StatusCode} Body: {responseBodyText}";
-            var logMessage = $"Request: {requestLog} {Environment.NewLine} Response: {responseLog}";
-            DynamicLogger.Log(LogFolder, logMessage, nameof(ApiLoggingMiddleware));
+                var responseLog = $"Status: {context.Response.StatusCode} Body: {responseBodyText}";
+                var logMessage = $"Request: {requestLog}{Environment.NewLine}Response: {responseLog}";
+                DynamicLogger.Log(LogFolder, logMessage, nameof(ApiLoggingMiddleware));
 
-            await memStream.CopyToAsync(originalBodyStream);
+                memStream.Seek(0, SeekOrigin.Begin);
+                await memStream.CopyToAsync(originalBodyStream);
+                context.Response.Body = originalBodyStream;
+            }
         }
 
         private async Task<string> ReadRequestBodyAsync(HttpContext context)

@@ -16,19 +16,20 @@ namespace Backend_API.Data.Repositories
             return nextID;
         }
 
-        public async Task<int> UpdateBillingProfileAsync(BillingProfile billingProfile)
+        public async Task<BillingProfile> UpdateBillingProfileAsync(BillingProfile billingProfile)
         {
-            var existingProfile = _context.BillingProfiles
-                .FirstOrDefault(x => x.BillingProfileId == billingProfile.BillingProfileId);
+            var existingProfile = _context.BillingProfiles.FirstOrDefault(x => x.BillingProfileId == billingProfile.BillingProfileId);
             
             if (existingProfile is null)
             {
-                return 0;
+                return null;
             }
 
             _context.Entry(existingProfile).CurrentValues.SetValues(billingProfile);
 
-            return await SaveAsync();
+            await SaveAsync();
+
+            return existingProfile;
         }
     }
 }

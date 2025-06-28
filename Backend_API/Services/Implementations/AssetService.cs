@@ -42,23 +42,14 @@ namespace Backend_API.Services
 
         public IEnumerable<AssetDTO> MapCustomerAssetsToAssetDTOs(IEnumerable<CustomerAssets> customerAssets)
         {
-            var assetDTOs = new List<AssetDTO>();
-
             if (customerAssets.IsNullOrEmpty())
             {
-                return assetDTOs;
+                return new List<AssetDTO>();
             }
 
             try
             {
-                foreach (var customerAsset in customerAssets)
-                {
-                    var assetDTO = _mapper.Map<AssetDTO>(customerAsset.Asset);
-                    assetDTO.CustomerAssetID = customerAsset.Id;
-                    assetDTO.AssetStatus = (ItemState)customerAsset.AssetStatusID;
-                    assetDTO.BillingProfile = new BillingProfileDTO { BillingProfileId = customerAsset.BillingProfileId};
-                    assetDTOs.Add(assetDTO);
-                }
+                var assetDTOs = _mapper.Map<IEnumerable<AssetDTO>>(customerAssets);
 
                 return assetDTOs;
             }
@@ -117,6 +108,19 @@ namespace Backend_API.Services
             var result = assetStatisticsData.ToDictionary(x => (ItemState)x.AssetStatusID, x => x.Count);
 
             return result;
+        }
+
+        public async Task<IEnumerable<AssetDTO>> GetAllAssetsAsync()
+        {
+            var assets = await _repository.Assets.GetAllAsync();
+            if (assets.IsNullOrEmpty())
+            {
+                return new List<AssetDTO>();
+            }
+
+            var assetDTOs = _mapper.Map<List<AssetDTO>>(assets);
+
+            return assetDTOs;
         }
     }
 }

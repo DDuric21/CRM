@@ -396,7 +396,7 @@ namespace Backend_API.Data.SeedData
         {
             if (!context.BillingProfiles.Any())
             {
-                var billingProfile1 = new BillingProfile { CustomerID = 1, AddressID = 1, BillingProfileStatusID = 1 };
+                var billingProfile1 = new BillingProfile { CustomerID = 1, AddressID = 1, BillingProfileStatusID = 1, Paperless = true };
                 billingProfile1.GenerateKey(1, 123);
                 var billingProfile2 = new BillingProfile { CustomerID = 2, AddressID = 2, BillingProfileStatusID = 1 };
                 billingProfile2.GenerateKey(1, 456);

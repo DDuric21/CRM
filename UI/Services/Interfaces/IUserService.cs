@@ -1,6 +1,8 @@
 ﻿using Models.DTO;
 using Models.Requests;
 using Models.Responses;
+using UI.Data;
+using UI.Helpers;
 
 namespace UI.Services
 {
@@ -12,7 +14,7 @@ namespace UI.Services
 
         Task<IAsyncEnumerable<UserDTO>> GetUsersAsync(UserFilterRQ userFilter);
 
-        Task<bool> UpdateUserDataAsync(UserDTO userDTO);
+        Task<ActionResult<object>> UpdateUserDataAsync(UserDTO userDTO, IEnumerable<SelectedUserRole> selectedUserRoles);
 
         Task<UserGridFilterDataRS> GetUserFilterBaseValues();
     }

@@ -10,7 +10,7 @@ else
     <div class="row bg-light bg-gradient p-4" style="border-radius:50px">
 
         <div class="d-flex justify-content-between align-items-center mb-1">
-            <h4 class="m-0">Grid Filter</h4>
+            <h4 class="m-0">@Translation.GridFilter</h4>
             <div class="d-flex justify-content-center col-1">
                 <button type="submit" class="btn btn-primary" @onclick="() => ExecuteFilter()">Filter</button>
             </div>
@@ -57,22 +57,22 @@ else
         </div>
 
         <div class="col-2 p-2">
-            <label>First Name:</label>
-            <input class="form-control" @bind="customerFilter.FirstName" placeholder="Enter first name" />
+            <label>@Translation.FirstName:</label>
+            <input class="form-control" @bind="customerFilter.FirstName" placeholder="@Translation.EnterFirstName" />
         </div>
 
         <div class="col-2 p-2">
-            <label>Last Name:</label>
-            <input class="form-control" @bind="customerFilter.LastName" placeholder="Enter last name" />
+            <label>@Translation.LastName:</label>
+            <input class="form-control" @bind="customerFilter.LastName" placeholder="@Translation.EnterLastName" />
         </div>
 
         <div class="col-2 p-2">
-            <label>Last Name:</label>
-            <input class="form-control" @bind="customerFilter.PersonalID" placeholder="Enter Personal ID" />
+            <label>@Translation.PersonalID:</label>
+            <input class="form-control" @bind="customerFilter.PersonalID" placeholder="@Translation.EnterPersonalID" />
         </div>
 
         <div class="col-4 p-2">
-            <label>Born between:</label>
+            <label>@Translation.BornBetween:</label>
             <div class="d-flex gap-2">
                 <input type="date" class="form-control" @bind="customerFilter.BirthdayDateStart" />
                 <input type="date" class="form-control" @bind="customerFilter.BirthdayDateEnd" />
@@ -96,13 +96,13 @@ else
         .Select(x => x.Status)
         .Any() 
         ? string.Join(", ", selectedCustomerStatuses.Where(x => x.IsSelected).Select(x => x.Status)) 
-        : "Select Status";    
+        : Translation.SelectStatus;    
     private string typesButtonText => selectedCustomerTypes
         .Where(x => x.IsSelected)
         .Select(x => x.Type)
         .Any() 
         ? string.Join(", ", selectedCustomerTypes.Where(x => x.IsSelected).Select(x => x.Type)) 
-        : "Select Customer Type";
+        : Translation.SelectCustomerType;
 
     private async Task ExecuteFilter()
     {

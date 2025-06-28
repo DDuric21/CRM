@@ -5,5 +5,6 @@
         Open = 1,
         Finished = 2,
         Cancelled = 3,
+        Submitted = 4,
     }
 }

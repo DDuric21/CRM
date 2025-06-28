@@ -3,6 +3,7 @@
 @inject ICrmModalService ModalService
 @inject AppConfig AppConfig
 @inject ILoggingService LoggingService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @code {
     [Parameter] 
@@ -23,15 +24,24 @@
             LoggingService.SendErrorLogToServerAsync(logDetails);
         }
 
-        if (AppConfig.IsDevelopment())
+        if (Exception is UnauthorizedAccessException)
         {
-            await ModalService.ShowErrorMessageAsync("An error occurred please try again");
+            ModalService.ShowErrorMessage(Translation.SessionExpired);
+            var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)AuthenticationStateProvider;
+            await crmAuthenticationStateProvider.Logout();
+            return;
+        }
+
+        if (!AppConfig.IsDevelopment())
+        {
+            ModalService.ShowCustomerFriendlyMessage();
         }
         else
         {
-            await ModalService.ShowErrorMessageAsync(Exception.Message);
+            await ModalService.ShowErrorMessageAsync(Exception?.Message);
         }
 
-        Navigation.NavigateTo("/index", forceLoad: true);
+        Navigation.NavigateTo("/index", forceLoad: true);            
+
     }
 }

@@ -8,8 +8,10 @@ namespace Models.DTO
 
         public long CustomerID { get; set; }
 
-        public ItemState BilingProfileStatus { get; set; }
+        public bool Paperless { get; set; }
 
-        public AddressDTO BillingAddress { get; set; }
+        public ItemState BillingProfileStatus { get; set; }
+
+        public AddressDTO BillingAddress { get; set; } = new AddressDTO();
     }
 }

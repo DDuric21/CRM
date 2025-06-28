@@ -19,7 +19,7 @@
 }
 
 .login-right {
-    font-family: "Roboto", sans-serif;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     position: relative;
@@ -53,7 +53,6 @@
 }
 
 .form input {
-    font-family: "Roboto", sans-serif;
     outline: 0;
     background: #f2f2f2;
     width: 100%;
@@ -66,14 +65,14 @@
 
     .form input:active, input:focus {
         border: solid 1px black;
-        border-radius: 10px;
+        border-radius: 0.3rem;
     }
 
     .form .submitButton {
-        font-family: "Roboto", sans-serif;
         text-transform: uppercase;
         outline: 0;
-        background-color: #279EFF;
+        background-color: #2fbbeb;
+        border-radius: 0.3rem;
         width: 100%;
         border: 0;
         padding: 15px;
@@ -85,8 +84,14 @@
 
         .form .submitButton:hover {
             cursor: pointer;
-            background-color: #33D6E6;
-            color: black;
+            background-color: #33a3ff;
+            color: white;
         }
+
+    .form .validation-message {
+        text-align: left; 
+        margin: 0.25em 0 0 0;
+        padding: 0;
+    }
 
 

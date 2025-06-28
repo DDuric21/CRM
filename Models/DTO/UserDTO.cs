@@ -1,5 +1,6 @@
 ﻿using Models.Enums;
 using System.ComponentModel.DataAnnotations;
+using Resources.Translations;
 
 namespace Models.DTO
 {
@@ -9,11 +10,16 @@ namespace Models.DTO
 
         public string LastName { get; set; }
 
+        [Required(
+           ErrorMessageResourceType = typeof(ValidationMessages),
+           ErrorMessageResourceName = nameof(ValidationMessages.UsernameRequired))]
         public string? UserName { get; set; }
 
-        [Required]
         public string UserEmail { get; set; }
 
+        [Required(
+           ErrorMessageResourceType = typeof(ValidationMessages),
+           ErrorMessageResourceName = nameof(ValidationMessages.PasswordRequired))]
         public string? Password { get; set; }
 
         public ItemState UserStatus { get; set; }

@@ -1,7 +1,10 @@
-﻿using Backend_API.Logging;
+﻿using Backend_API.Helpers;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Models.DTO;
 using Models.Helpers;
+using Models.Requests;
+using Models.Responses;
 
 namespace Backend_API.Controllers
 {
@@ -18,24 +21,97 @@ namespace Backend_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllApplicableRoles()
         {
-            try
+            var roles = _roleService.GetAllApplicableRoles();
+
+            if (roles.IsNullOrEmpty())
             {
-                var roles = _roleService.GetAllApplicableRoles();
-
-                if (roles.IsNullOrEmpty())
-                {
-                    return Problem("Roles not found!");
-                }
-
-                var roleDTOs = _roleService.MapUserRolesToDTO(roles);
-
-                return Ok(roleDTOs); ;
+                return Problem("Roles not found!");
             }
-            catch (Exception ex)
+
+            return Ok(roles);
+        }
+
+        [HttpGet]
+        [Route("Permissions")]
+        public async Task<IActionResult> GetAllApplicablePermissions()
+        {
+            var permissions = await _roleService.GetAllApplicablePermissionsAsync();
+
+            if (permissions.IsNullOrEmpty())
             {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
+                return Problem("Permissions not found!");
             }
+
+            return Ok(permissions);
+        }
+
+        [HttpGet]
+        [Route("Permissions/{roleName}")]
+        public async Task<IActionResult> GetRolePermissions(string roleName)
+        {
+            if (string.IsNullOrWhiteSpace(roleName))
+            {
+                return HttpContext.BadRequest();
+            }
+
+            var response = await _roleService.GetRolePermissionsAsync(roleName);
+            if (response is null)
+            {
+                return Problem("No permissions found for the specified role.");
+            }
+
+            return Ok(new GetRolePermissionsRS { RolePermissions = response });
+        }
+
+        [HttpPut]
+        [Route("Permissions")]
+        public async Task<IActionResult> UpdateRolePermissions([FromBody] RolePermissions rolePermissions)
+        {
+            if (rolePermissions.IsNullOrEmpty())
+            {
+                return HttpContext.BadRequest();
+            }
+
+            if (!await _roleService.UpdateRolePermissionsAsync(rolePermissions))
+            {
+                return Problem("No permissions updated");
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("Permissions/{roleName}")]
+        public async Task<IActionResult> DeleteRole(string roleName)
+        {
+            if (string.IsNullOrEmpty(roleName))
+            {
+                return HttpContext.BadRequest();
+            }
+
+            if (!await _roleService.DeleteRoleAsync(roleName))
+            {
+                return Problem($"Role {roleName} not deleted!");
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("Create")]
+        public async Task<IActionResult> CreateNewRole([FromBody] CreateNewRoleRQ createNewRoleRQ)
+        {
+            if (createNewRoleRQ.IsNullOrEmpty())
+            {
+                return HttpContext.BadRequest();
+            }
+
+            if (!await _roleService.CreateRoleAsync(createNewRoleRQ))
+            {
+                return Problem($"Role {createNewRoleRQ.RoleDTO.RoleName} not deleted!");
+            }
+
+            return Ok();
         }
     }
 }

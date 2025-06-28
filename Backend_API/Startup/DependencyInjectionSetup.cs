@@ -57,6 +57,7 @@ namespace Backend_API.Startup
             Register3AServices(builder);
 
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
             builder.Services.AddScoped<IAddressService, AddressService>();
             builder.Services.AddScoped<IAssetService, AssetService>();

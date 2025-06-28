@@ -1,10 +1,12 @@
-﻿using Backend_API.Logging;
+﻿using Backend_API.Helpers;
+using Backend_API.Logging;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Helpers;
 using Models.Requests;
 using Models.Responses;
+using Resources.Translations.API;
 
 namespace Backend_API.Controllers
 {
@@ -25,25 +27,17 @@ namespace Backend_API.Controllers
         {
             if (orderID == Guid.Empty)
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
+            var orderDTO = await _orderService.GetOrderDataAsync(orderID);
+
+            if (orderDTO.IsNullOrEmpty())
             {
-                var orderDTO = _orderService.GetOrderData(orderID);
-
-                if (orderDTO.IsNullOrEmpty())
-                {
-                    return Problem("No order data found!");
-                }
-
-                return Ok(orderDTO);
+                return Problem(APITranslations.OrderNotFound);
             }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(new GetOrderDataRS { Order = orderDTO });
         }
 
         [HttpPost]
@@ -52,25 +46,17 @@ namespace Backend_API.Controllers
             if (request.IsNullOrEmpty()
                 && request.OrderDTO.IsNullOrEmpty())
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
+            var result = await _orderService.CreateNewOrderAsync(request);
+
+            if (!result.IsSuccess)
             {
-                var isCreated = await _orderService.CreateNewOrderAsync(request);
-
-                if (!isCreated)
-                {
-                    return Problem("No order created!");
-                }
-
-                return Ok(new ResponseBase());
+                return Problem(result.ErrorMessage ?? "No order created!");
             }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(result);
         }
 
         [HttpPost]
@@ -79,25 +65,54 @@ namespace Backend_API.Controllers
         {
             if (orderDTO.IsNullOrEmpty())
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
+            var result = await _orderService.SubmitOrderDataAsync(orderDTO);
+
+            return Ok(result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> CancelOrder([FromBody] CancelOrderRQ cancelOrderRQ)
+        {
+            if (cancelOrderRQ.IsNullOrEmpty())
             {
-                var result = await _orderService.SubmitOrderDataAsync(orderDTO);
-
-                if (!result)
-                {
-                    return Problem("No order created!");
-                }
-
-                return Ok(result);
+                return HttpContext.BadRequest();
             }
-            catch (Exception ex)
+
+            var result = await _orderService.CancelOrderAsync(cancelOrderRQ);
+
+            if (!result.IsSuccess)
             {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
+                return Problem(result.ErrorMessage ?? APITranslations.OrderNotCanceled);
             }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("GridFilterData")]
+        public async Task<IActionResult> GetOrderFilterBaseValues()
+        {
+            var filterData = await _orderService.GetOrderFilterBaseValuesAsync();
+
+            if (filterData.IsNullOrEmpty())
+            {
+                return Problem(APITranslations.NoGridFilterDataFound);
+            }
+
+            return Ok(filterData);
+        }
+
+
+        [HttpPost]
+        [Route("GetOrders")]
+        public async Task<IActionResult> GetOrders([FromBody] OrderFilter orderFilter)
+        {
+            var orders = await _orderService.GetOrdersAsync(orderFilter);
+
+            return Ok(orders);
         }
     }
 }

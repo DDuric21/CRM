@@ -1,4 +1,5 @@
-﻿using Models.DTO;
+﻿using Models.Authentication.DataStructures;
+using Models.DTO;
 using Models.Helpers;
 using Models.Responses;
 
@@ -21,14 +22,13 @@ namespace UI.Services
             var request = await _communicationService.CreateRequestAsync(HttpMethod.Post, url, logDetails, false);
             try
             {
-                var response = await _communicationService.SendRequestAsync<ResponseBase>(request);
+                var response = await _communicationService.SendRequestAsyncNew<ResponseBase>(request);
 
-                return true;
+                return response.IsSuccess;
             }
             catch (Exception ex)
             {
-                // extract corelationID for logging
-                Console.WriteLine("Failed to log exception to server.");
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }

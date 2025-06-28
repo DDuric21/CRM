@@ -1,25 +1,43 @@
 ﻿
 
-<nav class="navbar navbar-dark bg-primary" >
-  <div class="container-fluid">
-      <div class="nav-item px-3">          
-        <a class="navbar-brand" role="button" @onclick="() => DisplayComponentHandler(nameof(CustomerAddresses))" >Addresses</a>
-      </div>      
-      <div class="nav-item px-3" >          
-        <a class="navbar-brand" role="button" @onclick="() => DisplayComponentHandler(nameof(CustomerProfiles))" >Profiles</a>
-      </div>          
-      <div class="nav-item px-3">          
-        <a class="navbar-brand" role="button" >Navbar w/ text3</a> 
-      </div>
-  </div>
+<nav class="navbar custom-navbar">
+    <div class="container-fluid p-0">
+        <div class="nav-btn-container">
+
+            <div class="btn-wrapper start">
+                <button class="btn @(activeTab == nameof(CustomerAddresses) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerAddresses))">
+                    @Translation.Addresses
+                </button>
+            </div>
+
+            <div class="btn-wrapper center">
+                <button class="btn @(activeTab == nameof(CustomerProfiles) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerProfiles))">
+                    @Translation.BillingProfiles
+                </button>
+            </div>
+
+            <div class="btn-wrapper end">
+                <button class="btn @(activeTab == nameof(CustomerBills) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerBills))">
+                    @Translation.Bills
+                </button>
+            </div>
+
+        </div>
+    </div>
 </nav>
 
 @code {
     [Parameter]
     public EventCallback<string> DisplayComponent { get; set; }
 
+    private string activeTab = nameof(CustomerAddresses);
+
     protected async Task DisplayComponentHandler(string selectedComponentName)
     {
+        activeTab = selectedComponentName;
         await DisplayComponent.InvokeAsync(selectedComponentName);
     }
 }

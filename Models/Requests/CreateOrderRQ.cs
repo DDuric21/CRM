@@ -2,7 +2,7 @@
 
 namespace Models.Requests
 {
-    public class CreateOrderRQ
+    public class CreateOrderRQ : RequestBase
     {
         public OrderDTO OrderDTO { get; set; }
 

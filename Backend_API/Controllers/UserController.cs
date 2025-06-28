@@ -1,10 +1,11 @@
-﻿using Backend_API.Logging;
+﻿using Backend_API.Helpers;
 using Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Helpers;
 using Models.Requests;
 using Models.Responses;
+using Resources.Translations.API;
 
 namespace Backend_API.Controllers
 {
@@ -24,50 +25,30 @@ namespace Backend_API.Controllers
         {
             if (string.IsNullOrWhiteSpace(username))
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
+            var userData = await _userService.GetUserDataAsync(username);
+
+            if (userData.IsNullOrEmpty())
             {
-                var userData = await _userService.GetUserDataAsync(username);
-
-                if (userData == null)
-                {
-                    return Problem("No user found!");
-                }
-
-                var userDTO = _userService.MapUserDataToDTO(userData);
-
-                return Ok(userDTO);
+                return Problem("No user found!");
             }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(userData);
         }
 
         [HttpPost]
         public async Task<IActionResult> GetUsers([FromBody] UserFilterRQ userFilter)
         {
-            try
+            var users = await _userService.GetUsersAsync(userFilter);
+
+            if (users is null)
             {
-                var users = await _userService.GetUsersAsync(userFilter);
-
-                if (users.IsNullOrEmpty())
-                {
-                    return Problem("No users found!");
-                }
-
-                var userDTO = _userService.MapUsersDataToDTOs(users);
-
-                return Ok(userDTO);
+                return Problem(APITranslations.FetchingUsersFailed);
             }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(users);
         }
 
         [HttpPut]
@@ -76,22 +57,12 @@ namespace Backend_API.Controllers
         {
             if (userDTO.IsNullOrEmpty())
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
-            {
-                var userData = _userService.MapDtoToUserData(userDTO);
+            var result = await _userService.UpdateUserDataAsync(userDTO);
 
-                var result = await _userService.UpdateUserDataAsync(userData);
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+            return Ok(result);
         }
 
         [HttpPut]
@@ -100,25 +71,17 @@ namespace Backend_API.Controllers
         {
             if (string.IsNullOrWhiteSpace(username))
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
+            var result = await _userService.DeactivateUserAsync(username);
+
+            if (!result.Succeeded)
             {
-                var result = await _userService.DeactivateUserAsync(username);
-
-                if (!result.Succeeded)
-                {
-                    return Problem("No user deactivated!");
-                }
-
-                return Ok(new ResponseBase());
+                return Problem("No user deactivated!");
             }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(new ResponseBase(result.Succeeded));
         }
 
         [HttpPut]
@@ -127,47 +90,31 @@ namespace Backend_API.Controllers
         {
             if (string.IsNullOrWhiteSpace(username))
             {
-                return BadRequest();
+                return HttpContext.BadRequest();
             }
 
-            try
+            var result = await _userService.ActivateUserAsync(username);
+
+            if (!result.Succeeded)
             {
-                var result = await _userService.ActivateUserAsync(username);
-
-                if (!result.Succeeded)
-                {
-                    return Problem("No user activated!");
-                }
-
-                return Ok(new ResponseBase());
+                return Problem("No user activated!");
             }
-            catch (Exception ex)
-            {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(new ResponseBase(result.Succeeded));
         }
 
         [HttpGet]
         [Route("GridFilterData")]
         public async Task<IActionResult> GetUserFilterBaseValues()
         {
-            try
-            {
-                var result = await _userService.GetUserFilterBaseValuesAsync();
+            var result = await _userService.GetUserFilterBaseValuesAsync();
 
-                if (result is null)
-                {
-                    return Problem("No data fetched!");
-                }
-
-                return Ok(result);
-            }
-            catch (Exception ex)
+            if (result is null)
             {
-                DynamicLogger.LogException(ex, ex.Message);
-                return StatusCode(500, ex.Message);
+                return Problem("No data fetched!");
             }
+
+            return Ok(result);
         }
     }
 }

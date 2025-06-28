@@ -45,13 +45,14 @@ namespace Backend_API.Handlers
                     var problem = new ProblemDetails
                     {
                         Title = "An unexpected error occurred.",
-                        Detail = $"Please contact support. (GUID: {context.Request.Headers[HttpHeaderNames.CorrelationID]})",
+                        Detail = exception?.Message ?? "Unhandled Exception",
                         Status = StatusCodes.Status500InternalServerError,
                         Instance = context.Request.Path
                     };
 
                     context.Response.ContentType = "application/json";
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    context.Response.Headers.Add(HttpHeaderNames.CorrelationID, context.Request.Headers[HttpHeaderNames.CorrelationID]);
 
                     await context.Response.WriteAsJsonAsync(problem);
                 });

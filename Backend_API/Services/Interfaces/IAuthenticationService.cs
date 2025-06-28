@@ -1,5 +1,6 @@
 ﻿using Backend_API.Data.Models;
 using Models.Authentication;
+using Models.Classes;
 using Models.DTO;
 
 namespace Backend_API.Services
@@ -41,6 +42,6 @@ namespace Backend_API.Services
 
         void SetRefreshTokenCookie(IResponseCookies responseCookies, string refreshToken);
 
-        public void DeleteRefreshTokenCookie(IResponseCookies responseCookies);
+        void DeleteRefreshTokenCookie(IResponseCookies responseCookies);
     }
 }

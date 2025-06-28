@@ -4,9 +4,9 @@
 @inject NavigationManager navigationManager
 @inject ICrmModalService modal
 
-<PageTitle>New Customer Form</PageTitle>
+<PageTitle>@Translation.NewCustomerForm</PageTitle>
 
-<h2>Create New Customer</h2>
+<h2>@Translation.CreateNewCustomer</h2>
 <select class="form-select" @bind="customerDTO.Type">
     @foreach (var customerType in Enum.GetValues(typeof(CustomerType)))
     {
@@ -22,32 +22,34 @@
                 <div class="col-md-6">
                     <div class="card shadow">
                         <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">New Residential Customer</h5>
+                            <h5 class="mb-0">@Translation.NewResidentialCustomer</h5>
                         </div>
                         <div class="card-body">
-                            <EditForm Model="@customerDTO" OnSubmit="@CreateNewResidentialCustomer">
+                            <EditForm Model="@customerDTO" OnValidSubmit="@CreateNewResidentialCustomer">
+                                <DataAnnotationsValidator />
                                 <div class="mb-3">
-                                    <label class="form-label">First Name</label>
+                                    <label class="form-label">@Translation.FirstName</label>
                                     <InputText class="form-control" @bind-Value="customerDTO.FirstName" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Last Name</label>
+                                    <label class="form-label">@Translation.LastName</label>
                                     <InputText class="form-control" @bind-Value="customerDTO.LastName" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Personal ID</label>
+                                    <label class="form-label">@Translation.PersonalID</label>
                                     <InputText class="form-control" @bind-Value="customerDTO.PersonalID" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Birthday</label>
+                                    <label class="form-label">@Translation.Birthday</label>
                                     <InputDate class="form-control" @bind-Value="customerDTO.Birthday" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Full Address</label>
+                                    <label class="form-label">@Translation.FullAddress</label>
                                     <InputText class="form-control" @bind-Value="addressDTO.FullAddress" />
                                 </div>
+                                <ValidationSummary />
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary">Create</button>
+                                    <button type="submit" class="btn btn-primary">@Translation.Create</button>
                                 </div>
                             </EditForm>
                         </div>
@@ -59,12 +61,12 @@
     case (CustomerType.Business):
     case (CustomerType.Enterprise):
         <div class="container d-flex align-items-center justify-content-center">
-            <span class="text-danger">Business types currently not supported</span>
+            <span class="text-danger">@Translation.BusinessTypesCurrentlyNotSupported</span>
         </div>
         break;
     default:    
         <div class="container d-flex align-items-center justify-content-center">
-            <span class="text-danger">Please choose the customer type</span>
+            <span class="text-danger">@Translation.ChooseCustomerType</span>
         </div>
         break;
 }
@@ -86,7 +88,7 @@
 
         if (result == 0)
         {
-            modal.ShowErrorMessage("Customer Not Created!");
+            modal.ShowErrorMessage(@Translation.CustomerNotCreated);
             return;
         }
 

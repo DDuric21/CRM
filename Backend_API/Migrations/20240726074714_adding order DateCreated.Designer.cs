@@ -211,7 +211,7 @@ namespace Backend_API.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<DateTime>("DateSubmited")
+                    b.Property<DateTime>("DateSubmitted")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("OrderStatusID")

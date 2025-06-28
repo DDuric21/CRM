@@ -6,6 +6,6 @@ namespace Backend_API.Data.Repositories
     {
         long GetNextBillingProfileID();
 
-        Task<int> UpdateBillingProfileAsync(BillingProfile billingProfile);
+        Task<BillingProfile> UpdateBillingProfileAsync(BillingProfile billingProfile);
     }
 }

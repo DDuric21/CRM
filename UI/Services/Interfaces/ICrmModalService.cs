@@ -7,6 +7,8 @@ namespace UI.Services
 {
     public interface ICrmModalService
     {
+        void ShowSuccessToast(string message, string title = "", int delay = 5000);
+
         void ShowCustomerFriendlyMessage();
 
         void ShowErrorMessage(string message);
@@ -22,5 +24,7 @@ namespace UI.Services
         Task<ModalResult> Show<TComponent>() where TComponent : IComponent;
 
         Task<ModalResult> Show<TComponent>(ModalParameters parameters) where TComponent : IComponent;
+
+        Task<ModalResult> Show<TComponent>(ModalParameters parameters, ModalOptions options) where TComponent : IComponent;
     }
 }

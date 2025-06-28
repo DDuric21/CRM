@@ -1,10 +1,10 @@
-﻿using Models.DTO;
-using Models.Requests;
+﻿using Models.Requests;
+using Models.Responses;
 
 namespace UI.Services
 {
     public interface INewsService
     {
-        Task<IEnumerable<NewsDTO>> GetNewsAsync(IEnumerable<RetrieveNewsRQ> newsFilter);
+        Task<RetrieveNewsRS> GetNewsAsync(IEnumerable<RetrieveNewsRQ> newsFilter);
     }
 }

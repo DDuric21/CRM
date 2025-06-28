@@ -13,15 +13,22 @@ namespace Backend_API.Migrations
                 columns: new[] { "DateCreated", "DateModified", "Name" },
                 values: new object[,]
                 {
+                { DateTime.UtcNow, DateTime.UtcNow, "read_user" },
                 { DateTime.UtcNow, DateTime.UtcNow, "edit_user" },
                 { DateTime.UtcNow, DateTime.UtcNow, "delete_user" },
                 { DateTime.UtcNow, DateTime.UtcNow, "create_user" },
+                { DateTime.UtcNow, DateTime.UtcNow, "read_customer" },
                 { DateTime.UtcNow, DateTime.UtcNow, "edit_customer" },
                 { DateTime.UtcNow, DateTime.UtcNow, "delete_customer" },
                 { DateTime.UtcNow, DateTime.UtcNow, "create_customer" },
+                { DateTime.UtcNow, DateTime.UtcNow, "read_asset" },
                 { DateTime.UtcNow, DateTime.UtcNow, "edit_asset" },
                 { DateTime.UtcNow, DateTime.UtcNow, "delete_asset" },
                 { DateTime.UtcNow, DateTime.UtcNow, "create_asset" },
+                { DateTime.UtcNow, DateTime.UtcNow, "read_order" },
+                { DateTime.UtcNow, DateTime.UtcNow, "edit_order" },
+                { DateTime.UtcNow, DateTime.UtcNow, "cancel_order" },
+                { DateTime.UtcNow, DateTime.UtcNow, "create_order" },
                 });
         }
 
@@ -30,7 +37,7 @@ namespace Backend_API.Migrations
             migrationBuilder.DeleteData(
                 table: "RolePermissions",
                 keyColumn: "Name",
-                keyValues: new object[] { "edit_user", "delete_user", "create_user", "edit_customer", "delete_customer", "create_customer", "edit_asset", "delete_asset", "create_asset" });
+                keyValues: new object[] { "read_user", "edit_user", "delete_user", "create_user", "read_customer", "edit_customer", "delete_customer", "create_customer", "read_asset", "edit_asset", "delete_asset", "create_asset", "read_order", "edit_order", "cancel_order", "create_order" });
         }
     }
 }

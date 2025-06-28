@@ -1,8 +1,10 @@
 ﻿using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Models.Authentication;
 using Models.Helpers;
 using System.Security.Claims;
+using UI.Helpers;
 using UI.Services;
 
 namespace UI.Authentication
@@ -10,20 +12,23 @@ namespace UI.Authentication
     public class CrmAuthenticationStateProvider : AuthenticationStateProvider
     {
         private const string AUTH_TYPE = "token";
-        private const string USER_SESSION = "UserSession";
+        private const string USER_SESSION = CrmStorageKeys.UserSession;
         private readonly ISessionStorageService _sessionStorage;
         private readonly IAuthenticationService _authenticationService;
         private readonly ILoggingService _loggingService;
+        private readonly NavigationManager _navigationManager;
         private ClaimsPrincipal _anonymus = new ClaimsPrincipal(new ClaimsIdentity());
 
         public CrmAuthenticationStateProvider(
             ISessionStorageService sessionStorage,
             IAuthenticationService authenticationService,
-            ILoggingService loggingService)
+            ILoggingService loggingService,
+            NavigationManager navigationManager)
         {
             _sessionStorage = sessionStorage;
             _authenticationService = authenticationService;
             _loggingService = loggingService;
+            _navigationManager = navigationManager;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -77,6 +82,13 @@ namespace UI.Authentication
             }
 
             await SaveSession(userSession);
+        }
+
+        public async Task Logout()
+        {
+            await ClearSession();
+
+            _navigationManager.NavigateTo("/login", true);
         }
 
         private async Task SaveSession(UserSession userSession)

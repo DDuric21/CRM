@@ -24,7 +24,7 @@ namespace Backend_API.Migrations
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
-                name: "DateSubmited",
+                name: "DateSubmitted",
                 table: "Order",
                 type: "datetime2",
                 nullable: true);
@@ -55,7 +55,7 @@ namespace Backend_API.Migrations
                 table: "Order");
 
             migrationBuilder.DropColumn(
-                name: "DateSubmited",
+                name: "DateSubmitted",
                 table: "Order");
 
             migrationBuilder.DropColumn(

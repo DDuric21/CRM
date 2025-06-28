@@ -8,10 +8,12 @@ namespace Backend_API.Data.Models
 
         public string? FullAddress { get; set; }
 
-        [ForeignKey("CustomerId")]
+        [ForeignKey(nameof(CustomerId))]
         public long CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
 
         public virtual ICollection<BillingProfile> BillingProfiles { get; set; }
+
+        public virtual ICollection<CustomerAssets> CustomerAssets { get; set; }
     }
 }

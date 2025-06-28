@@ -16,12 +16,17 @@ namespace Backend_API.Middleware
         public async Task Invoke(HttpContext context)
         {
             var stopwatch = Stopwatch.StartNew();
-            await _next(context);
-            stopwatch.Stop();
 
-            var actionName = context.Request.RouteValues["action"]?.ToString();
-
-            DynamicLogger.Log(LogFolder, $"Response time {stopwatch.ElapsedMilliseconds} ms", actionName);
+            try
+            {
+                await _next(context);
+            }
+            finally
+            {
+                stopwatch.Stop();
+                var actionName = context.Request.RouteValues["action"]?.ToString();
+                DynamicLogger.Log(LogFolder, $"Response time {stopwatch.ElapsedMilliseconds} ms", actionName);
+            }
         }
     }
 }

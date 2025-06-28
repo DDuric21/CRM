@@ -1,6 +1,7 @@
 ﻿using Models.DTO;
 using Models.Requests;
 using Models.Responses;
+using UI.Helpers;
 
 namespace UI.Services
 {
@@ -10,17 +11,17 @@ namespace UI.Services
 
         Task<long> CreateNewCustomerAsync(CustomerDTO customerDTO);
 
-        Task<CustomerDTO> GetCustomerDataAsync(long customerID);
+        Task<ActionResult<CustomerDTO>> GetCustomerDataAsync(long customerID);
 
         Task<bool> DeleteCustomer(long customerID);
 
-        Task<bool> UpdateCustomer(CustomerDTO customerDTO);
+        Task<ResponseBase> UpdateCustomer(CustomerDTO customerDTO);
 
         Task<IAsyncEnumerable<AssetDTO>> GetCustomerAssetsAsync(long id);
 
         Task<AssetDTO> GetCustomerAssetDataAsync(long customerAssetid);
 
-        Task<IAsyncEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID);
+        Task<IEnumerable<OrderDTO>> GetCustomerOrdersAsync(long customerID);
 
         Task<IAsyncEnumerable<InteractionDTO>> GetCustomerInteractionsAsync(long customerID);
 
