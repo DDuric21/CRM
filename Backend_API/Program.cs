@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 ApplicationConfigurationSetup.ConfigurateLogger(builder);
 ApplicationConfigurationSetup.ConfigureLocalization(builder);
+ApplicationConfigurationSetup.ConfigureMessageBroker(builder);
 
 DependencyInjectionSetup.RegisterServices(builder);
 

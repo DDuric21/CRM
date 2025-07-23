@@ -2,6 +2,7 @@
 using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
 using Backend_API.Logging;
+using Backend_API.MessageCommands;
 using Microsoft.EntityFrameworkCore;
 using Models.Authentication;
 using Models.Classes;
@@ -22,19 +23,22 @@ namespace Backend_API.Services
         private readonly IAssetService _assetService;
         private readonly IAuthorizationService _authorizationService;
         private readonly CrmUserManager _userManager;
+        private readonly IMessageBrokerService _messageBrokerService;
 
         public OrderService(
             ICrmRepository repository,
             IMapper mapper,
             IAssetService assetService,
             IAuthorizationService authorizationService,
-            CrmUserManager userManager)
+            CrmUserManager userManager,
+            IMessageBrokerService messageBrokerService)
         {
             _repository = repository;
             _mapper = mapper;
             _assetService = assetService;
             _authorizationService = authorizationService;
             _userManager = userManager;
+            _messageBrokerService = messageBrokerService;
         }
 
         public async Task<OrderDTO> GetOrderDataAsync(Guid id)
@@ -97,6 +101,11 @@ namespace Backend_API.Services
             {
                 var order = await MapDtoToOrderAsync(orderDTO);
                 var result = await SubmitOrderAsync(order);
+
+                if (result)
+                {
+                    await _messageBrokerService.PublishAsync(new UpdateBillingCommand{ OrderId = order.OrderID });
+                }
 
                 return new ResponseBase(result);
             }

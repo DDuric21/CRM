@@ -1,6 +1,9 @@
 ﻿using Backend_API.Data.DbContext;
 using Backend_API.Data.SeedData;
 using Backend_API.Middleware;
+using Backend_API.Properties;
+using Backend_API.Services;
+using Backend_API.Services.Implementations;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -79,6 +82,15 @@ namespace Backend_API.Startup
                 // read from Accept-Language header:
                 opts.RequestCultureProviders = new[] { new AcceptLanguageHeaderRequestCultureProvider() };
             });
+        }
+
+        internal static void ConfigureMessageBroker(WebApplicationBuilder builder)
+        {
+            builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection("RabbitMQ"));
+
+            builder.Services.AddSingleton<RabbitMqService>();
+            builder.Services.AddSingleton<IMessageBrokerService>(sp => sp.GetRequiredService<RabbitMqService>());
+            builder.Services.AddHostedService(sp => sp.GetRequiredService<RabbitMqService>());
         }
     }
 }
