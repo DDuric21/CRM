@@ -147,7 +147,7 @@ else
         if (!string.IsNullOrWhiteSpace(Action))
         {
             (var actionID , var customerAssetID) = ParseActionParameter();
-            if (actionID != (int)OrderAction.Create)
+            if (actionID != (int)OrderAction.CreateAsset)
             {
                 orderDTO.AssetDTO = await customerService.GetCustomerAssetDataAsync(customerAssetID);
             }            
@@ -202,7 +202,7 @@ else
         {
             orderDTO.Action = actionID > 0
                 ? (OrderAction)actionID
-                : OrderAction.Create;
+                : OrderAction.CreateAsset;
         }
     }
 

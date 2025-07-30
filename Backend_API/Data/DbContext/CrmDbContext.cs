@@ -1,6 +1,7 @@
 ﻿using Backend_API.Data.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Models.Enums;
 
 namespace Backend_API.Data.DbContext
 {
@@ -107,6 +108,10 @@ namespace Backend_API.Data.DbContext
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<RolePermission>();
+
+            modelBuilder.Entity<QueueAction>()
+                .Property(b => b.StatusId)
+                .HasDefaultValue(QueueActionStatus.Pending);
         }
 
         public override int SaveChanges()
@@ -147,6 +152,7 @@ namespace Backend_API.Data.DbContext
         public DbSet<News> News { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<ContactDetails> ContactDetails { get; set; }
+        public DbSet<QueueAction> QueueActions { get; set; }
         #endregion
     }
 }

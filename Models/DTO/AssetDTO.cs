@@ -16,6 +16,8 @@ namespace Models.DTO
 
         public ItemState AssetStatus { get; set; }
 
+        public ItemAction ItemAction { get; set; }
+
         public BillingProfileDTO BillingProfile { get; set; }
 
         public List<OptionDTO> Options { get; set; }

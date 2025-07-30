@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Backend_API.Data.DataClasses;
 using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
 using Backend_API.Logging;
@@ -19,11 +20,11 @@ namespace Backend_API.Services
     public class OrderService : IOrderService
     {
         private readonly ICrmRepository _repository;
+        private readonly IQueueActionRepository _queueActionRepository;
         private readonly IMapper _mapper;
         private readonly IAssetService _assetService;
         private readonly IAuthorizationService _authorizationService;
         private readonly CrmUserManager _userManager;
-        private readonly IMessageBrokerService _messageBrokerService;
 
         public OrderService(
             ICrmRepository repository,
@@ -31,14 +32,14 @@ namespace Backend_API.Services
             IAssetService assetService,
             IAuthorizationService authorizationService,
             CrmUserManager userManager,
-            IMessageBrokerService messageBrokerService)
+            IQueueActionRepository queueActionRepository)
         {
             _repository = repository;
             _mapper = mapper;
             _assetService = assetService;
             _authorizationService = authorizationService;
             _userManager = userManager;
-            _messageBrokerService = messageBrokerService;
+            _queueActionRepository = queueActionRepository;
         }
 
         public async Task<OrderDTO> GetOrderDataAsync(Guid id)
@@ -96,15 +97,18 @@ namespace Backend_API.Services
         public async Task<ResponseBase> SubmitOrderDataAsync(OrderDTO orderDTO)
         {
             orderDTO.Action = DefineOrderAction(orderDTO.Action);
+            orderDTO.OrderStatus = OrderStatus.Submitted;
 
             try
             {
                 var order = await MapDtoToOrderAsync(orderDTO);
+                await SetActionIds(orderDTO);
+
                 var result = await SubmitOrderAsync(order);
 
                 if (result)
                 {
-                    await _messageBrokerService.PublishAsync(new UpdateBillingCommand{ OrderId = order.OrderID });
+                    await PublishChangeToBillingAsync(order, orderDTO);
                 }
 
                 return new ResponseBase(result);
@@ -114,6 +118,130 @@ namespace Backend_API.Services
                 DynamicLogger.LogException(ex, ex.Message);
                 return new ResponseBase(false, APITranslations.OrderSubmissionFailed);
             } 
+        }
+
+        private async Task PublishChangeToBillingAsync(Order order, OrderDTO orderDTO)
+        {
+            var billableData = await RetrieveAssetDataAsync(order, orderDTO);
+
+            if (!order.CustomerAssets.CustomerAssetOptions.IsNullOrEmpty())
+            {
+                billableData.CustomerAssetAdditions = await RetrieveAssetOptionsDataAsync(order, billableData, orderDTO);
+            }
+
+            var updateBillingCommand = new UpdateBillingCommand
+            {
+                OrderId = order.OrderID,
+                BillingProfileId = order.CustomerAssets.BillingProfileId,
+                CustomerAssetBillableData = billableData
+            };
+
+            var action = new QueueAction
+            {
+                Type = nameof(UpdateBillingCommand),
+                Payload = JsonConvert.SerializeObject(updateBillingCommand)
+            };
+
+            await _queueActionRepository.AddAsync(action);
+        }
+
+        private async Task<IEnumerable<CustomerAssetAddition>> RetrieveAssetOptionsDataAsync(Order order, CustomerAssetBillableData billableData, OrderDTO orderDTO)
+        {
+            var optionIDs = orderDTO.AssetDTO.Options
+                .Select(x => x.Id)
+                .ToList();
+
+            var assetOptionsData = await _repository.Options
+                .Where(x => optionIDs.Contains(x.Id))
+                .ToListAsync();
+
+            var assetAdditionsData = assetOptionsData
+                .Select(x => new CustomerAssetAddition
+                {
+                    AdditionId = x.Id,
+                    Price = x.Price,
+                    CurrencyID = x.CurrencyID,
+                    AdditionActionId = (int)orderDTO.AssetDTO.Options.First(y => y.Id == x.Id).ItemAction,
+                })
+                .ToList();
+
+            return assetAdditionsData;
+        }
+
+        private async Task SetActionIds(OrderDTO orderDto)
+        {
+            if (orderDto.IsNullOrEmpty())
+            {
+                return;
+            }
+
+            switch (orderDto.Action)
+            {
+                case OrderAction.CreateAsset:
+                    orderDto.AssetDTO.ItemAction = ItemAction.Activate;
+                    orderDto.AssetDTO.Options?.ForEach(x => x.ItemAction = ItemAction.Activate);
+                    break;
+                case OrderAction.UpdateAsset:
+                    orderDto.AssetDTO.ItemAction = orderDto.AssetDTO.ItemAction == ItemAction.None
+                        ? ItemAction.Update
+                        : orderDto.AssetDTO.ItemAction;
+                    await DetermineUpdateAdditionsActionsAsync(orderDto);
+                    break;
+                case OrderAction.DeactivateAsset:
+                    orderDto.AssetDTO.ItemAction = ItemAction.Deactivate;
+                    orderDto.AssetDTO.Options?.ForEach(x => x.ItemAction = ItemAction.Deactivate);
+                    break;
+            }
+        }
+
+        private async Task DetermineUpdateAdditionsActionsAsync(OrderDTO orderDto)
+        {
+            if (orderDto.AssetDTO.IsNullOrEmpty() || orderDto.AssetDTO.Options.IsNullOrEmpty())
+            {
+                return;
+            }
+
+            var existingOptions = await _repository.CustomerAssetOptions
+                    .Where(x => x.CustomerAssetsID == orderDto.AssetDTO.CustomerAssetID)
+                    .ToListAsync();
+
+            foreach (var option in orderDto.AssetDTO.Options)
+            {
+                if (option.ItemAction == ItemAction.None)
+                {
+                    option.ItemAction = existingOptions.Any(x => x.OptionID == option.Id)
+                        ? option.ItemAction
+                        : ItemAction.Activate;
+                }
+            }
+
+            var optionsToDeactivate = existingOptions
+              .Where(x => !orderDto.AssetDTO.Options.Select(y => y.Id).Contains(x.OptionID))
+                .Select(x => new OptionDTO
+                {
+                    ItemAction = ItemAction.Deactivate,
+                    Id = x.OptionID
+                })
+              .ToList();
+
+            orderDto.AssetDTO.Options.AddRange(optionsToDeactivate);
+        }
+
+        private async Task<CustomerAssetBillableData> RetrieveAssetDataAsync(Order order, OrderDTO orderDTO)
+        {
+            var assetData = await _repository.Assets
+                .Where(x => x.Id == order.CustomerAssets.AssetID)
+                .FirstOrDefaultAsync();
+
+            var billableData = new CustomerAssetBillableData
+            {
+                CustomerAssetId = order.CustomerAssets.Id,
+                Price = assetData?.Price ?? throw new ArgumentException($"No price found for assetID: {order.CustomerAssets.Id} !"),
+                CurrencyID = assetData?.CurrencyID ?? throw new ArgumentException($"No currency ID found for assetID: {order.CustomerAssets.Id}!"),
+                CustomerAssetActionId = (int)orderDTO.AssetDTO.ItemAction
+            };
+
+            return billableData;
         }
 
         public async Task<ResponseBase> CancelOrderAsync(CancelOrderRQ cancelOrderRQ)
@@ -180,21 +308,26 @@ namespace Backend_API.Services
         {
             SetSubmitDate(order);
 
-            var isSuccess = await HandleOrderActionAsync(order);
-
-            if (isSuccess)
+            int result = 0;
+            switch ((OrderAction)order.ActionID)
             {
-                try
-                {
-                    //for some reason this doesn't work if not awaited
-                    await UpdateOrderStatusAsync(order, (int)OrderStatus.Finished);
-                }
-                catch (Exception ex)
-                {
-                    DynamicLogger.LogException(ex, "Error while updating order status to finished");
-                }
+                case OrderAction.CreateAsset:
+                    result = await InsertNewCustomerAssetAsync(order);
+                    break;
+                case OrderAction.UpdateAsset:
+                    result = await UpdateCustomerAssetAsync(order.CustomerAssets);
+                    await _repository.Orders.PartialUpdateAsync(order, x => x.DateSubmitted, x => x.OrderStatusID);
+                    break;
+                case OrderAction.DeactivateAsset:
+                    result = await DeactivateCustomerAssetAsync(order);
+                    await _repository.Orders.PartialUpdateAsync(order, x => x.DateSubmitted, x => x.OrderStatusID);
+                    break;
+                default:
+                    DynamicLogger.LogError($"Unhandled order action used {order.ActionID}");
+                    break;
             }
 
+            var isSuccess = result > 0;
             return isSuccess;
         }
 
@@ -204,31 +337,6 @@ namespace Backend_API.Services
             {
                 order.DateSubmitted = DateTime.UtcNow;
             }
-        }
-
-        private async Task<bool> HandleOrderActionAsync(Order order)
-        {
-            int result = 0;
-            switch ((OrderAction)order.ActionID)
-            {
-                case OrderAction.Create:
-                    result = await InsertNewCustomerAssetAsync(order);
-                    break;
-                case OrderAction.Delete:
-                    result = await DeactivateCustomerAssetAsync(order);
-                    await _repository.Orders.PartialUpdateAsync(order, x => x.DateSubmitted);
-                    break;
-                case OrderAction.Update:
-                    result = await UpdateCustomerAssetAsync(order.CustomerAssets, order.OrderID);
-                    await _repository.Orders.PartialUpdateAsync(order, x => x.DateSubmitted);
-                    break;
-                default:
-                    DynamicLogger.LogError($"Unhandled order action used {order.ActionID}");
-                    break;
-            }
-
-            var isSuccess = result > 0;
-            return isSuccess;
         }
 
         private async Task<int> DeactivateCustomerAssetAsync(Order order)
@@ -244,7 +352,7 @@ namespace Backend_API.Services
             return result;
         }
 
-        private async Task<int> UpdateCustomerAssetAsync(CustomerAssets customerAssets, Guid orderID)
+        private async Task<int> UpdateCustomerAssetAsync(CustomerAssets customerAssets)
         {
             foreach (var option in customerAssets.CustomerAssetOptions)
             {
@@ -293,13 +401,13 @@ namespace Backend_API.Services
             var status = 0;
             switch (orderAction)
             {
-                case OrderAction.Create:
+                case OrderAction.CreateAsset:
                     status = (int)ItemState.Active;
                     break;
-                case OrderAction.Update:
+                case OrderAction.UpdateAsset:
                     status = (int)ItemState.Active;
                     break;
-                case OrderAction.Delete:
+                case OrderAction.DeactivateAsset:
                     status = (int)ItemState.Inactive;
                     break;
                 // maybe not the best idea
@@ -313,7 +421,7 @@ namespace Backend_API.Services
 
         private OrderAction DefineOrderAction(OrderAction crudAction)
         {
-            var action = OrderAction.Create;
+            var action = OrderAction.CreateAsset;
             if ((int)crudAction > 0)
             {
                 action = crudAction;

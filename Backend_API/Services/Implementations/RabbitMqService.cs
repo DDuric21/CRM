@@ -1,4 +1,5 @@
-﻿using Backend_API.MessageCommands;
+﻿using Backend_API.Logging;
+using Backend_API.MessageCommands;
 using Backend_API.Properties;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -55,11 +56,18 @@ namespace Backend_API.Services.Implementations
                 VirtualHost = config.VirtualHost
             };
 
-            _connection = await factory.CreateConnectionAsync();
-            _channel = await _connection.CreateChannelAsync();
+            try
+            {
+                _connection = await factory.CreateConnectionAsync();
+                _channel = await _connection.CreateChannelAsync();
 
-            await _channel.ExchangeDeclareAsync(exchange: ExchangeName, type: ExchangeType.Direct, durable: true, autoDelete: false, arguments: null);
-            await _channel.QueueDeclareAsync(queue: QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                await _channel.ExchangeDeclareAsync(exchange: ExchangeName, type: ExchangeType.Direct, durable: true, autoDelete: false, arguments: null);
+                await _channel.QueueDeclareAsync(queue: QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            }
+            catch (Exception ex)
+            {
+                DynamicLogger.LogException(ex, "Failed to connect to RabbitMQ");
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

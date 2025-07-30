@@ -1,7 +1,9 @@
 ﻿using Backend_API.Data.DbContext;
 using Backend_API.Data.Models;
 using Backend_API.Data.Repositories;
+using Backend_API.Data.Repositories.Implementations;
 using Backend_API.Services;
+using Backend_API.Services.Implementations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +71,13 @@ namespace Backend_API.Startup
             builder.Services.AddScoped<INewsService, NewsService>();
             builder.Services.AddScoped<IOptionService, OptionService>();
             builder.Services.AddScoped<IContactDetailsService, ContactDetailsService>();
-            builder.Services.AddSingleton<IDataValidationService, DataValidationService>();
+            builder.Services.AddScoped<IQueueActionRepository, QueueActionRepository>();
+            builder.Services.AddScoped<IQueueActionHandler, UpdateBillingHandler>();
+
+            builder.Services.AddSingleton<IDataValidationService, DataValidationService>(); 
+            builder.Services.AddSingleton<QueueActionDispatcher>();
+
+            builder.Services.AddHostedService<QueueActionsFeedHostedService>();
 
             builder.Services.AddCors(options =>
             {

@@ -5,7 +5,7 @@
     <!--Asset-->
     <div class="col-2">
         <label>@Translation.AssetType</label>
-        @if (ActionID == (int)OrderAction.Create)
+        @if (ActionID == (int)OrderAction.CreateAsset)
         {
             <select id="selectedAsset" class="form-select" @onchange="AssetSelected">
                 @foreach (var asset in selectableAssets)
@@ -36,7 +36,7 @@
     <!--BillingProfile-->
     <div class="col-2">
         <label>@Translation.BillingProfile</label>
-        <fieldset disabled="@(ActionID == (int)OrderAction.Delete)">
+        <fieldset disabled="@(ActionID == (int)OrderAction.DeactivateAsset)">
             <select id="selectedBillingProfile" class="form-select" @onchange="BillingProfileChanged" >
                 @foreach (var profile in selectableBillingProfiles)
                 {
@@ -50,7 +50,7 @@
 
     <div class="col-2">
         <label>@Translation.Address</label>
-        <fieldset disabled="@(ActionID == (int)OrderAction.Delete)">
+        <fieldset disabled="@(ActionID == (int)OrderAction.DeactivateAsset)">
             <InputSelect @bind-Value="AssetDTO.AssetAddress.Id" TValue="long" class="form-select">
                 @foreach (var addr in selectableAddresses)
                 {
@@ -83,13 +83,13 @@
                 <td><label id="asset">@optionDTO.Name</label></td>
                 <td><label id="asset">@optionDTO.Price</label></td>
                 <td><label id="asset" class="text-danger">TBD</label></td>
-                <td hidden="@(ActionID == (int)OrderAction.Delete)">
+                <td hidden="@(ActionID == (int)OrderAction.DeactivateAsset)">
                     <button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">
                         <em class="oi oi-trash"></em> @Translation.Deactivate</button>
                 </td>
             </tr>
         }
-        @if (ActionID != (int)OrderAction.Delete)
+        @if (ActionID != (int)OrderAction.DeactivateAsset)
         {
             @foreach (var assetOption in selectedOptions)
             {
@@ -154,7 +154,7 @@
             .Where(x => x.BillingProfileStatus == ItemState.Active)
             .ToList();
 
-        if (ActionID == (int)OrderAction.Create)
+        if (ActionID == (int)OrderAction.CreateAsset)
         {            
             var assets = await assetService.GetAssetsAsync(true);
             if (!await assets.AnyAsync())
@@ -171,7 +171,7 @@
             this.selectableAddresses.Insert(0, new AddressDTO());
         }
 
-        if (ActionID == (int)OrderAction.Update)
+        if (ActionID == (int)OrderAction.UpdateAsset)
         {
             ReorderSelectableBillingProfiles();
             var options = await assetService.GetAssetAvailableOptionsAsync(AssetDTO.Id);
