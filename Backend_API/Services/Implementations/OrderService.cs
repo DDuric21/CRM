@@ -120,6 +120,27 @@ namespace Backend_API.Services
             } 
         }
 
+        public async Task<bool> UpdateOrderStatusAsync(Guid orderId, int orderStatusId)
+        {
+            var order = await _repository.Orders
+                .Where(x => x.OrderID == orderId)
+                .FirstOrDefaultAsync();
+            if (order == null)
+            {
+                DynamicLogger.LogError($"No order found for ID: {orderId}");
+                return false;
+            }
+
+            var result = await UpdateOrderStatusInternalAsync(order, orderStatusId);
+            if (result <= 0)
+            {
+                DynamicLogger.LogError($"Failed to update order status for ID: {orderId}");
+                return false;
+            }
+
+            return true;
+        }
+
         private async Task PublishChangeToBillingAsync(Order order, OrderDTO orderDTO)
         {
             var billableData = await RetrieveAssetDataAsync(order, orderDTO);
@@ -257,7 +278,7 @@ namespace Backend_API.Services
                 return new ResponseBase(false, APITranslations.OrderNotFound);
             }
 
-            var result = await UpdateOrderStatusAsync(order, (int)OrderStatus.Cancelled);
+            var result = await UpdateOrderStatusInternalAsync(order, (int)OrderStatus.Cancelled);
             if (result <= 0)
             {
                 DynamicLogger.LogError($"Failed to update order status for ID: {cancelOrderRQ.OrderId}");
@@ -364,7 +385,7 @@ namespace Backend_API.Services
             return result;
         }
 
-        private async Task<int> UpdateOrderStatusAsync(Order order, int orderStatusID)
+        private async Task<int> UpdateOrderStatusInternalAsync(Order order, int orderStatusID)
         {
             order.OrderStatusID = orderStatusID;
             return await _repository.Orders.PartialUpdateAsync(order, x => x.OrderStatusID);

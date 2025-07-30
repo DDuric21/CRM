@@ -1,5 +1,6 @@
 using Backend_API.Handlers;
 using Backend_API.Logging;
+using Backend_API.Services.Implementations;
 using Backend_API.Startup;
 using Microsoft.Extensions.Options;
 
@@ -23,5 +24,7 @@ var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocali
 app.UseRequestLocalization(localizationOptions);
 
 app.UseGlobalExceptionHandler();
+
+DiContainer.Initialize(app.Services);
 
 app.Run();

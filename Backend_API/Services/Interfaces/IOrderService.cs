@@ -20,5 +20,7 @@ namespace Backend_API.Services
         Task<OrderGridFilterDataRS> GetOrderFilterBaseValuesAsync();
 
         Task<GetOrdersRS> GetOrdersAsync(OrderFilter orderFilter);
+
+        Task<bool> UpdateOrderStatusAsync(Guid orderId, int statusId);
     }
 }

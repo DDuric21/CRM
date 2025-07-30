@@ -11,5 +11,10 @@ namespace Backend_API.MessageCommands
 
         [JsonProperty("BillingItemData")]
         public CustomerAssetBillableData CustomerAssetBillableData { get; set; }
+
+        public override Task ExecuteAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
