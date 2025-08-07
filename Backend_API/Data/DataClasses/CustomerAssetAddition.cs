@@ -4,6 +4,8 @@
     {
         public long AdditionId { get; set; }
 
+        public string Name { get; set; }
+
         public decimal Price { get; set; }
 
         public long CurrencyID { get; set; }

@@ -179,6 +179,7 @@ namespace Backend_API.Services
             var assetAdditionsData = assetOptionsData
                 .Select(x => new CustomerAssetAddition
                 {
+                    Name = x.Name,
                     AdditionId = x.Id,
                     Price = x.Price,
                     CurrencyID = x.CurrencyID,
@@ -256,6 +257,7 @@ namespace Backend_API.Services
 
             var billableData = new CustomerAssetBillableData
             {
+                Name = assetData?.Name,
                 CustomerAssetId = order.CustomerAssets.Id,
                 Price = assetData?.Price ?? throw new ArgumentException($"No price found for assetID: {order.CustomerAssets.Id} !"),
                 CurrencyID = assetData?.CurrencyID ?? throw new ArgumentException($"No currency ID found for assetID: {order.CustomerAssets.Id}!"),
