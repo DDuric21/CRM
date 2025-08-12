@@ -9,6 +9,8 @@ namespace Backend_API.MessageCommands
 
         public string BillingProfileId { get; set; }
 
+        public long CustomerId { get; set; }
+
         [JsonProperty("BillingItemData")]
         public CustomerAssetBillableData CustomerAssetBillableData { get; set; }
 

@@ -49,7 +49,7 @@ else
                         <CustomerProfiles BillingProfiles="@customerDTO.BillingProfiles"></CustomerProfiles>
                         break;
                     case nameof(CustomerBills):
-                        <CustomerBills />
+                        <CustomerBills CustomerId="@customerDTO.Id" />
                         break;
                     case nameof(CustomerContactDetails):
                         <CustomerContactDetails ContactDetails="@customerDTO.ContactDetails" />

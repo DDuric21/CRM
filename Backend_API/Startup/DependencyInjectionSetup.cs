@@ -55,6 +55,12 @@ namespace Backend_API.Startup
 
             builder.Services.AddDbContext<CrmDbContext>(options => { options.UseSqlServer(_config.GetConnectionString("DefaultConnection")); });
             builder.Services.AddScoped<ICrmRepository, CrmRepository>();
+            builder.Services.AddHttpClient("BillingApp", (sp, http) =>
+            {
+                var cfg = sp.GetRequiredService<IConfiguration>();
+                http.BaseAddress = new Uri(cfg["BillingApp:BaseUrl"]!.TrimEnd('/'));
+                http.DefaultRequestHeaders.Add("X-Api-Key", cfg["BillingApp:ApiKey"]!);
+            });
 
             Register3AServices(builder);
 

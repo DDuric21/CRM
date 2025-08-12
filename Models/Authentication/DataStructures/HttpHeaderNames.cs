@@ -9,5 +9,7 @@
         public const string Accept = "Accept";
 
         public const string AcceptLanguage = "Accept-Language";
+
+        public const string X_Api_Key = "X-Api-Key";
     }
 }

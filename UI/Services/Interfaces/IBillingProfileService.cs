@@ -10,5 +10,9 @@ namespace UI.Services
         Task<ActionResult<BillingProfileDTO>> UpdateBillingProfileAsync(BillingProfileDTO billingProfileDTO);
 
         Task<ActionResult<object>> DeactivateBillingProfileAsync(string billingProfileId);
+
+        Task<List<InvoiceRow>> GetBillingProfileInvoicesAsync(long customerId);
+
+        Task<SignedLinkDto> GetPdfLinkAsync(long billId, long customerId);
     }
 }

@@ -555,4 +555,13 @@
   <data name="ContactDetailsUpdated" xml:space="preserve">
     <value>Kontakt podaci uspješno ažurirani</value>
   </data>
+  <data name="View" xml:space="preserve">
+    <value>Pregled</value>
+  </data>
+  <data name="BillingDate" xml:space="preserve">
+    <value>Datum Obračuna</value>
+  </data>
+  <data name="Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
 </root>

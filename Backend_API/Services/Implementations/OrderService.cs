@@ -154,6 +154,7 @@ namespace Backend_API.Services
             {
                 OrderId = order.OrderID,
                 BillingProfileId = order.CustomerAssets.BillingProfileId,
+                CustomerId = order.CustomerID,
                 CustomerAssetBillableData = billableData
             };
 

@@ -82,5 +82,41 @@ namespace UI.Services
                 return new ActionResult<object>(ex.Message);
             }
         }
+
+        public async Task<List<InvoiceRow>> GetBillingProfileInvoicesAsync(long customerId)
+        {
+            var url = $"api/billing/customers/{customerId}/invoices";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<List<InvoiceRow>>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return null;
+            }
+        }
+
+        public async Task<SignedLinkDto> GetPdfLinkAsync(long billId, long customerId)
+        {
+            var url =  $"api/billing/signed-link/{billId}?ttlSeconds=600&customerId={customerId}";
+            var request = await _communicationService.CreateRequestAsync(HttpMethod.Get, url);
+
+            try
+            {
+                var response = await _communicationService.SendRequestAsync<SignedLinkDto>(request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.SendErrorLogToServerAsync(ex);
+                return null;
+            }
+        }
     }
 }

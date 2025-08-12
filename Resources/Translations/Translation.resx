@@ -555,4 +555,13 @@
   <data name="ContactDetailsUpdated" xml:space="preserve">
     <value>Contact Details Successfully Updated</value>
   </data>
+  <data name="View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="BillingDate" xml:space="preserve">
+    <value>Billing Date</value>
+  </data>
+  <data name="Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
 </root>
