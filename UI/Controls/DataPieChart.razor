@@ -1,0 +1,52 @@
+﻿@inject IJSRuntime JSRuntime
+
+@if (ChartData is null)
+{
+    <Loader />
+} 
+else
+{
+    <canvas id="myPieChart" ></canvas>
+}
+    
+
+@code {
+    [Parameter] 
+    public Dictionary<ItemState, int> ChartData { get; set; }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!ChartData.IsNullOrEmpty())
+        {
+            await RenderPieChart();
+        }
+    }
+
+    private async Task RenderPieChart()
+    {
+        var chartData = new
+        {
+            type = "pie",
+            data = new
+            {
+                labels = ChartData.Keys.Select(x => x.ToString()).ToArray(),
+                datasets = new[]
+                {
+                    new
+                    {
+                        data = ChartData.Values.ToArray(),
+                        backgroundColor = new[] { "#33A1FF", "#FF5733", "#FFEB33" },
+                        hoverBackgroundColor = new[] { "#33A1FF", "#FF5733", "#FFEB33" }
+                    }
+                }
+            }
+        };
+
+        var jsonChartData = System.Text.Json.JsonSerializer.Serialize(chartData);
+
+        await JSRuntime.InvokeVoidAsync("eval", $@"
+            var ctx = document.getElementById('myPieChart').getContext('2d');
+            new Chart(ctx, {jsonChartData});
+        ");
+    }
+}

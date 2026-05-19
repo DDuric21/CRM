@@ -1,0 +1,21 @@
+﻿using Backend_API.Data.Models;
+
+namespace Backend_API.Data.Repositories
+{
+    public interface ICrmRepository
+    {
+        ICustomerRepository Customers { get; }
+        IAddressRepository Addresses { get; }
+        IAssetRepository Assets { get; }
+        ICustomerAssetsRepository CustomerAssets { get; }
+        ICustomerAssetOptionsRepository CustomerAssetOptions { get; }
+        IOptionRepository Options { get; }
+        IOrderRepository Orders { get; }
+        IRefreshTokenRepository RefreshTokens { get; }
+        IGenericRepository<Interaction> Interactions { get; }
+        IBillingProfileRepository BillingProfiles { get; }
+        IGenericRepository<News> News { get; }
+        IGenericRepository<RolePermission> RolePermissions { get; }
+        IGenericRepository<ContactDetails> ContactDetails { get; }
+    }
+}

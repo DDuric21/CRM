@@ -1,0 +1,43 @@
+﻿
+
+<nav class="navbar custom-navbar">
+    <div class="container-fluid p-0">
+        <div class="nav-btn-container">
+
+            <div class="btn-wrapper start">
+                <button class="btn @(activeTab == nameof(CustomerInteractions) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerInteractions))">
+                    @Translation.Interactions
+                </button>
+            </div>
+
+            <div class="btn-wrapper center">
+                <button class="btn @(activeTab == nameof(CustomerAssets) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerAssets))">
+                    @Translation.Assets
+                </button>
+            </div>
+
+            <div class="btn-wrapper end">
+                <button class="btn @(activeTab == nameof(CustomerOrders) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerOrders))">
+                    @Translation.Orders
+                </button>
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+@code {
+    [Parameter]
+    public EventCallback<string> DisplayComponent { get; set; }
+
+    private string activeTab = nameof(CustomerInteractions);
+
+    private async Task DisplayComponentHandler(string componentName)
+    {
+        activeTab = componentName;
+        await DisplayComponent.InvokeAsync(componentName);
+    }
+}

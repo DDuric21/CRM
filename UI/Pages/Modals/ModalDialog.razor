@@ -1,0 +1,46 @@
+﻿<div class="modal-body">
+    <Paragraph>@Body</Paragraph>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Cancel" >@abort</button>
+    <button type="button" class="@saveBtnClass" @onclick="Close" >@save</button>
+</div>
+
+@code {
+    private string abort;
+    private string save;
+    private string saveBtnClass = "btn btn-primary";
+
+    [CascadingParameter]
+    BlazoredModalInstance modalInstance { get; set; }
+
+    [Parameter]
+    public string Body { get; set; }
+
+    [Parameter]
+    public ModalDialogType modalDialogType { get; set; } = ModalDialogType.OK;
+
+    protected override async Task OnInitializedAsync()
+    {
+        switch(modalDialogType)
+        {
+            case ModalDialogType.Delete :
+                abort = Translation.Cancel;
+                save = Translation.Delete;
+                saveBtnClass = "btn btn-danger";
+                break;
+            case ModalDialogType.OK :
+                abort = Translation.Cancel;
+                save = "OK";
+                break;
+            case ModalDialogType.Save :
+                abort = Translation.Cancel;
+                save = Translation.Save;
+                break;
+        }
+    }
+
+    protected async Task Cancel() => await modalInstance.CancelAsync();
+
+    protected async Task Close() => await modalInstance.CloseAsync();
+}

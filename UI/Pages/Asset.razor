@@ -1,0 +1,296 @@
+﻿@inject IAssetService assetService
+@inject ICrmModalService modalService
+
+<div class="row g-2 align-items-stretch">
+    <!--Asset-->
+    <div class="col-2">
+        <label>@Translation.AssetType</label>
+        @if (ActionID == (int)OrderAction.CreateAsset)
+        {
+            <select id="selectedAsset" class="form-select" @onchange="AssetSelected">
+                @foreach (var asset in selectableAssets)
+                {
+                    @if (asset.Id == AssetDTO.Id)
+                    {
+                        <option selected value="@asset.Id">@asset.Name</option>                        
+                    }
+                    else
+                    {
+                        <option value="@asset.Id">@asset.Name</option>                        
+                    }
+                }
+            </select> 
+        }
+        else
+        {
+            <fieldset disabled="@true">
+                <select id="selectedAsset" class="form-select">
+                    <option selected value="@AssetDTO.Id">@AssetDTO.Name</option>
+                </select>
+            </fieldset>
+        }
+    </div>
+
+    <br />
+
+    <!--BillingProfile-->
+    <div class="col-2">
+        <label>@Translation.BillingProfile</label>
+        <fieldset disabled="@(ActionID == (int)OrderAction.DeactivateAsset)">
+            <select id="selectedBillingProfile" class="form-select" @onchange="BillingProfileChanged" >
+                @foreach (var profile in selectableBillingProfiles)
+                {
+                    <option value="@profile.BillingProfileId">@profile.BillingProfileId</option>
+                }
+            </select>
+        </fieldset>
+    </div>
+
+    <!--Asset Address-->
+
+    <div class="col-2">
+        <label>@Translation.Address</label>
+        <fieldset disabled="@(ActionID == (int)OrderAction.DeactivateAsset)">
+            <InputSelect @bind-Value="AssetDTO.AssetAddress.Id" TValue="long" class="form-select">
+                @foreach (var addr in selectableAddresses)
+                {
+                    <option value="@addr.Id">@addr.FullAddress</option>
+                }
+            </InputSelect>
+        </fieldset>
+    </div>
+</div>
+
+<br />
+
+<!--Asset options-->
+<div class="d-flex align-items-center gap-3">
+    <h4 class="mb-0">@Translation.AssetItmes</h4>
+    <button type="button" class="btn btn-primary btn-sm" @onclick="AddOption">@Translation.Add +</button>
+</div>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>@Translation.Name</th>
+            <th>@Translation.Price</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>        
+        @foreach (var optionDTO in AssetDTO.Options)
+        {
+            <tr>
+                <td><label id="asset">@optionDTO.Name</label></td>
+                <td><label id="asset">@optionDTO.Price</label></td>
+                <td><label id="asset" class="text-danger">TBD</label></td>
+                <td hidden="@(ActionID == (int)OrderAction.DeactivateAsset)">
+                    <button type="button" class="btn btn-danger" value="@optionDTO.Id" @onclick="(() => RemoveOption(optionDTO.Id))">
+                        <em class="oi oi-trash"></em> @Translation.Deactivate</button>
+                </td>
+            </tr>
+        }
+        @if (ActionID != (int)OrderAction.DeactivateAsset)
+        {
+            @foreach (var assetOption in selectedOptions)
+            {
+                <tr>
+                    <td>
+                        <select class="form-select" id="selectedOption" @onchange="OptionSelected">
+                            @foreach (var option in selectableOptions)
+                            {
+                                <option value="@option.Id">@option.Name</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveOption(assetOption.Id))">
+                            <em class="oi oi-trash"></em> @Translation.Cancel
+                        </button>                            
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table> 
+
+
+@code {
+    [CascadingParameter]
+    public OrderDTO OrderDTO { get; set; }
+
+    [Parameter]
+    public AssetDTO AssetDTO { get; set; }
+
+    [Parameter]
+    public int ActionID { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "readOrder")]
+    public bool ReadOrder { get; set; }
+
+    private List<AssetDTO> selectableAssets = new List<AssetDTO>();
+    private List<AddressDTO> selectableAddresses = new List<AddressDTO>();
+    private List<BillingProfileDTO> selectableBillingProfiles = new List<BillingProfileDTO>();
+    private List<OptionDTO> selectableOptions => selectableAssets
+        .FirstOrDefault(x => x.Id == GetSelectedAsset())
+        .Options;
+    private List<OptionDTO> selectedOptions = new List<OptionDTO>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        AssetDTO = AssetDTO ?? OrderDTO.AssetDTO ?? new AssetDTO();
+
+        selectableAddresses = OrderDTO.CustomerDTO.Addresses ?? new List<AddressDTO> { AssetDTO.AssetAddress };
+
+        if (ReadOrder)
+        {
+            selectableBillingProfiles.Add(AssetDTO.BillingProfile);
+            selectableAssets.Add(AssetDTO);
+            return;
+        }
+
+        selectableBillingProfiles = OrderDTO.CustomerDTO.BillingProfiles
+            .Where(x => x.BillingProfileStatus == ItemState.Active)
+            .ToList();
+
+        if (ActionID == (int)OrderAction.CreateAsset)
+        {            
+            var assets = await assetService.GetAssetsAsync(true);
+            if (!await assets.AnyAsync())
+            {
+                modalService.ShowCustomerFriendlyMessage();
+                return;
+            }
+            this.selectableAssets = await assets.ToListAsync();
+
+            //add empty items for better UX
+            this.selectableAssets.ForEach(x => x.Options.Insert(0, new OptionDTO()));
+            this.selectableAssets.Insert(0, new AssetDTO());
+            this.selectableBillingProfiles.Insert(0, new BillingProfileDTO { BillingProfileStatus = ItemState.Active });
+            this.selectableAddresses.Insert(0, new AddressDTO());
+        }
+
+        if (ActionID == (int)OrderAction.UpdateAsset)
+        {
+            ReorderSelectableBillingProfiles();
+            var options = await assetService.GetAssetAvailableOptionsAsync(AssetDTO.Id);
+            var selectableAssetOptions = options.ToList();
+            selectableAssetOptions.Insert(0, new OptionDTO());
+
+            var selectableAsset = new AssetDTO
+            {
+                Id = AssetDTO.Id,
+                Name = AssetDTO.Name,
+                Price = AssetDTO.Price,
+                Options = selectableAssetOptions
+            };
+
+            selectableAssets.Add(selectableAsset);
+        }
+    }
+
+    private void ReorderSelectableBillingProfiles()
+    {
+        var billingProfile = selectableBillingProfiles
+            .FirstOrDefault(x => x.BillingProfileId == AssetDTO?.BillingProfile?.BillingProfileId);
+
+        if (billingProfile != null)
+        {
+            selectableBillingProfiles.Remove(billingProfile);
+            selectableBillingProfiles.Insert(0, billingProfile);
+        }
+    }
+
+    private void AddOption()
+    {
+        selectedOptions.Add(new OptionDTO());
+    }
+
+    private void RemoveOption(long optionID)
+    {
+        var deletedOption = AssetDTO.Options.FirstOrDefault(x => x.Id == optionID);     
+        AssetDTO.Options.Remove(deletedOption);
+
+        var tempOption = selectedOptions.FirstOrDefault(x => x.Id == optionID);
+        selectedOptions.Remove(tempOption);
+
+        StateHasChanged();
+    }
+
+    private void OptionSelected(ChangeEventArgs e)
+    {
+        if (!ValidateEventArgID(e, out long id))
+        {
+            modalService.ShowErrorMessage(Translation.SelectedOptionNotValid);
+            return;
+        }   
+
+        AssetDTO.Options.RemoveAll(x => x.Id == id);
+        var selectedOption = selectableOptions.FirstOrDefault(x => x.Id == id);
+        AssetDTO.Options.Add(selectedOption);
+        selectedOptions.Clear();
+
+        StateHasChanged();
+    }    
+
+    private void AssetSelected(ChangeEventArgs e)
+    {
+        if (!ValidateEventArgID(e, out long id))
+        {
+            modalService.ShowErrorMessage("Selected asset is not valid!");
+            return;
+        }
+
+        AssetDTO = selectableAssets.FirstOrDefault(x => x.Id == id).Clone();
+        selectedOptions.Clear();
+
+        StateHasChanged();
+    }
+
+    private void BillingProfileChanged(ChangeEventArgs e)
+    {
+        if (!ValidateEventArgID(e, out string id))
+        {
+            modalService.ShowErrorMessage(Translation.SelectedBPNotValid);
+            return;
+        }
+
+        AssetDTO.BillingProfile = selectableBillingProfiles
+            .FirstOrDefault(x => x.BillingProfileId == id);
+
+        StateHasChanged();
+    }
+
+    private long GetSelectedAsset()
+    {
+        var selectedAsset = AssetDTO.Id == 0
+            ? selectableAssets.FirstOrDefault(x => x.Id != 0)
+                .Id
+            : AssetDTO.Id;
+
+        return selectedAsset;
+    }
+
+    public static bool ValidateEventArgID(ChangeEventArgs e, out long id)
+    {
+        id = 0;
+        var isValid = e != null
+            && long.TryParse(e.Value.ToString(), out id);
+
+        return isValid;
+    }
+
+    public static bool ValidateEventArgID(ChangeEventArgs e, out string id)
+    {
+        var isValid = e != null
+            && e.Value != null
+            && !string.IsNullOrEmpty(e.Value.ToString());
+
+        id = isValid
+            ? e.Value.ToString()
+            : string.Empty;
+
+        return isValid;
+    }
+}

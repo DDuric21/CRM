@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "localBackend": {
+      "environment": "Development",
+      "backendUrl": "http://localhost:5076",
+      "secureBackendUrl": "https://localhost:7076"
+    },
+    "iisBackend": {
+      "environment": "Development",
+      "backendUrl": "http://localhost:17464",
+      "secureBackendUrl": "https://localhost:44325"
+    }
+  }
+}

@@ -1,0 +1,147 @@
+﻿
+@inject IUserService userService
+
+@if (userGridFilterData is null)
+{    
+    <Loader></Loader>
+}
+else
+{  
+    <div class="row bg-light bg-gradient p-4" style="border-radius:50px">
+
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <h4 class="m-0">@Translation.GridFilter</h4>
+            <div class="d-flex justify-content-center col-1">
+                <button type="submit" class="btn btn-primary" @onclick="() => ExecuteFilter()">Filter</button>
+            </div>
+        </div>
+
+        <div class="col-11 d-flex flex-wrap">
+
+            <div class="col-2 dropdown p-2">
+                <label>Status:</label>
+                <button class="form-select text-truncate" type="button" data-dropdown-id="statusDropdown" id="dropdownButton" data-bs-toggle="dropdown">
+                    @statusesButtonText
+                </button>
+
+                <ul class="dropdown-menu" data-bs-auto-close="outside">
+                   @foreach (var status in selectedUserStatuses)
+                   {                       
+                        <li>
+                            <label class="dropdown-item">
+                                <input type="checkbox" class="form-check-input me-2" data-dropdown-id="statusDropdown" value="@status.Status"
+                                @bind="status.IsSelected">
+                                @status.Status
+                            </label>
+                        </li>
+                   }
+                </ul>
+            </div>
+
+            <div class="col-2 p-2">
+                <label>@Translation.FirstName:</label>
+                <input class="form-control" @bind="userFilter.FirstName" placeholder="@Translation.EnterFirstName" />
+            </div>
+
+            <div class="col-2 p-2">
+                <label>@Translation.LastName:</label>
+                <input class="form-control" @bind="userFilter.LastName" placeholder="@Translation.EnterLastName" />
+            </div>
+
+            <div class="col-2 p-2">
+                <label>@Translation.Username:</label>
+                <input class="form-control" @bind="userFilter.Username" placeholder="@Translation.EnterUsername" />
+            </div>
+
+            <div class="col-2 p-2">
+                <label>Email:</label>
+                <input class="form-control" @bind="userFilter.Email" placeholder="@Translation.EnterEmail" />
+            </div>
+
+            <div class="col-4 p-2">
+                <label>@Translation.CreatedBetween:</label>
+                <div class="d-flex gap-2">
+                    <input type="date" class="form-control" @bind="userFilter.CreatedDateStart" />
+                    <input type="date" class="form-control" @bind="userFilter.CreatedDateEnd" />
+                </div>
+            </div>
+
+            <div class="col-2 dropdown p-2">
+                <label>@Translation.UserRoles:</label>
+                <button class="form-select text-truncate" type="button" data-dropdown-id="rolesDropdown" id="dropdownButton" data-bs-toggle="dropdown">
+                    @rolesButtonText
+                </button>
+                <ul class="dropdown-menu" data-bs-auto-close="outside">
+                   @foreach (var role in selectedUserRoles)
+                   {                       
+                        <li>
+                            <label class="dropdown-item">
+                                <input type="checkbox" class="form-check-input me-2" data-dropdown-id="rolesDropdown" value="@role.UserRole.RoleName" 
+                                    @bind="role.IsSelected">
+                                @role.UserRole.RoleName
+                            </label>
+                        </li>                       
+                   }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter] 
+    public EventCallback<UserFilterRQ> OnFilterExecute { get; set; }
+
+    private UserFilterRQ userFilter = new UserFilterRQ();
+    private UserGridFilterDataRS userGridFilterData { get; set; }
+    private IEnumerable<SelectedUserRole> selectedUserRoles = new List<SelectedUserRole>();
+    private IEnumerable<SelectedStatus> selectedUserStatuses = new List<SelectedStatus>();
+
+    private string rolesButtonText => selectedUserRoles
+        .Where(x => x.IsSelected)
+        .Select(x => x.UserRole.RoleName)
+        .Any() 
+        ? string.Join(", ", selectedUserRoles.Where(x => x.IsSelected).Select(x => x.UserRole.RoleName))
+        : Translation.SelectRoles;
+
+    private string statusesButtonText => selectedUserStatuses
+        .Where(x => x.IsSelected)
+        .Select(x => x.Status)
+        .Any() 
+        ? string.Join(", ", selectedUserStatuses.Where(x => x.IsSelected).Select(x => x.Status))
+        : Translation.SelectStatus;
+
+    private async Task ExecuteFilter()
+    {
+        userFilter.UserRoles = selectedUserRoles
+            .Where(x => x.IsSelected)
+            .Select(x => x.UserRole.RoleName)
+            .ToList();
+        userFilter.UserStatuses = selectedUserStatuses
+            .Where(x => x.IsSelected)
+            .Select(x => x.Status)
+            .ToList();
+
+        await OnFilterExecute.InvokeAsync(userFilter);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitializedAsync();
+
+        userGridFilterData = await userService.GetUserFilterBaseValues();
+
+        if (userGridFilterData.IsNullOrEmpty())
+        {
+            return;
+        }
+
+        selectedUserRoles = userGridFilterData.UserRoles
+            .Select(x => new SelectedUserRole { UserRole = new UserRoleDTO { RoleName = x }})
+            .ToList();
+        selectedUserStatuses = userGridFilterData.UserStatuses
+            .Select(x => new SelectedStatus { Status = x })
+            .ToList();
+    }
+}

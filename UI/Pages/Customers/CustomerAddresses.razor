@@ -1,0 +1,101 @@
+﻿
+@inject IAddressService addressesService
+@inject ICrmModalService modal
+@implements IAsyncDisposable
+
+<div class="d-flex justify-content-start mb-2">
+    <button type="button" class="btn btn-primary me-2" @onclick="CreateNewAddress">@Translation.New +</button>
+    <button type="button" class="btn btn-primary" hidden="@(!hasLegalChanged)" @onclick="UpdateAddresses"> @Translation.SaveChanges</button>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>@Translation.Primary</th>
+            <th>@Translation.Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var addressDTO in Addresses)
+        {
+            <tr>
+                <td><input type="radio" id="legalAddress" checked="@addressDTO.IsLegal" name="legalRadio" @onchange="() => ChangeLegal(addressDTO.Id)"/></td>
+                <td><label id="address" for="legalAddress">@addressDTO.FullAddress</label></td>
+                <td><button class="btn btn-danger" @onclick="() => DeleteAddress(addressDTO.Id)"><em class="oi oi-trash"></em> @Translation.Delete</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<AddressDTO> Addresses { get; set; }
+
+    private bool hasLegalChanged = false;
+
+    private void ChangeLegal(long id)
+    {
+        Addresses.ForEach(x => x.IsLegal = false);
+        Addresses.First(x => x.Id == id).IsLegal = true;
+        hasLegalChanged = true;
+    }
+
+    private async Task UpdateAddresses()
+    {
+        if (!await addressesService.UpdateAddressesAsync(Addresses))
+        {
+            modal.ShowCustomerFriendlyMessage();
+            return;
+        }
+        else
+        {
+            hasLegalChanged = false;
+            modal.ShowSuccessToast(Translation.AddressesUpdateSuccess);
+        }
+    }
+
+    private async Task CreateNewAddress()
+    {
+        var parameters = new ModalParameters()
+            .Add("CustomerId", Addresses.First().CustomerId);
+
+        var result = await modal.Show<NewAddressForm>(parameters);
+
+        if (result.Confirmed)
+        {
+            var createdAddress = (AddressDTO)result.Data; 
+            Addresses.Add(createdAddress);
+        }
+    }
+
+    private async void DeleteAddress(long addressId)
+    {
+        var result = await modal.ShowDialog(Translation.Confirmation, ModalDialogType.Delete);
+
+        if (result.Cancelled)
+        {
+            return;
+        }
+
+        var isDeleted = await addressesService.DeleteAddressAsync(addressId) > 0 ? true : false;
+
+        if (isDeleted)
+        {
+            var deletedAddress = Addresses.FirstOrDefault(x => x.Id == addressId);
+            Addresses.Remove(deletedAddress);
+            StateHasChanged();
+        }
+        else
+        {
+            modal.ShowCustomerFriendlyMessage();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hasLegalChanged)
+        {
+            await UpdateAddresses();
+        }
+    }
+}

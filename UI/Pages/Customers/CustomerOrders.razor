@@ -1,0 +1,21 @@
+﻿
+@inject ICustomerService customerService
+
+<OrdersGrid Orders="orders"/>
+
+@code {
+    [CascadingParameter]
+    public CustomerDTO CustomerDTO { get; set; }
+
+    private SortedSet<OrderDTO> orders = new SortedSet<OrderDTO>(new OrdersSorter());
+
+    protected override async Task OnInitializedAsync()
+    {        
+        var customerOrders = await customerService.GetCustomerOrdersAsync(CustomerDTO.Id);
+
+        foreach(var order in customerOrders)
+        {
+            orders.Add(order);
+        }
+    }
+}

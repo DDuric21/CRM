@@ -1,0 +1,75 @@
+﻿@inject IBillingProfileService BillingProfileService
+@inject ICrmModalService modal
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>@Translation.BillingProfileID</th>
+            <th>@Translation.BillingDate</th>
+            <th>@Translation.Period</th>
+            <th class="text-end">@Translation.View</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Invoices is null)
+        {
+            <tr>
+                <td colspan="4" class="text-center py-5">
+                    <Loader />
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var inv in Invoices)
+            {
+                <tr role="button" @ondblclick="() => OpenPdfAsync(inv.BillId)">
+                    <td><label id="@inv.BillId">@inv.BillingProfileId</label></td>
+                    <td><label id="@inv.BillId">@inv.DateCreated.ToString("yyyy-MM-dd")</label></td>
+                    <td><label id="@inv.BillId">@GetPeriod(inv)</label></td>
+                    <td class="text-end">
+                        <button class="btn btn-outline-secondary"
+                        title="@Translation.View"
+                        disabled="@(!inv.HasPdf)"
+                        @onclick="() => OpenPdfAsync(inv.BillId)">
+                            <span class="oi oi-file"> @Translation.View</span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter] 
+    public long CustomerId { get; set; }
+
+    List<InvoiceRow>? Invoices;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var invoices = await BillingProfileService.GetBillingProfileInvoicesAsync(CustomerId);
+
+        if(invoices is null)
+        {
+            modal.ShowCustomerFriendlyMessage();
+            Invoices = new List<InvoiceRow>();
+        }
+
+        Invoices = invoices;
+    }
+
+    string GetPeriod(InvoiceRow inv) => inv.DateCreated.ToString("yyyy-MM");
+
+    protected async Task OpenPdfAsync(long billId)
+    {
+        var link = await BillingProfileService.GetPdfLinkAsync(billId, CustomerId);
+
+        if (link is not null && !string.IsNullOrWhiteSpace(link.Url))
+            await JS.InvokeVoidAsync("open", link.Url, "_blank", "noopener,noreferrer");
+    }
+
+}

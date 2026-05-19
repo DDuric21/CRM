@@ -1,0 +1,30 @@
+﻿using Blazored.Modal;
+using Blazored.Modal.Services;
+using Microsoft.AspNetCore.Components;
+using UI.Enums;
+
+namespace UI.Services
+{
+    public interface ICrmModalService
+    {
+        void ShowSuccessToast(string message, string title = "", int delay = 5000);
+
+        void ShowCustomerFriendlyMessage();
+
+        void ShowErrorMessage(string message);
+
+        Task<ModalResult> ShowErrorMessageAsync(string message);
+
+        void ShowWarningMessage(string message);
+
+        void ShowInfoMessage(string message);
+
+        Task<ModalResult> ShowDialog(string message, ModalDialogType type);
+
+        Task<ModalResult> Show<TComponent>() where TComponent : IComponent;
+
+        Task<ModalResult> Show<TComponent>(ModalParameters parameters) where TComponent : IComponent;
+
+        Task<ModalResult> Show<TComponent>(ModalParameters parameters, ModalOptions options) where TComponent : IComponent;
+    }
+}

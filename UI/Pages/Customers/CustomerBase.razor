@@ -1,0 +1,92 @@
+﻿@page "/Customers/{customerId:long}"
+
+@inject ICustomerService customerService
+@inject ICrmModalService modal
+@inject NavigationManager navigationManager
+@inject ISessionStorageService sessionStorage
+
+@if (customerDTO.IsNullOrEmpty())
+{
+    <Loader></Loader>
+}
+else
+{    
+    <CascadingValue Value="@customerDTO">
+        <div class="d-flex justify-content-start align-items-center">
+            <h1 class="me-2 mb-0 align-self-center">
+                @(customerDTO.FirstName + " " + customerDTO.LastName)
+            </h1>
+
+            <button type="button"
+                    title="@Translation.AdministrateCustomer"
+                    @onclick="NavigateToCustomerAdministrationAsync"
+                    class="btn btn-primary border-0 bg-transparent p-0 text-primary fs-1 me-3 d-inline-flex align-items-center justify-content-center"
+                    style="transform: scale(1.0);">
+                <span class="oi oi-arrow-thick-right"></span>
+            </button>
+        </div>
+
+        <fieldset class="mb-3" disabled="@true">
+            <Customer />
+        </fieldset>
+
+         <div class="border border-top-0" style="border-radius: 0.5rem;">
+            <CustomerNav DisplayComponent="ShowComponent"></CustomerNav>
+
+            <section class="mt-3 mb-3 px-3">
+                @switch (componentName)
+                {
+                    case nameof(CustomerInteractions) :
+                        <CustomerInteractions />
+                        break;
+                    case nameof(CustomerAssets) :
+                        <CustomerAssets />
+                        break;
+                    case nameof(CustomerOrders) :
+                        <CustomerOrders />
+                        break;
+                    default:
+                        <h3>@Translation.NoComponentSelected</h3>
+                        break;
+                }
+            </section>
+        </div>
+    </CascadingValue>
+}
+
+@code {
+    private CustomerDTO customerDTO = new CustomerDTO();
+
+    [Parameter]
+    public long CustomerId { get; set; }
+
+    private string componentName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        customerDTO = null;
+        var result = await customerService.GetCustomerDataAsync(CustomerId);
+        if (result.IsSuccess)
+        {
+            customerDTO = result.Data;
+            componentName = nameof(CustomerInteractions);
+        }
+        else
+        {
+            customerDTO = new CustomerDTO();
+            modal.ShowErrorMessage(result.ErrorMessage);
+        }
+    }
+
+    private async Task NavigateToCustomerAdministrationAsync()
+    {
+        var storageKey = $"{CrmStorageKeys.CustomerData}{CustomerId}";
+        await sessionStorage.SaveItemEncryptedAsync(storageKey, customerDTO);
+        navigationManager.NavigateTo($"Customers/Admin/{CustomerId}");
+    }    
+
+    protected void ShowComponent(string selectedComponentName)
+    {
+        componentName = selectedComponentName;
+    }
+}

@@ -1,0 +1,98 @@
+﻿@page "/NewCustomerForm"
+
+@inject ICustomerService _customerService
+@inject NavigationManager navigationManager
+@inject ICrmModalService modal
+
+<PageTitle>@Translation.NewCustomerForm</PageTitle>
+
+<h2>@Translation.CreateNewCustomer</h2>
+<select class="form-select" @bind="customerDTO.Type">
+    @foreach (var customerType in Enum.GetValues(typeof(CustomerType)))
+    {
+        <option value="@customerType">@customerType</option>                  
+    }
+</select> 
+
+@switch (customerDTO.Type)
+{
+    case (CustomerType.Residential):        
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">@Translation.NewResidentialCustomer</h5>
+                        </div>
+                        <div class="card-body">
+                            <EditForm Model="@customerDTO" OnValidSubmit="@CreateNewResidentialCustomer">
+                                <DataAnnotationsValidator />
+                                <div class="mb-3">
+                                    <label class="form-label">@Translation.FirstName</label>
+                                    <InputText class="form-control" @bind-Value="customerDTO.FirstName" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">@Translation.LastName</label>
+                                    <InputText class="form-control" @bind-Value="customerDTO.LastName" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">@Translation.PersonalID</label>
+                                    <InputText class="form-control" @bind-Value="customerDTO.PersonalID" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">@Translation.Birthday</label>
+                                    <InputDate class="form-control" @bind-Value="customerDTO.Birthday" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">@Translation.FullAddress</label>
+                                    <InputText class="form-control" @bind-Value="addressDTO.FullAddress" />
+                                </div>
+                                <ValidationSummary />
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">@Translation.Create</button>
+                                </div>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        break;
+    case (CustomerType.Business):
+    case (CustomerType.Enterprise):
+        <div class="container d-flex align-items-center justify-content-center">
+            <span class="text-danger">@Translation.BusinessTypesCurrentlyNotSupported</span>
+        </div>
+        break;
+    default:    
+        <div class="container d-flex align-items-center justify-content-center">
+            <span class="text-danger">@Translation.ChooseCustomerType</span>
+        </div>
+        break;
+}
+
+@code {
+    private CustomerDTO customerDTO = new CustomerDTO();
+
+    private AddressDTO addressDTO = new AddressDTO();
+
+    protected override void OnInitialized()
+    {
+        customerDTO.Birthday = DateTime.Now;
+    }
+
+    private async Task CreateNewResidentialCustomer()
+    {
+        customerDTO.Addresses.Add(addressDTO);
+        var result = await _customerService.CreateNewCustomerAsync(customerDTO);
+
+        if (result == 0)
+        {
+            modal.ShowErrorMessage(@Translation.CustomerNotCreated);
+            return;
+        }
+
+        var redirectPath = string.Format("/Customers/{0}", result);
+        navigationManager.NavigateTo(redirectPath);
+    }
+}

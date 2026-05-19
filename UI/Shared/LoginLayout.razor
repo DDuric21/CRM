@@ -1,0 +1,29 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>CRM</PageTitle>
+
+<HeadContent>    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</HeadContent>
+
+<div class="page">
+    @Body
+</div>
+
+@inject NavigationManager NavigationManager
+
+@code {
+    [CascadingParameter] 
+    protected Task<AuthenticationState> authenticationState { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var user = (await authenticationState).User;
+        if(user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/index");
+        }
+
+        base.OnInitialized();
+    }
+}

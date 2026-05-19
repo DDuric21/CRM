@@ -1,0 +1,242 @@
+﻿@page "/Orders/Order"
+
+@inject ILocalStorageService localStorageService
+@inject NavigationManager navigationManager
+@inject IOrderService orderService
+@inject ICustomerService customerService
+@inject ICrmModalService modalService
+@inject AuthenticationStateProvider AuthState
+
+@if (customerDTO == null)
+{
+    <Loader></Loader>
+}
+else
+{
+    <!-- Action Buttons -->
+    <fieldset disabled="@IsDisabled()">
+        <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+            <button type="submit" class="btn btn-primary btn-lg" @onclick="SubmitOrder"> @Translation.SubmitOrder</button>
+            <button type="button" class="btn btn-outline-danger btn-lg" @onclick="CancelOrder"> @Translation.Cancel</button>
+        </div>
+    </fieldset>
+    <fieldset disabled>
+        <div class="card my-2">
+            <div class="card-body">
+                <!-- Customer Information Section -->
+                <section class="mb-4">
+                    <h5 class="fw-semibold mb-3">@Translation.CustomerInformation</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="firstName">@Translation.FirstName</label>
+                            <InputText id="firstName" class="form-control form-control-sm" @bind-Value="customerDTO.FirstName" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="lastName">@Translation.LastName</label>
+                            <InputText id="lastName" class="form-control form-control-sm" @bind-Value="customerDTO.LastName" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="birthday">@Translation.Birthday</label>
+                            <InputDate id="birthday" class="form-control form-control-sm" @bind-Value="@customerDTO.Birthday" @bind-Value:format="dd-MM-yyyy" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="personalID">@Translation.PersonalID</label>
+                            <InputText id="personalID" class="form-control form-control-sm" @bind-Value="@customerDTO.PersonalID" />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Additional info Section -->
+                <section class="mb-2">
+                    <h5 class="fw-semibold mb-3">@Translation.OrderInfo</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="createdBy">@Translation.CreatedBy</label>
+                            <InputText id="createdBy" class="form-control form-control-sm" @bind-Value="orderDTO.CreatedByUsername" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="orderID">@Translation.OrderID</label>
+                            <input type="text" id="orderID" class="form-control form-control-sm" @bind-value="@orderDTO.OrderID" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="createdDate">@Translation.Created</label>
+                            <input type="text" id="createdDate" class="form-control form-control-sm" value="@orderDTO.DateCreated.ToStringValue()" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="createdDate">@Translation.Submited</label>
+                            <input type="text" id="createdDate" class="form-control form-control-sm" value="@orderDTO.DateSubmitted.ToStringValue()" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="orderStatus">@Translation.OrderStatus</label>
+                            <input type="text" id="orderStatus" class="form-control form-control-sm" @bind-value="orderDTO.OrderStatus" />
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </fieldset>
+    <br />
+    <fieldset disabled="@IsDisabled()">
+        <h4>@Translation.OrderItems</h4>
+        <CascadingValue Value="@orderDTO">
+            <Asset ActionID="actionID" @ref="orderAsset"></Asset>
+        </CascadingValue>
+    </fieldset>
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "orderID")]
+    public Guid OrderID { get; set; }
+    private OrderDTO orderDTO { get; set; } = new OrderDTO();
+    private Asset orderAsset = new Asset();
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "customerID")]
+    public long CustomerID { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "action")]
+    public string Action { get; set; } = string.Empty;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "readOrder")]
+    public bool ReadOrder { get; set; }
+
+    private int actionID => DetermineAction(); 
+
+    private CustomerDTO customerDTO;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ReadOrder)
+        {
+            orderDTO = await orderService.GetOrderDataAsync(OrderID);
+            customerDTO = orderDTO.CustomerDTO;
+        }
+        else
+        {
+            customerDTO = await localStorageService.GetItemAsync<CustomerDTO>(OrderID.ToString());
+            localStorageService.RemoveItemAsync(OrderID.ToString());
+            var authState = await AuthState.GetAuthenticationStateAsync();
+            orderDTO.CreatedByUsername = authState?.User?.Identity?.Name;
+        }
+
+        if (customerDTO.IsNullOrEmpty()
+            && orderDTO.CustomerDTO.IsNullOrEmpty())
+        {
+            navigationManager.NavigateTo($"/Customers/{CustomerID}");
+        }
+
+        if (orderDTO.OrderID == Guid.Empty)
+        {
+            orderDTO.OrderID = this.OrderID;            
+        }
+
+        if (orderDTO.DateCreated == default)
+        {
+            orderDTO.DateCreated = DateTime.UtcNow;
+        }
+
+        if (orderDTO.CustomerDTO.IsNullOrEmpty())
+        {
+            orderDTO.CustomerDTO = this.customerDTO;            
+        }
+
+        if (!string.IsNullOrWhiteSpace(Action))
+        {
+            (var actionID , var customerAssetID) = ParseActionParameter();
+            if (actionID != (int)OrderAction.CreateAsset)
+            {
+                orderDTO.AssetDTO = await customerService.GetCustomerAssetDataAsync(customerAssetID);
+            }            
+        }
+
+        orderDTO.AssetDTO.AssetAddress = orderDTO.CustomerDTO.Addresses
+            .FirstOrDefault(x => x.Id == orderDTO.AssetDTO.AssetAddress.Id) ?? new AddressDTO();
+
+        SetOrderAction();
+    }
+
+    private async Task SubmitOrder()
+    {
+        orderDTO.AssetDTO = orderAsset.AssetDTO;
+
+        var response = await orderService.SubmitOrderAsync(orderDTO);
+
+        if (response.IsSuccess)
+        {
+            await modalService.ShowDialog(Translation.OrderSuccessfullySubmitted, ModalDialogType.OK);
+            orderDTO.OrderStatus = OrderStatus.Submitted;
+        }
+        else
+        {
+            modalService.ShowErrorMessage(response.ErrorMessage);
+        }
+    }
+
+    private async Task CancelOrder()
+    {
+        var result = await modalService.ShowDialog(Translation.CancelOrderConfirmation, ModalDialogType.OK);
+        if (result.Cancelled)
+        {
+            return;
+        }
+
+        var response = await orderService.CancelOrderAsync(orderDTO.OrderID);
+        if (response.IsSuccess)
+        {
+            orderDTO.OrderStatus = OrderStatus.Cancelled;
+            modalService.ShowSuccessToast(Translation.OrderCanceledSuccessfully);
+        }
+        else
+        {
+            await modalService.ShowErrorMessageAsync(response.ErrorMessage);
+        }
+    }
+
+    private void SetOrderAction()
+    {
+        if ((int)orderDTO.Action <= 0)
+        {
+            orderDTO.Action = actionID > 0
+                ? (OrderAction)actionID
+                : OrderAction.CreateAsset;
+        }
+    }
+
+    private (int, long) ParseActionParameter()
+    {
+        var actionID = 0;
+        var customerAssetID = 0L; 
+        if (string.IsNullOrWhiteSpace(Action))
+        {
+            return (actionID, customerAssetID);            
+        }
+
+        string[] ids = Action.Split(":");
+        int.TryParse(ids[0], out actionID);
+        long.TryParse(ids[1], out customerAssetID);
+
+        return (actionID, customerAssetID);
+    }
+
+    private int DetermineAction()
+    {
+        if (ReadOrder)
+        {
+            return (int)orderDTO.Action;
+        }
+
+        return ParseActionParameter().Item1;
+    }
+
+    private bool IsDisabled()
+    {
+        var openOrderStatuses = new List<int> { 0, (int)OrderStatus.Open };
+        var isDisabled = !openOrderStatuses.Contains((int)orderDTO.OrderStatus);
+
+        return isDisabled;
+    }
+}

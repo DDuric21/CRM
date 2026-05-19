@@ -1,0 +1,32 @@
+﻿<ErrorBoundary>
+    <ChildContent>
+        <CascadingBlazoredModal DisableBackgroundCancel="true" Position="ModalPosition.Middle" Size="ModalSize.Large" AnimationType="ModalAnimationType.None">
+            <CascadingAuthenticationState>
+                <Router AppAssembly="@typeof(App).Assembly">
+                    <Found Context="routeData">
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                            </ChildContent>
+                            <ErrorContent Context="routeError">
+                                <RouteFallback Exception="routeError" />
+                            </ErrorContent>
+                        </ErrorBoundary>
+                        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+                    </Found>
+
+                    <NotFound>
+                        <PageTitle>Not found</PageTitle>
+                        <LayoutView Layout="@typeof(MainLayout)">
+                            <p role="alert">@Translation.NothingAtThisAddress</p>
+                        </LayoutView>
+                    </NotFound>
+                </Router>
+            </CascadingAuthenticationState>
+        </CascadingBlazoredModal>
+    </ChildContent>
+
+    <ErrorContent Context="globalError">
+        <GlobalFallback Exception="globalError" />
+    </ErrorContent>
+</ErrorBoundary>

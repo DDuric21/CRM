@@ -1,0 +1,54 @@
+﻿
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject AppConfig AppConfig
+@inject ICommunicationService CommunicationService
+
+<style>
+    .app-exception-fallback {
+    padding: 4rem;
+    text-align: center;
+    }
+</style>
+
+<div class="app-exception-fallback"><!--When icon for app is decided add here icon or some picture-->
+    <h1 class="text-danger">@Translation.SomethingWentWrong</h1>
+
+    @if (AppConfig.IsDevelopment())
+    {
+        <pre>@Exception?.ToString()</pre>
+    }
+    else
+    {
+        <p>@Translation.FallbackUserInfo</p>
+    }
+
+    <button class="btn btn-primary mt-3" @onclick="ReloadApp">@Translation.Reload</button>
+
+</div>
+
+
+@code {
+    [Parameter] 
+    public Exception Exception { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var url = new Uri(NavigationManager.Uri).PathAndQuery;
+            await CommunicationService.SendErrorLogToServerUsingJsAsync(Exception, url);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+    private async Task ReloadApp()
+    {
+        await JS.InvokeVoidAsync("localStorage.clear");
+        await JS.InvokeVoidAsync("sessionStorage.clear");
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+}

@@ -1,0 +1,50 @@
+﻿
+
+<nav class="navbar custom-navbar">
+    <div class="container-fluid p-0">
+        <div class="nav-btn-container">
+
+            <div class="btn-wrapper start">
+                <button class="btn @(activeTab == nameof(CustomerAddresses) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerAddresses))">
+                    @Translation.Addresses
+                </button>
+            </div>
+
+            <div class="btn-wrapper center">
+                <button class="btn @(activeTab == nameof(CustomerContactDetails) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerContactDetails))">
+                    @Translation.ContactDetails
+                </button>
+            </div>
+
+            <div class="btn-wrapper center">
+                <button class="btn @(activeTab == nameof(CustomerProfiles) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerProfiles))">
+                    @Translation.BillingProfiles
+                </button>
+            </div>
+
+            <div class="btn-wrapper end">
+                <button class="btn @(activeTab == nameof(CustomerBills) ? "btn-active" : "btn-inactive")"
+                        @onclick="() => DisplayComponentHandler(nameof(CustomerBills))">
+                    @Translation.Bills
+                </button>
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+@code {
+    [Parameter]
+    public EventCallback<string> DisplayComponent { get; set; }
+
+    private string activeTab = nameof(CustomerAddresses);
+
+    protected async Task DisplayComponentHandler(string selectedComponentName)
+    {
+        activeTab = selectedComponentName;
+        await DisplayComponent.InvokeAsync(selectedComponentName);
+    }
+}

@@ -1,0 +1,111 @@
+﻿
+@inject ICustomerService customerService
+@inject IOrderService orderService
+@inject ILocalStorageService localStorageService
+@inject NavigationManager navigationManager
+@inject ICrmModalService modal
+
+<table class="table table-hover">
+    <thead>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => AddNewAsset()">@Translation.New +</button>
+        <tr>
+            <th>@Translation.Name</th>
+            <th>@Translation.Price</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var assetDTO in assets)
+        {
+            <tr>
+                <td><label id="@assetDTO.Id" >@assetDTO.Name</label></td>
+                <td><label id="@assetDTO.Id" >@assetDTO.Price</label></td>
+                <td><label id="@assetDTO.Id" >@assetDTO.AssetStatus.ToString()</label></td>
+                @if (assetDTO.AssetStatus != ItemState.Inactive)
+                {
+                    <td>
+                        <button type="button" class="btn btn-outline-secondary" @onclick="() => EditAsset(false, assetDTO.CustomerAssetID)"><span class="oi oi-pencil"></span> @Translation.Edit</button>
+                        <button type="button" class="btn btn-danger" @onclick="() => EditAsset(true, assetDTO.CustomerAssetID)">@Translation.Deactivate</button>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [CascadingParameter]
+    public CustomerDTO CustomerDTO { get; set; }
+
+    private SortedSet<AssetDTO> assets { get; set; } = new SortedSet<AssetDTO>(new CustomerAssetsSorter());
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {            
+            var customerAssets = await customerService.GetCustomerAssetsAsync(CustomerDTO.Id);
+
+            await foreach(var asset in customerAssets)
+            {
+                assets.Add(asset);
+            }
+
+            CustomerDTO.Assets = assets.ToList();
+        }
+        catch (Exception ex)
+        {
+            modal.ShowCustomerFriendlyMessage();
+        }
+    }
+
+    private async void AddNewAsset()
+    {
+        var orderID = Guid.NewGuid();
+        var order = new OrderDTO
+        {
+            OrderID = orderID,
+            CustomerDTO = this.CustomerDTO
+        };
+
+        var result = await orderService.CreateOrderAsync(order);
+        if (!result.IsSuccess)
+        {
+            await modal.ShowErrorMessageAsync(result.ErrorMessage);
+            return;
+        }
+
+        await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
+        navigationManager.NavigateTo($"/Orders/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={(int)OrderAction.CreateAsset}:0");
+    }
+
+    private async void EditAsset(bool isDelete, long customerAssetID)
+    {
+        var orderID = Guid.NewGuid();
+        var action = isDelete
+            ? OrderAction.DeactivateAsset
+            : OrderAction.UpdateAsset;
+
+        var asset = assets.First(x => x.CustomerAssetID == customerAssetID);
+        asset.AssetAddress = CustomerDTO.Addresses
+            .FirstOrDefault(x => x.Id == asset.AssetAddress.Id);
+
+        var order = new OrderDTO
+        {
+            OrderID = orderID,
+            CustomerDTO = this.CustomerDTO,
+            Action = action,
+            AssetDTO = asset
+        };
+
+        var result = await orderService.CreateOrderAsync(order, withOptions: true);
+        if (!result.IsSuccess)
+        {
+            await modal.ShowErrorMessageAsync(result.ErrorMessage);
+            return;
+        } 
+
+        var actionIndicator = $"{(int)action}:{customerAssetID}";
+        await localStorageService.SetItemAsync<CustomerDTO>(orderID.ToString(), CustomerDTO);
+        navigationManager.NavigateTo($"/Orders/Order?customerID={CustomerDTO.Id}&orderID={orderID}&action={actionIndicator}");        
+    }
+}

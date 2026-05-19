@@ -1,0 +1,67 @@
+﻿@using Blazored.Modal
+@using Blazored.Modal.Services
+@inherits ComponentBase
+
+<style>
+    .toast-custom {
+        min-height: 4rem;
+        max-width: 20rem;
+        word-wrap: break-word;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+    }
+
+    .icon-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border: 2px solid green;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+        color: green;
+    }
+
+        .icon-circle.oi-check {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+</style>
+
+<div class="toast show position-fixed bottom-0 start-0 ms-4 mb-4 border-0 shadow bg-white toast-custom"
+     role="alert" aria-live="assertive" aria-atomic="true" style="z-index:2000;">
+    <div class="d-flex align-items-start w-100">
+        <span class="oi oi-check icon-circle"></span>
+        <div class="flex-grow-1">
+            <strong class="fs-5">@Title</strong>
+            <div class="fs-6 mt-1">@Message</div>
+        </div>
+        <button type="button" class="btn-close ms-3 align-self-start" @onclick="Dismiss" aria-label="Close" />
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; } = default!;
+
+    [Parameter] 
+    public string Title { get; set; }
+
+    [Parameter] 
+    public string Message { get; set; }
+
+    [Parameter] 
+    public int Delay { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(Delay);
+            await ModalInstance.CloseAsync();
+        }
+    }
+
+    private async Task Dismiss()
+        => await ModalInstance.CloseAsync();
+}

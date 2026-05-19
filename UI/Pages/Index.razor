@@ -1,0 +1,83 @@
+﻿@page "/index"
+
+@inject ICrmModalService modalService
+@inject INewsService newsService
+@inject IAssetService assetService
+
+
+<h1>@Translation.WelcomeToCRMApp</h1>
+
+<div class="d-flex align-items-center mw-75 mh-75 gap-3">
+    <div class="w-50 h-100">
+        <NewsFeed Title="@Translation.NewsFeedTitle1" NewsData="@globalNews" />
+        <hr style="margin-left: -1%; width: 44vw"/>
+        <NewsFeed Title="@Translation.NewsFeedTitle2" NewsData="@companyNews" />
+    </div>
+    <div class="d-flex justify-content-center align-items-center w-100" style="height: 50vh;">
+        <div class="w-75">
+            <h4 align="center">@Translation.CustomersAssets</h4>
+            <DataPieChart ChartData="@pieChartData" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private Dictionary<ItemState, int> pieChartData = new Dictionary<ItemState, int>();
+    private List<NewsDTO> globalNews = new List<NewsDTO>();
+    private List<NewsDTO> companyNews = new List<NewsDTO>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        var newsFilter = new List<RetrieveNewsRQ>
+        {
+            new RetrieveNewsRQ { NewsType = NewsType.CompanyInfo, Amount = 10 },
+            new RetrieveNewsRQ { NewsType = NewsType.GeneralInfo, Amount = 10 },
+        };
+
+        var results = await GetCombinedTasks(
+            newsService.GetNewsAsync(newsFilter),
+            assetService.GetAssetsChartDataAsync()      
+        );
+
+        await SetNewsDataAsync(results.Item1);
+        await SetAssetChartDataAsync(results.Item2);
+    }
+
+    private async Task<(T1, T2)> GetCombinedTasks<T1, T2>(Task<T1> task1, Task<T2> task2)
+    {
+        await Task.WhenAll(task1, task2);
+
+        return (await task1, await task2);
+    }
+
+    private async Task SetNewsDataAsync(RetrieveNewsRS retrievedNews)
+    {
+        if (!retrievedNews.IsSuccess)
+        {
+            await modalService.ShowErrorMessageAsync(retrievedNews.ErrorMessage);
+            return;
+        }
+
+        companyNews = retrievedNews.News
+            .Where(x => x.NewsType == NewsType.CompanyInfo)
+            .ToList();
+
+        globalNews = retrievedNews.News
+            .Where(x => x.NewsType == NewsType.GeneralInfo)
+            .ToList();
+    }
+
+    private async Task SetAssetChartDataAsync(Dictionary<ItemState, int> assetChartData)
+    {
+        if (assetChartData.IsNullOrEmpty())
+        {
+            await modalService.ShowErrorMessageAsync("");
+            return;
+        }
+
+        pieChartData = assetChartData;
+    }
+    
+}

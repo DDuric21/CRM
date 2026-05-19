@@ -1,0 +1,193 @@
+﻿
+@inject IBillingProfileService billingProfileService
+@inject ICrmModalService modalService
+
+<table class="table table-hover table-fixed" style="width:100%;">
+    <colgroup>
+        <col style="width:15%;">
+        <col style="width:auto;">
+        <col style="width:auto;">
+        <col style="width:15%;">
+    </colgroup>
+    <thead>
+        <button type="submit" name="submit" class="btn btn-primary" @onclick="() => CreateNewBillingProfile()" >@Translation.New +</button>
+        <tr>
+            <th>@Translation.BillingProfileID</th>
+            <th>@Translation.Address</th>
+            <th>@Translation.Paperless</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>        
+        @if (customerBillingProfiles is null)
+        {
+            <tr>
+                <td colspan="4" class="text-center py-5">
+                    <Loader />
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var profile in customerBillingProfiles)
+            {
+                <tr @key="profile.Key.CustomId">
+                    <td>
+                        <InputText class="form-control" @bind-Value="profile.Value.BillingProfileId" disabled />
+                    </td>
+                    <td>
+                        <select class="form-select w-30" @bind="profile.Value.BillingAddress.Id" disabled="@(!profile.Key.IsEditable)">
+                            @foreach (var billingAddress in CustomerDTO.Addresses)
+                            {
+                                <option value="@billingAddress.Id">@billingAddress.FullAddress</option>
+                            }
+                        </select>
+                    </td>
+                    <td class="text-center align-middle">
+                        <InputCheckbox @bind-Value="profile.Value.Paperless" disabled="@(!profile.Key.IsEditable)" />
+                    </td>
+                    <td>
+                        <label>@profile.Value.BillingProfileStatus</label>
+                    </td>
+                    @if (profile.Value.BillingProfileStatus != ItemState.Inactive)
+                    {
+                        <td>
+                            <button hidden="@profile.Key.IsEditable" class="btn btn-outline-secondary" @onclick="() => EditBillingProfile(profile.Key.CustomId)"><em class="oi oi-pencil"></em> @Translation.Edit</button>
+                            <button hidden="@profile.Key.IsEditable" class="btn btn-danger" @onclick="() => DeactivateBillingProfileAsync(profile.Key.CustomId)">@Translation.Deactivate</button>
+
+                            <button hidden="@(!profile.Key.IsEditable)" class="btn btn-primary" @onclick="() => SaveBillingProfileAsync(profile.Value)">@Translation.Save</button>
+                            <button hidden="@(!profile.Key.IsEditable)" class="btn btn-secondary" @onclick="() => CancelBillingProfileEditing(profile.Key.CustomId)">@Translation.Cancel</button>
+                        </td>                  
+                    }
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    [CascadingParameter]
+    public CustomerDTO CustomerDTO { get; set; }
+
+    [Parameter]
+    public List<BillingProfileDTO> BillingProfiles { get; set; }
+
+    private SortedDictionary<EditableID, BillingProfileDTO> customerBillingProfiles = new SortedDictionary<EditableID, BillingProfileDTO>(new BillingProfileKeySorter());
+
+    private BillingProfileDTO editableBillingProfile = new BillingProfileDTO();
+
+    protected override void OnInitialized()
+    {
+        customerBillingProfiles = null;
+        try
+        {
+            var billingProfiles = BillingProfiles
+                .ToDictionary(
+                    x => new EditableID
+                        {
+                            IsEditable = false,
+                            CustomId = x.BillingProfileId
+                        },
+                    x => x);
+
+            customerBillingProfiles = new SortedDictionary<EditableID, BillingProfileDTO>(billingProfiles, new BillingProfileKeySorter());
+        }
+        catch (Exception ex)
+        {
+            modalService.ShowErrorMessage(ex.Message);
+            customerBillingProfiles = new SortedDictionary<EditableID, BillingProfileDTO>(new BillingProfileKeySorter());
+        }
+    }
+
+    private async void CreateNewBillingProfile()
+    {
+        var editableID = new EditableID
+        {
+            DateCreated = DateTime.Now,
+            IsEditable = true
+        };
+
+        var result = await billingProfileService.CreateNewBillingProfileAsync(CustomerDTO.Id);
+        if (!result.IsSuccess)
+        {
+            modalService.ShowErrorMessage(result.ErrorMessage);
+            return;
+        }
+
+        var newBillingProfile = result.Data;
+        editableID.CustomId = newBillingProfile.BillingProfileId;
+        customerBillingProfiles.Add(editableID, newBillingProfile);
+        BillingProfiles.Add(newBillingProfile);
+        editableBillingProfile = newBillingProfile;
+
+        StateHasChanged();
+    }
+
+    private async Task DeactivateBillingProfileAsync(string billingProfileId)
+    {
+        var result = await billingProfileService.DeactivateBillingProfileAsync(billingProfileId);
+        if (!result.IsSuccess)
+        {
+            modalService.ShowErrorMessage(result.ErrorMessage);
+            return;
+        }
+        else
+        {
+            modalService.ShowSuccessToast(Translation.BillingProfileDeactivationSuccess);
+        }
+
+        var customerBillingProfile = customerBillingProfiles.First(x => x.Key.CustomId == billingProfileId);
+        customerBillingProfile.Value.BillingProfileStatus = ItemState.Inactive;
+    }
+
+    private void EditBillingProfile(string billingProfileId)
+    {
+        var billingProfileForEdit = customerBillingProfiles.Keys.First(x => x.CustomId == billingProfileId);
+        billingProfileForEdit.IsEditable = true;
+        editableBillingProfile = customerBillingProfiles[billingProfileForEdit].Clone();
+        editableBillingProfile.BillingAddress = customerBillingProfiles[billingProfileForEdit].BillingAddress.Clone();
+    }
+
+    private async Task SaveBillingProfileAsync(BillingProfileDTO billingProfileDTO)
+    {
+        if (billingProfileDTO.BillingAddress.Id <= 0)
+        {
+            modalService.ShowErrorMessage(Translation.MandatoryFieldsNotPopulated);
+            return;
+        }
+
+        var result = await billingProfileService.UpdateBillingProfileAsync(billingProfileDTO);
+        if (result.IsSuccess)
+        {
+            modalService.ShowSuccessToast(Translation.BillingProfileUpdateSuccess);
+        }
+        else 
+        {
+            modalService.ShowErrorMessage(result.ErrorMessage);
+            return;
+        }
+
+        editableBillingProfile = new BillingProfileDTO();
+        var billingProfileForSave = customerBillingProfiles.First(x => x.Key.CustomId == billingProfileDTO.BillingProfileId);
+        billingProfileForSave.Key.IsEditable = false;
+        customerBillingProfiles[billingProfileForSave.Key] = result.Data;
+
+        StateHasChanged();
+    }
+
+    private void CancelBillingProfileEditing(string billingProfileId)
+    {
+        var billingProfileForEdit = customerBillingProfiles.Keys.First(x => x.CustomId == billingProfileId);
+        billingProfileForEdit.IsEditable = false;
+        if (string.IsNullOrEmpty(billingProfileForEdit.CustomId))
+        {
+            customerBillingProfiles.Remove(billingProfileForEdit);
+        }
+        else
+        {
+            customerBillingProfiles[billingProfileForEdit] = editableBillingProfile;
+        }
+
+        editableBillingProfile = new BillingProfileDTO();
+    }
+}

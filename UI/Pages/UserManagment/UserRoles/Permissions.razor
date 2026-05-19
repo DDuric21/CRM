@@ -1,0 +1,89 @@
+@inject IRoleService roleService
+@inject ICrmModalService modal
+
+@if (RolePermissions.IsNullOrEmpty())
+{
+    <Loader />
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>@Translation.Permission</th>
+                    <th class="text-center">@Translation.Grant</th>
+                    <th class="text-center">@Translation.Deny</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in RolePermissions)
+                {
+                    <tr>
+                        <td class="align-middle">@item.Name</td>
+                        <InputRadioGroup @bind-Value="item.Value">
+                            <td class="text-center">
+                                <div class="form-check form-check-inline">
+                                    <InputRadio class="form-check-input" Value="true" />
+                                    <label class="form-check-label">@Translation.Grant</label>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="form-check form-check-inline">
+                                    <InputRadio class="form-check-input" Value="false" />
+                                    <label class="form-check-label">@Translation.Deny</label>
+                                </div>
+                            </td>
+                        </InputRadioGroup>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code{
+    [Parameter]
+    public string RoleName { get; set; } = string.Empty;
+
+    [Parameter]
+    public List<PermissionItem> RolePermissions { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(RoleName))
+        {
+            var result = await roleService.GetRolePermissionsAsync(RoleName);
+            if (!result.IsSuccess)
+            {
+                modal.ShowErrorMessage(result.ErrorMessage);
+                return;
+            }
+
+            RolePermissions = result.Data.RolePermissions.Permissions
+                .Select(x => new PermissionItem
+                    {
+                        Name = x.Key,
+                        Value = x.Value
+                    })
+                .ToList();
+        }
+        else
+        {
+            var result = await roleService.GetAllPermissionsAsync();
+            if (!result.IsSuccess)
+            {
+                modal.ShowErrorMessage(result.ErrorMessage);
+                return;
+            }
+
+            RolePermissions = result.Data.Permissions
+                .Select(x => new PermissionItem
+                    {
+                        Name = x,
+                        Value = false
+                    })
+                .ToList();
+        }
+    }
+}

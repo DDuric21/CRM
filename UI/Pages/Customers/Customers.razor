@@ -1,0 +1,101 @@
+﻿@page "/Customers/Customers"
+
+@inject NavigationManager navigationManager
+@inject ICustomerService customerService
+@inject ICrmModalService modal
+
+<CustomerGridFilter OnFilterExecute="GetFilteredCustomersAsync"/>
+
+<br />
+<h3>@Translation.Customers</h3>
+<button id="btnAddCustomer" class="btn btn-primary" @onclick="Redirect">@Translation.New +</button>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>@Translation.Name</th>
+            <th>@Translation.Birthday</th>
+            <th>@Translation.Address</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (customers is null)
+        {
+            <tr>
+                <td colspan="3" class="text-center py-5">
+                    <Loader />
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var customer in customers)
+            {
+                <tr role="button" @ondblclick="() => RedirectToCustomer(customer.Id)">
+                    <td>@(customer.FirstName + " " + customer.LastName)</td>
+                    <td>@customer.Birthday.ToString("dd-MM-yyyy")</td>
+                    <td>@GetLegalAddress(customer.Addresses)</td>
+                    <td>
+                        <button class="btn btn-outline-secondary" @onclick="() => RedirectToCustomer(customer.Id)">
+                            <em class="oi oi-pencil"></em> @Translation.Edit
+                        </button>
+                        <button class="btn btn-danger" @onclick="() => DeleteCustomer(customer.Id)">@Translation.Mask</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<CustomerDTO> customers = new List<CustomerDTO>();
+
+    private async Task GetFilteredCustomersAsync(CustomerFilterRQ customerFilter)
+    {
+        customers = null;
+        try
+        {            
+            var asyncCustomers = await customerService.GetCustomersAsync(customerFilter);
+
+            customers = await asyncCustomers.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            customers = new List<CustomerDTO>();
+            modal.ShowCustomerFriendlyMessage();
+        }
+    }
+
+    protected async void DeleteCustomer(long id)
+    {
+        var result = await modal.ShowDialog(Translation.RemoveCustomerDataConfirmation, ModalDialogType.Delete);
+
+        if (result.Cancelled)
+        {
+            return;
+        }
+
+        if (!await customerService.DeleteCustomer(id))
+        {
+            modal.ShowCustomerFriendlyMessage();
+        }
+    }
+
+    protected void RedirectToCustomer(long id)
+    {
+        navigationManager.NavigateTo("/Customers/" + id);
+    }
+
+    protected void Redirect()
+    {
+        navigationManager.NavigateTo("/NewCustomerForm");
+    }
+
+    private string GetLegalAddress(IEnumerable<AddressDTO> addresses)
+    {
+        var legalAddress = addresses.FirstOrDefault(x => x.IsLegal == true);
+
+        return legalAddress?.FullAddress ?? string.Empty;
+    }
+}

@@ -1,0 +1,38 @@
+﻿@page "/Orders/Orders"
+
+@inject IOrderService orderService
+@inject ICrmModalService modal
+
+<OrderGridFilter OnFilterExecute="GetFilteredOrdersAsync" />
+<br />
+<h3>@Translation.Orders</h3>
+
+<OrdersGrid Orders="orders"/>
+
+@code {
+    private SortedSet<OrderDTO> orders = new SortedSet<OrderDTO>(new OrdersSorter());
+
+    private async Task GetFilteredOrdersAsync(OrderFilter orderFilter)
+    {
+        orders = null;
+        try
+        {
+            var result = await orderService.GetOrdersAsync(orderFilter);
+
+            if (!result.IsSuccess)
+            {
+                orders = new SortedSet<OrderDTO>();
+                modal.ShowErrorMessage(result.ErrorMessage);
+                return;
+            }
+
+            orders = new SortedSet<OrderDTO>(result.Data.Orders, new OrdersSorter());
+        }
+        catch (Exception ex)
+        {
+            orders = new SortedSet<OrderDTO>();
+            modal.ShowErrorMessage(ex.Message);
+        }
+    }
+
+}

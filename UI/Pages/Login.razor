@@ -1,0 +1,94 @@
+﻿@layout LoginLayout
+@page "/Login"
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject IAuthenticationService authenticationService
+@inject NavigationManager navigationManager
+
+<PageTitle>@Translation.Login</PageTitle>
+
+<HeadContent>    
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    <link rel="stylesheet" href="/css/loginStyle.css">
+</HeadContent>
+
+<div class="login-left">
+    <h1>CRM</h1>
+</div>
+<div class="login-right">
+    <div class="form">
+        <div class="login">
+            <div class="login-header">
+                <h3>@Translation.Login</h3>
+                <p>@Translation.LoginInfo</p>
+            </div>
+        </div>
+        <EditForm class="login-form" Model="@userDTO" OnValidSubmit="@SubmitLogin">
+            <DataAnnotationsValidator />
+            <ValidationMessage For="@(() => userDTO.UserName)" class="validation-message" />
+            <InputText placeholder="@Translation.Username" name="username" @bind-Value="userDTO.UserName" oninput="@RemoveWarningText" />
+            <ValidationMessage For="@(() => userDTO.Password)" class="validation-message" />
+            <InputText type="password" placeholder="@Translation.Password" name="password" @bind-Value="userDTO.Password" oninput="@RemoveWarningText" />
+            <button type="submit" name="submit" class="submitButton">
+                <span class="spinner-border spinner-border-sm" role="status" hidden="@(!showLoading)"></span>
+                <span>@Translation.Login.ToUpper()</span>                
+            </button>
+        </EditForm>
+        <p class="warning-text" hidden="@(!showCredentialsWarning)">@warningText</p>        
+    </div>
+</div>
+
+@code {
+    private UserDTO userDTO = new UserDTO();
+
+    private bool showLoading = false;
+    private bool showCredentialsWarning = false;
+    private string warningText = string.Empty;
+
+    private async Task SubmitLogin()
+    {
+        RemoveWarningText();
+        showLoading = true;
+
+        try
+        {
+            var loginResult = await authenticationService.Login(userDTO.UserName, userDTO.Password);
+            if (loginResult.IsNullOrEmpty()
+                || loginResult.ErrorMessages.Any())
+            {
+                ShowWarningText(Translation.GeneralErrorText);
+                return;
+            }
+
+            if (loginResult.IsAuthenticated)
+            {
+                var crmAuthenticationStateProvider = (CrmAuthenticationStateProvider)authenticationStateProvider;
+                await crmAuthenticationStateProvider.UpdateAuthenticationState(loginResult.AccessToken);
+                navigationManager.NavigateTo("/index");
+            }
+            else
+            {
+                ShowWarningText(Translation.WrongCredentials);
+            }
+        }
+        catch
+        {
+            ShowWarningText(Translation.GeneralErrorText);
+        }
+        finally
+        {
+            showLoading = false;
+        }
+    }
+
+    private void RemoveWarningText()
+    {
+        showCredentialsWarning = false;
+    }
+
+    private void ShowWarningText(string text)
+    {
+        showCredentialsWarning = true;
+        warningText = text;
+    }
+}

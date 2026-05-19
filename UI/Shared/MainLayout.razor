@@ -1,0 +1,44 @@
+﻿@inherits LayoutComponentBase
+
+@inject NavigationManager NavigationManager
+@inject IConfiguration configuration
+
+<PageTitle>CRM</PageTitle>
+<AuthorizeView>
+    <div class="page">
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+
+        <main>
+            <div class="top-row px-4">    
+                <a class="btn btn-outline-secondary" href="/UserManagment/UserSettings?username=@username">
+                    <span class="oi oi-cog"></span> @Translation.Settings
+                </a>
+            </div>
+
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter] 
+    protected Task<AuthenticationState> authenticationState { get; set; }
+
+    private string username;
+
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        var user = (await authenticationState).User;
+        username = user.Identity.Name;
+        if(!user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/Login");
+        }
+    }
+}

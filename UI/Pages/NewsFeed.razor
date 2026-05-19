@@ -1,0 +1,37 @@
+﻿
+@if (NewsData is null)
+{
+    <Loader />
+}
+else
+{
+   <div class="card border-0" style="max-height: 40vh;">
+        <div class="card-header bg-primary bg-gradient text-white rounded-top">
+            <h4 class="my-auto">@Title</h4>
+        </div>
+        <div class="card-body overflow-auto border rounded-bottom">
+            @foreach (var news in NewsData)
+            {
+                <div class="card">
+                    <div class="card-header bg-primary bg-opacity-10">              
+                        <h6 class="card-title my-auto">@news.Title</h6>
+                    </div>
+                  <div class="card-body text-dark text">
+                    <p class="card-text lh-sm fs-6 text">@news.Content</p>
+                  </div>
+                </div>
+                <br />
+            }
+        </div>
+    </div> 
+}
+
+
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+       
+    [Parameter]
+    public List<NewsDTO> NewsData { get; set; }
+}
