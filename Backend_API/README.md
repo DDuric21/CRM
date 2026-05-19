@@ -1,51 +1,28 @@
-# CRM (Blazor WebAssembly + .NET 8)
+# Backend_API
 
-Short description
-This repository contains a Customer Relationship Management (CRM) application implemented as a .NET 8 backend API and a Blazor WebAssembly (`UI`) frontend. The WebAssembly client talks to the `Backend_API` for data, authentication and business logic.
+## Purpose
+This project is the server-side Web API for the CRM. It contains controllers, services, data access (EF Core), authentication (ASP.NET Identity + JWT), and seeding logic.
 
-What a visitor should know
-- Backend: `Backend_API` — ASP.NET Core Web API using Identity, JWT authentication and EF Core for persistence.
-- Frontend: `UI` — Blazor WebAssembly client (WASM) that calls the backend API.
-- The solution is configured for local development: run the API and the UI concurrently.
+## Prerequisites
+- .NET 8 SDK
+- Database server (e.g., SQL Server) or local DB provider (check `appsettings.json`)
 
-Prerequisites
-- .NET 8 SDK installed: https://dotnet.microsoft.com/en-us/download/dotnet/8.0
-- Visual Studio 2022 (with __ASP.NET and web development__ workload) or use the `dotnet` CLI.
-- (Optional) SQL Server / other DB server if you want to use a production DB. The project may create/seed the database automatically for development.
+## Run locally (Visual Studio)
+1. Open solution in Visual Studio.
+2. Set `Backend_API` as a startup project, or set it as one of multiple startup projects (__Set Startup Projects__).
+3. Run (F5 or __Debug > Start Debugging__).
 
-Quick start — Command line
-1. Clone the repo:
-   - `git clone https://github.com/DDuric21/CRM.git`
-2. From repository root, run the backend and UI in separate terminals:
-
-Terminal 1 — backend:
+## Run locally (CLI)
 - `dotnet run --project Backend_API`
 
-Terminal 2 — UI:
-- `dotnet run --project UI`
+## Database / Migrations
+- Apply EF Core migrations:
+  - `dotnet tool install --global dotnet-ef` (if needed)
+  - `dotnet ef database update --project Backend_API`
+- The solution contains seed routines that may create sample data on startup (see seed classes in `Data/SeedData`).
 
-3. Open the URL printed by the `UI` project (usually `http://localhost:5000` / `https://localhost:5001`) in your browser.
-
-Configuration notes
-- The frontend reads `appCustomSettings.json` at startup (see `UI/Startup/Initializer.cs`) to determine the backend base URL. Edit that file (or the appropriate environment-specific config) to point to your running `Backend_API` (for example, set `SecureBackendUrl`).
-- The backend expects configuration sections such as `ConnectionStrings`, `JwtConfiguration` and `CORS:AllowedOrigins`. Adjust `Backend_API/appsettings.json` or environment variables as needed:
-  - Example (simplified):
-    ```json
-    {
-      "ConnectionStrings": {
-        "DefaultConnection": "Server=.;Database=CrmDb;Trusted_Connection=True;"
-      },
-      "JwtConfiguration": {
-        "Issuer": "your-issuer",
-        "Audience": "your-audience",
-        "Key": "a-very-long-secret-key"
-      },
-      "CORS": {
-        "AllowedOrigins": [ "https://localhost:5001" ]
-      }
-    }
-    ```
-- Database: If the project uses EF Core migrations, run `dotnet ef database update --project Backend_API` to apply migrations. Some seed code in the project may also create and populate the database automatically on startup.
-
-Notes
-- This README is intentionally generic so visitors quickly understand the repo layout and how to run it locally. Edit sections above to add more project-specific instructions (database engine used, sample user accounts, screenshots, CI/CD, Docker support, etc.).
+## Configuration
+- Edit `Backend_API/appsettings.json` or environment variables for:
+  - `ConnectionStrings:DefaultConnection`
+  - `JwtConfiguration` (Issuer, Audience, Key)
+  - `CORS:AllowedOrigins` (allow the UI URL)
